@@ -3,6 +3,17 @@
 Backspace vendors the following dependencies so the extension and both
 Harness installation paths make no runtime network requests.
 
+## Upstream project
+
+- Project: https://github.com/d-dev0101/open-sea-skin
+- License: MIT
+- Copyright: © 2026 Open Sea Skin contributors
+
+Backspace is a fork of `open-sea-skin`. The renderer, Harness plugin, extension
+and installers were originally authored upstream; this fork renames the project
+and its identifiers while preserving the upstream MIT copyright notice in
+`LICENSE`.
+
 ## three.js 0.178.0
 
 - Project: https://threejs.org/
