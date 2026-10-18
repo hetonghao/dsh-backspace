@@ -50,8 +50,8 @@ test('the repository root is an installable DeepSeek Harness bundle', async () =
   assert.deepEqual(pkg.dsh.client, { inject: [], platform: 'web' })
   assert.equal(pkg.main, 'plugin/index.js')
   assert.equal(pkg.exports['./client'], './plugin/client.js')
-  assert.match(await text('cordis.patch.yml'), /id: open-sea-skin[\s\S]*name: open-sea-skin/)
-  assert.match(await text('plugin/client.js'), /__ModuleLoader__\.load\(\{ id: "open-sea-skin"/)
+  assert.match(await text('cordis.patch.yml'), /id: dsh-backspace[\s\S]*name: dsh-backspace/)
+  assert.match(await text('plugin/client.js'), /__ModuleLoader__\.load\(\{ id: "dsh-backspace"/)
 })
 
 test('vendored three.js is local, patched and licensed', async () => {
@@ -70,8 +70,8 @@ test('vendored three.js is local, patched and licensed', async () => {
 test('shared controller retains duplicate guards, a11y and resilient anchors', async () => {
   const core = await text('shared/skin-core.js')
   for (const required of [
-    '__open-sea-skin__',
-    '__open-sea-skin-btn__',
+    '__dsh-backspace__',
+    '__dsh-backspace-btn__',
     'role',
     "event.key === 'Escape'",
     "event.key !== 'Tab'",
@@ -101,7 +101,7 @@ test('the GitHub Pages website is an interactive local-only product demo', async
   assert.match(html, /class="harness-capture harness-capture-light"/)
   assert.match(html, /class="nav-github"[\s\S]*?<svg viewBox="0 0 16 16"/)
   assert.doesNotMatch(html, /class="demo-(?:sidebar|conversation|details)"/)
-  assert.match(app, /type: 'oss-set'/)
+  assert.match(app, /type: 'bs-set'/)
   assert.match(app, /--capture-opacity/)
   assert.match(app, /parentOrigin: location\.origin/)
   assert.match(app, /navigator\.clipboard/)
@@ -128,14 +128,14 @@ test('renderer contains the promised performance and security policies', async (
     'TARGET_FPS',
     'renderScale',
     'p.sub(floor(p.div(289)).mul(289))',
-    '__ossState',
+    '__bsState',
   ]) assert.ok(ocean.includes(required), required)
 })
 
 test('native integration keeps modal overlays above every app column', async () => {
   const integration = await text('harness-plugin/integration/update-harness.mjs')
-  assert.match(integration, /isolation: isolate; \/\* Open Sea background stacking context \*\//)
+  assert.match(integration, /isolation: isolate; \/\* Backspace background stacking context \*\//)
   assert.match(integration, /z-index: -1/)
   assert.match(integration, /text = text\.replace/)
-  assert.match(integration, /ui-open-sea-skin.*web-search-deepseek/)
+  assert.match(integration, /ui-backspace.*web-search-deepseek/)
 })

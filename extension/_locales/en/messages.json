@@ -1,5 +1,5 @@
 {
-  "extensionName": { "message": "Open Sea Skin" },
+  "extensionName": { "message": "Backspace" },
   "extensionDescription": { "message": "A realtime WebGPU ocean background exclusively for local DeepSeek Harness pages. Adaptive quality, local assets, no data collection." },
   "tagline": { "message": "Realtime WebGPU ocean · UI skin" },
   "toggleLabel": { "message": "Ocean background" },

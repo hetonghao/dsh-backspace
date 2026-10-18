@@ -1,16 +1,16 @@
 /**
- * Installable DeepSeek Harness Host plugin for Open Sea.
- * Serves the self-contained renderer under /open-sea-skin without patching
+ * Installable DeepSeek Harness Host plugin for Backspace.
+ * Serves the self-contained renderer under /dsh-backspace without patching
  * the Harness checkout.
  */
 import { readFile } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-export const name = 'open-sea-skin'
+export const name = 'dsh-backspace'
 export const inject = ['webServer']
 
-const ROUTE = '/open-sea-skin'
+const ROUTE = '/dsh-backspace'
 const ASSET_ROOT = resolve(fileURLToPath(new URL('../native-dist/', import.meta.url)))
 const MIME = Object.freeze({
   '.css': 'text/css; charset=utf-8',
@@ -75,5 +75,5 @@ export function apply(ctx) {
     kind: 'prefix',
     path: ROUTE,
     handler: serveAsset,
-  }), 'open-sea-skin: static renderer route')
+  }), 'dsh-backspace: static renderer route')
 }

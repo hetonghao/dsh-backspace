@@ -1,21 +1,21 @@
 // GENERATED from shared/skin-core.js. Run npm run build after editing shared sources.
-window.__ModuleLoader__.load({ id: "open-sea-skin", factory: (require) => {
+window.__ModuleLoader__.load({ id: "dsh-backspace", factory: (require) => {
   var module = { exports: {} };
   var exports = module.exports;
-// Open Sea Skin shared host-page controller.
+// Backspace shared host-page controller.
 //
 // This file intentionally has no import/export statements: the release build
 // concatenates it with either the Chrome storage adapter or the localStorage
 // adapter, so both installation paths run the same DOM, glass and a11y code.
-(function registerOpenSeaSkinCore(global) {
+(function registerBackspaceSkinCore(global) {
   'use strict';
 
   const IDS = Object.freeze({
-    frame: '__open-sea-skin__',
-    glass: '__open-sea-skin-glass__',
-    uiStyle: '__open-sea-skin-glass__-ui',
-    button: '__open-sea-skin-btn__',
-    panel: '__open-sea-skin-panel__',
+    frame: '__dsh-backspace__',
+    glass: '__dsh-backspace-glass__',
+    uiStyle: '__dsh-backspace-glass__-ui',
+    button: '__dsh-backspace-btn__',
+    panel: '__dsh-backspace-panel__',
   });
 
   const DEFAULTS = Object.freeze({
@@ -28,12 +28,12 @@ window.__ModuleLoader__.load({ id: "open-sea-skin", factory: (require) => {
 
   const COPY = Object.freeze({
     zh: {
-      button: '海洋皮肤设置',
+      button: 'Backspace 皮肤设置',
       close: '关闭',
       sea: '波浪大小',
       time: '日光',
       glass: '玻璃不透明度',
-      enable: '启用海洋皮肤',
+      enable: '启用 Backspace 皮肤',
       autoCycle: '自动昼夜循环',
       reset: '恢复默认',
       resetNote: '恢复全部默认设置（波浪 45 / 日光 55 / 玻璃 72 / 自动循环开）',
@@ -41,12 +41,12 @@ window.__ModuleLoader__.load({ id: "open-sea-skin", factory: (require) => {
       times: ['黄昏', '金色时刻', '下午', '正午'],
     },
     en: {
-      button: 'Open Sea skin settings',
+      button: 'Backspace skin settings',
       close: 'Close',
       sea: 'Sea state',
       time: 'Daylight',
       glass: 'Glass opacity',
-      enable: 'Enable Open Sea skin',
+      enable: 'Enable Backspace skin',
       autoCycle: 'Automatic day cycle',
       reset: 'Reset to defaults',
       resetNote: 'Restore all defaults (sea 45 / daylight 55 / glass 72 / auto cycle on)',
@@ -97,7 +97,7 @@ window.__ModuleLoader__.load({ id: "open-sea-skin", factory: (require) => {
     const light = glass / 100;
     const dark = Math.max(0.40, light - 0.12);
     return `
-/* Open Sea Skin: one translucent shell; nested fills must not compound. */
+/* Backspace: one translucent shell; nested fills must not compound. */
 body {
   background: transparent !important;
   --dsw-alias-bg-base: rgba(255, 255, 255, ${alpha(light)}) !important;
@@ -200,24 +200,24 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
   display:none;
 }
 #${IDS.panel}.open { display:block; }
-#${IDS.panel} .oss-title { display:flex; align-items:center; justify-content:space-between; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:14px; }
-#${IDS.panel} .oss-mark, #${IDS.panel} .oss-value { color:#8fe9e4; }
-#${IDS.panel} .oss-close { background:none; border:0; color:rgba(255,255,255,.55); font-size:18px; line-height:1; cursor:pointer; padding:3px 6px; border-radius:6px; }
-#${IDS.panel} .oss-close:hover { color:#fff; background:rgba(255,255,255,.08); }
-#${IDS.panel} .oss-row { margin-top:13px; }
-#${IDS.panel} .oss-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:9px; font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.7); }
-#${IDS.panel} .oss-value { font-variant-numeric:tabular-nums; }
+#${IDS.panel} .bs-title { display:flex; align-items:center; justify-content:space-between; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:14px; }
+#${IDS.panel} .bs-mark, #${IDS.panel} .bs-value { color:#8fe9e4; }
+#${IDS.panel} .bs-close { background:none; border:0; color:rgba(255,255,255,.55); font-size:18px; line-height:1; cursor:pointer; padding:3px 6px; border-radius:6px; }
+#${IDS.panel} .bs-close:hover { color:#fff; background:rgba(255,255,255,.08); }
+#${IDS.panel} .bs-row { margin-top:13px; }
+#${IDS.panel} .bs-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:9px; font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.7); }
+#${IDS.panel} .bs-value { font-variant-numeric:tabular-nums; }
 #${IDS.panel} input[type='range'] { appearance:none; display:block; width:100%; height:14px; margin:0; padding:0; background:transparent; cursor:pointer; }
 #${IDS.panel} input[type='range']::-webkit-slider-runnable-track { height:3px; border-radius:2px; background:rgba(255,255,255,.2); }
 #${IDS.panel} input[type='range']::-webkit-slider-thumb { appearance:none; width:14px; height:14px; margin-top:-5.5px; border:0; border-radius:50%; background:#8fe9e4; box-shadow:0 0 10px rgba(143,233,228,.75); }
 #${IDS.panel} input[type='range']::-moz-range-track { height:3px; border-radius:2px; background:rgba(255,255,255,.2); }
 #${IDS.panel} input[type='range']::-moz-range-thumb { width:14px; height:14px; border:0; border-radius:50%; background:#8fe9e4; box-shadow:0 0 10px rgba(143,233,228,.75); }
-#${IDS.panel} .oss-note { margin-top:13px; font-size:10px; line-height:1.7; color:rgba(255,255,255,.46); }
-#${IDS.panel} .oss-switch { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-#${IDS.panel} .oss-switch label { font-size:11px; color:rgba(255,255,255,.7); }
-#${IDS.panel} .oss-switch input[type='checkbox'] { width:15px; height:15px; margin:0; accent-color:#8fe9e4; cursor:pointer; }
-#${IDS.panel} .oss-reset { width:100%; margin-top:4px; padding:7px 0; border-radius:8px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#eef4f6; font-size:11px; cursor:pointer; transition:background .15s ease, border-color .15s ease; }
-#${IDS.panel} .oss-reset:hover { background:rgba(143,233,228,.12); border-color:rgba(143,233,228,.4); }
+#${IDS.panel} .bs-note { margin-top:13px; font-size:10px; line-height:1.7; color:rgba(255,255,255,.46); }
+#${IDS.panel} .bs-switch { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+#${IDS.panel} .bs-switch label { font-size:11px; color:rgba(255,255,255,.7); }
+#${IDS.panel} .bs-switch input[type='checkbox'] { width:15px; height:15px; margin:0; accent-color:#8fe9e4; cursor:pointer; }
+#${IDS.panel} .bs-reset { width:100%; margin-top:4px; padding:7px 0; border-radius:8px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#eef4f6; font-size:11px; cursor:pointer; transition:background .15s ease, border-color .15s ease; }
+#${IDS.panel} .bs-reset:hover { background:rgba(143,233,228,.12); border-color:rgba(143,233,228,.4); }
 @media (prefers-reduced-motion: reduce) {
   #${IDS.button}, #${IDS.panel}, #${IDS.panel} * { transition:none !important; }
 }`;
@@ -225,7 +225,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
 
   function createController(options) {
     if (!options || typeof options.assetUrl !== 'function' || !options.storage) {
-      throw new TypeError('OpenSeaSkinCore requires assetUrl() and storage adapters.');
+      throw new TypeError('BackspaceSkinCore requires assetUrl() and storage adapters.');
     }
 
     let copy = selectCopy(options.locale);
@@ -246,7 +246,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
     const save = (patch) => {
       state = normalize({ ...state, ...patch });
       return Promise.resolve(options.storage.set(patch)).catch((error) => {
-        console.warn('[Open Sea Skin] Failed to save settings.', error);
+        console.warn('[Backspace] Failed to save settings.', error);
       });
     };
 
@@ -261,7 +261,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       let targetOrigin = '*';
       try { targetOrigin = new URL(frame.src).origin; } catch { /* local test documents may have no absolute base URL */ }
       frame.contentWindow.postMessage({
-        type: 'oss-set', sea: state.sea, t: state.time, auto: state.autoCycle,
+        type: 'bs-set', sea: state.sea, t: state.time, auto: state.autoCycle,
       }, targetOrigin);
     };
 
@@ -359,14 +359,14 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       panel.setAttribute('aria-modal', 'false');
       panel.setAttribute('aria-label', copy.button);
       panel.innerHTML = `
-        <div class="oss-title"><span>OPEN SEA <span class="oss-mark">·</span> SKIN</span><button class="oss-close" type="button" aria-label="${copy.close}">×</button></div>
-        <div class="oss-row"><div class="oss-head"><label for="${IDS.panel}-sea-range">${copy.sea}</label><output class="oss-value" id="${IDS.panel}-sea" for="${IDS.panel}-sea-range"></output></div><input type="range" id="${IDS.panel}-sea-range" min="0" max="100" step="1" /></div>
-        <div class="oss-row"><div class="oss-head"><label for="${IDS.panel}-time-range">${copy.time}</label><output class="oss-value" id="${IDS.panel}-time" for="${IDS.panel}-time-range"></output></div><input type="range" id="${IDS.panel}-time-range" min="0" max="100" step="1" /></div>
-        <div class="oss-row"><div class="oss-head"><label for="${IDS.panel}-glass-range">${copy.glass}</label><output class="oss-value" id="${IDS.panel}-glass" for="${IDS.panel}-glass-range"></output></div><input type="range" id="${IDS.panel}-glass-range" min="40" max="90" step="1" /></div>
-        <div class="oss-row oss-switch"><label for="${IDS.panel}-enabled">${copy.enable}</label><input type="checkbox" id="${IDS.panel}-enabled" /></div>
-        <div class="oss-row oss-switch"><label for="${IDS.panel}-cycle">${copy.autoCycle}</label><input type="checkbox" id="${IDS.panel}-cycle" /></div>
-        <div class="oss-row"><button type="button" class="oss-reset">${copy.reset}</button></div>
-        <p class="oss-note">${copy.resetNote}<br>${copy.note}</p>`;
+        <div class="bs-title"><span>BACKSPACE <span class="bs-mark">·</span> SKIN</span><button class="bs-close" type="button" aria-label="${copy.close}">×</button></div>
+        <div class="bs-row"><div class="bs-head"><label for="${IDS.panel}-sea-range">${copy.sea}</label><output class="bs-value" id="${IDS.panel}-sea" for="${IDS.panel}-sea-range"></output></div><input type="range" id="${IDS.panel}-sea-range" min="0" max="100" step="1" /></div>
+        <div class="bs-row"><div class="bs-head"><label for="${IDS.panel}-time-range">${copy.time}</label><output class="bs-value" id="${IDS.panel}-time" for="${IDS.panel}-time-range"></output></div><input type="range" id="${IDS.panel}-time-range" min="0" max="100" step="1" /></div>
+        <div class="bs-row"><div class="bs-head"><label for="${IDS.panel}-glass-range">${copy.glass}</label><output class="bs-value" id="${IDS.panel}-glass" for="${IDS.panel}-glass-range"></output></div><input type="range" id="${IDS.panel}-glass-range" min="40" max="90" step="1" /></div>
+        <div class="bs-row bs-switch"><label for="${IDS.panel}-enabled">${copy.enable}</label><input type="checkbox" id="${IDS.panel}-enabled" /></div>
+        <div class="bs-row bs-switch"><label for="${IDS.panel}-cycle">${copy.autoCycle}</label><input type="checkbox" id="${IDS.panel}-cycle" /></div>
+        <div class="bs-row"><button type="button" class="bs-reset">${copy.reset}</button></div>
+        <p class="bs-note">${copy.resetNote}<br>${copy.note}</p>`;
 
       const host = document.body || document.documentElement;
       host.append(button, panel);
@@ -379,7 +379,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       const glassOut = panel.querySelector(`#${IDS.panel}-glass`);
       const enabledBox = panel.querySelector(`#${IDS.panel}-enabled`);
       const cycleBox = panel.querySelector(`#${IDS.panel}-cycle`);
-      const resetBtn = panel.querySelector('.oss-reset');
+      const resetBtn = panel.querySelector('.bs-reset');
 
       const syncUi = () => {
         seaRange.value = String(state.sea);
@@ -400,12 +400,12 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
         button.title = copy.button;
         button.setAttribute('aria-label', copy.button);
         panel.setAttribute('aria-label', copy.button);
-        panel.querySelector('.oss-close').setAttribute('aria-label', copy.close);
+        panel.querySelector('.bs-close').setAttribute('aria-label', copy.close);
         for (const [suffix, key] of [['sea-range', 'sea'], ['time-range', 'time'], ['glass-range', 'glass'], ['enabled', 'enable'], ['cycle', 'autoCycle']]) {
           panel.querySelector(`label[for="${IDS.panel}-${suffix}"]`).textContent = copy[key];
         }
         resetBtn.textContent = copy.reset;
-        panel.querySelector('.oss-note').replaceChildren(copy.resetNote, document.createElement('br'), copy.note);
+        panel.querySelector('.bs-note').replaceChildren(copy.resetNote, document.createElement('br'), copy.note);
         timeOut.textContent = timeLabel(copy, state.time);
       };
       syncLocale();
@@ -456,7 +456,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       });
 
       on(button, 'click', () => setPanelOpen(!panelOpen));
-      on(panel.querySelector('.oss-close'), 'click', () => setPanelOpen(false));
+      on(panel.querySelector('.bs-close'), 'click', () => setPanelOpen(false));
       on(document, 'click', (event) => {
         if (panelOpen && !panel.contains(event.target) && !button.contains(event.target)) setPanelOpen(false);
       });
@@ -532,7 +532,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       try {
         state = normalize(await options.storage.get(DEFAULTS));
       } catch (error) {
-        console.warn('[Open Sea Skin] Failed to load settings; using defaults.', error);
+        console.warn('[Backspace] Failed to load settings; using defaults.', error);
       }
       applyEnabled();
       if (typeof options.listen === 'function') {
@@ -554,16 +554,16 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
     return Object.freeze({ start, stop, getState: () => ({ ...state }) });
   }
 
-  global.OpenSeaSkinCore = Object.freeze({ createController, DEFAULTS, IDS });
+  global.BackspaceSkinCore = Object.freeze({ createController, DEFAULTS, IDS });
 })(globalThis);
 
 
   const KEYS = Object.freeze({
-    enabled: 'ossEnabled',
-    sea: 'ossSea',
-    time: 'ossTime',
-    glass: 'ossGlass',
-    autoCycle: 'ossAutoCycle',
+    enabled: 'bsEnabled',
+    sea: 'bsSea',
+    time: 'bsTime',
+    glass: 'bsGlass',
+    autoCycle: 'bsAutoCycle',
   });
 
   function readSetting(key, fallback) {
@@ -577,11 +577,11 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
     }
   }
 
-  exports.name = 'open-sea-skin-client';
+  exports.name = 'dsh-backspace-client';
   exports.inject = [];
   exports.apply = function apply(ctx) {
-    const controller = globalThis.OpenSeaSkinCore.createController({
-      assetUrl: (path) => '/open-sea-skin/' + path,
+    const controller = globalThis.BackspaceSkinCore.createController({
+      assetUrl: (path) => '/dsh-backspace/' + path,
       storage: {
         get: async (defaults) => ({
           enabled: readSetting('enabled', defaults.enabled),
@@ -602,7 +602,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       },
     });
     void controller.start();
-    ctx.effect(() => () => controller.stop(), 'open-sea-skin: browser surface');
+    ctx.effect(() => () => controller.stop(), 'dsh-backspace: browser surface');
   };
 
   return module.exports;

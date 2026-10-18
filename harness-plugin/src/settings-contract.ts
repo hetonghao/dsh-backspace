@@ -1,16 +1,16 @@
-/** Durable Open Sea settings shared by the Host schema and Client scope. */
+/** Durable Backspace settings shared by the Host schema and Client scope. */
 
-/** Settings namespace owned by the native Open Sea plugin. */
-export const OPEN_SEA_SETTINGS_NAMESPACE = 'ui-open-sea-skin'
+/** Settings namespace owned by the native Backspace plugin. */
+export const BACKSPACE_SETTINGS_NAMESPACE = 'ui-backspace'
 
 /** Supported renderer quality policies. */
-export const OPEN_SEA_QUALITIES = ['auto', 'low', 'high'] as const
+export const BACKSPACE_QUALITIES = ['auto', 'low', 'high'] as const
 
 /** Renderer quality policy. */
-export type OpenSeaQuality = typeof OPEN_SEA_QUALITIES[number]
+export type BackspaceQuality = typeof BACKSPACE_QUALITIES[number]
 
-/** Durable Open Sea preference section. */
-export interface OpenSeaSettings {
+/** Durable Backspace preference section. */
+export interface BackspaceSettings {
   /** Whether the background and glass token layer are active. */
   enabled: boolean
   /** Gerstner wave strength on a 0-100 scale. */
@@ -22,11 +22,11 @@ export interface OpenSeaSettings {
   /** Whether the renderer advances through its twelve-minute daylight cycle. */
   autoCycle: boolean
   /** Automatic, explicitly low, or explicitly high rendering quality. */
-  quality: OpenSeaQuality
+  quality: BackspaceQuality
 }
 
 /** Defaults applied when a field is absent from user-settings. */
-export const DEFAULT_OPEN_SEA_SETTINGS: Readonly<OpenSeaSettings> = Object.freeze({
+export const DEFAULT_BACKSPACE_SETTINGS: Readonly<BackspaceSettings> = Object.freeze({
   enabled: true,
   sea: 45,
   time: 55,

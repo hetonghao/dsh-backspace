@@ -19,7 +19,7 @@
     // so verify the server-rendered Harness boot marker before touching the DOM.
     if (!isHarnessPage()) return;
 
-    const controller = globalThis.OpenSeaSkinCore.createController({
+    const controller = globalThis.BackspaceSkinCore.createController({
       assetUrl: (path) => chrome.runtime.getURL(path),
       storage: {
         get: async (defaults) => {

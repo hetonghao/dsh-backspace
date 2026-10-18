@@ -1,5 +1,5 @@
 // ============================================================================
-//  OPEN SEA — optimized ocean engine (extension skin edition)
+//  BACKSPACE — optimized ocean engine (extension skin edition)
 //  WebGPU · Three.js 0.178 · TSL node shaders
 //
 //  Same visual language as the standalone site, re-tuned for a persistent
@@ -339,18 +339,18 @@ const fpsReadout = $('fps');
 
 function showUnavailable() {
   if (!loader) {
-    console.error('[OPEN SEA SKIN] WebGPU is not available in this browser.');
+    console.error('[BACKSPACE] WebGPU is not available in this browser.');
     return;
   }
   loader.classList.add('error');
   loaderTitle.textContent = 'WEBGPU UNAVAILABLE';
   loaderStatus.textContent = 'WEBGPU IS NOT AVAILABLE IN THIS BROWSER';
   loaderNote.hidden = false;
-  loaderNote.textContent = 'Open Sea requires WebGPU. Please use a recent version of Chrome or Edge with hardware acceleration enabled, then reload the page.';
+  loaderNote.textContent = 'Backspace requires WebGPU. Please use a recent version of Chrome or Edge with hardware acceleration enabled, then reload the page.';
 }
 
 function showInitError(err) {
-  console.error('[OPEN SEA SKIN] initialization failed:', err);
+  console.error('[BACKSPACE] initialization failed:', err);
   if (!loader) return;
   loader.classList.add('error');
   loaderTitle.textContent = 'INITIALIZATION FAILED';
@@ -371,7 +371,7 @@ if (SKIN) {
     if (ev.source !== window.parent) return;
     if (SKIN_PARENT_ORIGIN && ev.origin !== SKIN_PARENT_ORIGIN) return;
     const d = ev.data;
-    if (d && d.type === 'oss-set') {
+    if (d && d.type === 'bs-set') {
       manualTimeOfDay = d.auto !== true;
       const sea = Number(d.sea);
       const t = Number(d.t);
@@ -384,7 +384,7 @@ if (SKIN) {
     }
   });
   // tiny debug hook for automated checks
-  window.__ossState = () => ({
+  window.__bsState = () => ({
     sea: uSea.value,
     daylight: currentDaylight,
     elapsed: uTime.value,

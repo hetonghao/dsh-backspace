@@ -2,12 +2,12 @@
 import { useEffect, useRef } from 'react'
 import type { PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
-import type { createOpenSeaStore, OpenSeaState } from './store.ts'
-import css from './OpenSeaBackground.module.css'
+import type { createBackspaceStore, BackspaceState } from './store.ts'
+import css from './BackspaceBackground.module.css'
 
-const FRAME_ID = '__open-sea-skin__'
+const FRAME_ID = '__dsh-backspace__'
 
-function source(state: OpenSeaState): string {
+function source(state: BackspaceState): string {
   const query = new URLSearchParams({
     skin: '1',
     sea: String(state.sea),
@@ -16,19 +16,19 @@ function source(state: OpenSeaState): string {
     quality: state.quality,
     parentOrigin: location.origin,
   })
-  return `/open-sea-skin/skin.html?${query}`
+  return `/dsh-backspace/skin.html?${query}`
 }
 
-/** Props derived from the layout slot and shared Open Sea store. */
-export type OpenSeaBackgroundProps =
-  PropsRuntime<'shell.background'> & PropsStore<ReturnType<typeof createOpenSeaStore>>
+/** Props derived from the layout slot and shared Backspace store. */
+export type BackspaceBackgroundProps =
+  PropsRuntime<'shell.background'> & PropsStore<ReturnType<typeof createBackspaceStore>>
 
 /**
- * Render the same-origin Open Sea scene beneath the Harness columns.
+ * Render the same-origin Backspace scene beneath the Harness columns.
  * @param props - composed slot props.
  * @returns the background iframe or null while disabled/duplicated.
  */
-export function OpenSeaBackground({ useStore }: OpenSeaBackgroundProps) {
+export function BackspaceBackground({ useStore }: BackspaceBackgroundProps) {
   const state = useStore(snapshot => snapshot)
   const frame = useRef<HTMLIFrameElement | null>(null)
   const ownsSurface = useRef(document.getElementById(FRAME_ID) === null)
@@ -42,7 +42,7 @@ export function OpenSeaBackground({ useStore }: OpenSeaBackgroundProps) {
   useEffect(() => {
     if (!state.ready || !state.enabled) return
     frame.current?.contentWindow?.postMessage({
-      type: 'oss-set',
+      type: 'bs-set',
       sea: state.sea,
       t: state.time,
       auto: state.autoCycle,

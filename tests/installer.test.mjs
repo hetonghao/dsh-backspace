@@ -13,7 +13,7 @@ const sourceInstaller = resolve(root, 'harness-plugin/install-into-harness.sh')
 
 test('static bootstrap defaults to the current GitHub release', async () => {
   const script = await readFile(bootstrapInstaller, 'utf8')
-  assert.match(script, /OPEN_SEA_VERSION="\$\{OPEN_SEA_VERSION:-v1\.2\.5\}"/)
+  assert.match(script, /BACKSPACE_VERSION="\$\{BACKSPACE_VERSION:-v1\.2\.5\}"/)
 })
 
 function run(...args) {
@@ -32,18 +32,18 @@ function runBootstrap(archive, cwd, ...args) {
   const result = spawnSync('bash', [bootstrapInstaller, ...args], {
     cwd,
     encoding: 'utf8',
-    env: { ...process.env, OPEN_SEA_ARCHIVE_FILE: archive },
+    env: { ...process.env, BACKSPACE_ARCHIVE_FILE: archive },
   })
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`)
   return result.stdout
 }
 
 async function createSourceArchive(fixture) {
-  const archiveRoot = resolve(fixture, 'archive/open-sea-skin-1.2.0')
+  const archiveRoot = resolve(fixture, 'archive/dsh-backspace-1.2.0')
   await mkdir(archiveRoot, { recursive: true })
   await cp(resolve(root, 'native-dist'), resolve(archiveRoot, 'native-dist'), { recursive: true })
-  const archive = resolve(fixture, 'open-sea-skin.tar.gz')
-  const result = spawnSync('tar', ['-czf', archive, '-C', resolve(fixture, 'archive'), 'open-sea-skin-1.2.0'], {
+  const archive = resolve(fixture, 'dsh-backspace.tar.gz')
+  const result = spawnSync('tar', ['-czf', archive, '-C', resolve(fixture, 'archive'), 'dsh-backspace-1.2.0'], {
     encoding: 'utf8',
   })
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`)
@@ -51,7 +51,7 @@ async function createSourceArchive(fixture) {
 }
 
 test('static installer is repeatable and preserves unrelated Harness updates', async () => {
-  const fixture = await mkdtemp(resolve(tmpdir(), 'open-sea-installer-'))
+  const fixture = await mkdtemp(resolve(tmpdir(), 'backspace-installer-'))
   const dist = resolve(fixture, 'dist')
   const index = resolve(dist, 'index.html')
   await mkdir(dist)
@@ -59,30 +59,30 @@ test('static installer is repeatable and preserves unrelated Harness updates', a
 
   run('--dist', dist)
   let html = await readFile(index, 'utf8')
-  assert.equal((html.match(/open-sea-skin:begin/g) || []).length, 1)
-  assert.match(html, /\/open-sea-skin\/loader\.js/)
-  await stat(resolve(dist, 'open-sea-skin/vendor/three.webgpu.js'))
-  await stat(`${index}.oss-backup`)
+  assert.equal((html.match(/dsh-backspace:begin/g) || []).length, 1)
+  assert.match(html, /\/dsh-backspace\/loader\.js/)
+  await stat(resolve(dist, 'dsh-backspace/vendor/three.webgpu.js'))
+  await stat(`${index}.bs-backup`)
 
   html = html.replace('<title>Harness</title>', '<title>Harness upgraded</title><meta name="fixture" content="preserve">')
   await writeFile(index, html)
   run('--update', '--dist', dist)
   html = await readFile(index, 'utf8')
-  assert.equal((html.match(/open-sea-skin:begin/g) || []).length, 1)
+  assert.equal((html.match(/dsh-backspace:begin/g) || []).length, 1)
   assert.match(html, /Harness upgraded/)
   assert.match(html, /name="fixture"/)
 
   const uninstallOutput = run('--uninstall', '--dist', dist)
   assert.match(uninstallOutput, /Restart Harness/)
   html = await readFile(index, 'utf8')
-  assert.doesNotMatch(html, /open-sea-skin/)
+  assert.doesNotMatch(html, /dsh-backspace/)
   assert.match(html, /Harness upgraded/)
   assert.match(html, /name="fixture"/)
-  await assert.rejects(stat(resolve(dist, 'open-sea-skin')))
+  await assert.rejects(stat(resolve(dist, 'dsh-backspace')))
 })
 
 test('dry-run discovers an explicit dist without changing it', async () => {
-  const fixture = await mkdtemp(resolve(tmpdir(), 'open-sea-dry-run-'))
+  const fixture = await mkdtemp(resolve(tmpdir(), 'backspace-dry-run-'))
   await writeFile(resolve(fixture, 'index.html'), '<html><head></head><body></body></html>')
   const before = await readFile(resolve(fixture, 'index.html'), 'utf8')
   const output = run('--dry-run', '--dist', fixture)
@@ -91,7 +91,7 @@ test('dry-run discovers an explicit dist without changing it', async () => {
 })
 
 test('GitHub bootstrap works from an unrelated directory and forwards installer options', async () => {
-  const fixture = await mkdtemp(resolve(tmpdir(), 'open-sea-bootstrap-'))
+  const fixture = await mkdtemp(resolve(tmpdir(), 'backspace-bootstrap-'))
   const unrelatedCwd = resolve(fixture, 'unrelated-working-directory')
   const dist = resolve(fixture, 'dist')
   await mkdir(unrelatedCwd)
@@ -100,18 +100,18 @@ test('GitHub bootstrap works from an unrelated directory and forwards installer 
   const archive = await createSourceArchive(fixture)
 
   const output = runBootstrap(archive, unrelatedCwd, '--dist', dist)
-  assert.match(output, /Open Sea Skin is installed/)
-  await stat(resolve(dist, 'open-sea-skin/loader.js'))
-  assert.match(await readFile(resolve(dist, 'index.html'), 'utf8'), /open-sea-skin:begin/)
+  assert.match(output, /Backspace is installed/)
+  await stat(resolve(dist, 'dsh-backspace/loader.js'))
+  assert.match(await readFile(resolve(dist, 'index.html'), 'utf8'), /dsh-backspace:begin/)
 
   const uninstallOutput = runBootstrap(archive, unrelatedCwd, '--uninstall', '--dist', dist)
   assert.match(uninstallOutput, /Start Harness again/)
-  await assert.rejects(stat(resolve(dist, 'open-sea-skin')))
-  assert.doesNotMatch(await readFile(resolve(dist, 'index.html'), 'utf8'), /open-sea-skin/)
+  await assert.rejects(stat(resolve(dist, 'dsh-backspace')))
+  assert.doesNotMatch(await readFile(resolve(dist, 'index.html'), 'utf8'), /dsh-backspace/)
 })
 
 test('native source installer is repeatable and preserves overlay stacking', async () => {
-  const harness = await mkdtemp(resolve(tmpdir(), 'open-sea-harness-source-'))
+  const harness = await mkdtemp(resolve(tmpdir(), 'backspace-harness-source-'))
   const files = {
     'AGENTS.md': '# fixture\n',
     'packages/client/ui-layout/src/client/index.ts': `type Slots = {\n    'shell.overlay': { kind: 'list'; scope: 'root' }\n}\nconst children = {\n        'shell.overlay': { kind: 'list', scope: 'root' },\n}\n`,
@@ -138,12 +138,12 @@ test('native source installer is repeatable and preserves overlay stacking', asy
   assert.match(css, /\.backgroundLayer \{[\s\S]*z-index: -1/)
   assert.doesNotMatch(css, /\.sidebarCol,\n\.centerCol,\n\.detailsCol/)
   const proxy = await readFile(resolve(harness, 'packages/host/apiproxy/src/api-proxy.ts'), 'utf8')
-  assert.equal((proxy.match(/ui-open-sea-skin/g) || []).length, 1)
-  await stat(resolve(harness, 'packages/client/ui-open-sea-skin/src/client/OpenSeaQuickControls.tsx'))
+  assert.equal((proxy.match(/ui-backspace/g) || []).length, 1)
+  await stat(resolve(harness, 'packages/client/ui-backspace/src/client/BackspaceQuickControls.tsx'))
 })
 
 test('native source installer supports Harness 0.1.2 split client services', async () => {
-  const harness = await mkdtemp(resolve(tmpdir(), 'open-sea-harness-alpha3-'))
+  const harness = await mkdtemp(resolve(tmpdir(), 'backspace-harness-alpha3-'))
   const files = {
     'AGENTS.md': '# fixture\n',
     'packages/client/ui-layout/src/client/index.ts': `type Slots = {\n    'shell.overlay': { kind: 'list'; scope: 'root' }\n}\nconst children = {\n        'shell.overlay': { kind: 'list', scope: 'root' },\n}\n`,
@@ -164,9 +164,9 @@ test('native source installer supports Harness 0.1.2 split client services', asy
   const frame = await readFile(resolve(harness, 'packages/client/ui-layout/src/client/AppFrame.tsx'), 'utf8')
   assert.match(frame, /renderSlot\('shell\.background'/)
   assert.match(frame, /<DocumentTitle productTitle=/)
-  const pkg = JSON.parse(await readFile(resolve(harness, 'packages/client/ui-open-sea-skin/package.json'), 'utf8'))
+  const pkg = JSON.parse(await readFile(resolve(harness, 'packages/client/ui-backspace/package.json'), 'utf8'))
   assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-runtime'))
   assert.equal(pkg.peerDependencies['@deepseek-ai/dsh-client-runtime'], undefined)
-  const tsconfig = JSON.parse(await readFile(resolve(harness, 'packages/client/ui-open-sea-skin/tsconfig.json'), 'utf8'))
+  const tsconfig = JSON.parse(await readFile(resolve(harness, 'packages/client/ui-backspace/tsconfig.json'), 'utf8'))
   assert.ok(!tsconfig.references.some(reference => reference.path === '../runtime'))
 })

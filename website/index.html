@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#061116">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'">
-  <meta name="description" content="Open Sea：为 DeepSeek Harness 打造的可调节 WebGPU 实时海洋皮肤。">
+  <meta name="description" content="Backspace：为 DeepSeek Harness 打造的可调节 WebGPU 实时海洋皮肤。">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Open Sea · DeepSeek Harness 海洋皮肤">
+  <meta property="og:title" content="Backspace · DeepSeek Harness 海洋皮肤">
   <meta property="og:description" content="亲手调节波浪、日光与界面通透度，体验真正运行的 WebGPU 海洋皮肤。">
-  <meta property="og:image" content="https://d-dev0101.github.io/open-sea-skin/og.png">
-  <meta property="og:url" content="https://d-dev0101.github.io/open-sea-skin/">
+  <meta property="og:image" content="https://hetonghao.github.io/dsh-backspace/og.png">
+  <meta property="og:url" content="https://hetonghao.github.io/dsh-backspace/">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Open Sea · DeepSeek Harness 海洋皮肤">
+  <meta name="twitter:title" content="Backspace · DeepSeek Harness 海洋皮肤">
   <meta name="twitter:description" content="亲手调节波浪、日光与界面通透度。">
-  <meta name="twitter:image" content="https://d-dev0101.github.io/open-sea-skin/og.png">
-  <title>Open Sea · DeepSeek Harness 海洋皮肤</title>
+  <meta name="twitter:image" content="https://hetonghao.github.io/dsh-backspace/og.png">
+  <title>Backspace · DeepSeek Harness 海洋皮肤</title>
   <link rel="icon" href="./icon48.png" type="image/png">
   <link rel="stylesheet" href="./site.css">
   <link rel="preload" as="image" href="./ocean-preview.jpg" fetchpriority="high">
@@ -24,7 +24,7 @@
   <a class="skip-link" href="#main" data-i18n="skip">跳到主要内容</a>
 
   <header class="site-nav" aria-label="Main navigation">
-    <a class="brand" href="#top" aria-label="Open Sea home">
+    <a class="brand" href="#top" aria-label="Backspace home">
       <span class="brand-mark" aria-hidden="true">
         <svg class="brand-symbol" viewBox="0 0 48 48" focusable="false">
           <path d="M10 17.5c4.5-4 9-4 13.5 0s9 4 14.5 0"></path>
@@ -32,7 +32,7 @@
           <path d="M10 30.5c4.5-4 9-4 13.5 0s9 4 14.5 0"></path>
         </svg>
       </span>
-      <span>OPEN SEA</span>
+      <span>BACKSPACE</span>
       <small>FOR HARNESS</small>
     </a>
     <nav class="nav-links" aria-label="Page sections">
@@ -42,7 +42,7 @@
     </nav>
     <div class="nav-actions">
       <button class="language-toggle" id="language-toggle" type="button" aria-label="Switch language">EN</button>
-      <a class="nav-github" href="https://github.com/d-dev0101/open-sea-skin" target="_blank" rel="noreferrer">
+      <a class="nav-github" href="https://github.com/hetonghao/dsh-backspace" target="_blank" rel="noreferrer">
         <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
           <path fill="currentColor" d="M8 0C3.58 0 0 3.64 0 8.13c0 3.59 2.29 6.64 5.47 7.71.4.08.55-.17.55-.39 0-.19-.01-.83-.01-1.5-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.96-.82-1.15-.28-.15-.68-.53-.01-.54.63-.01 1.08.59 1.23.83.72 1.23 1.87.88 2.33.67.07-.53.28-.88.51-1.08-1.78-.2-3.64-.9-3.64-4.01 0-.89.31-1.62.82-2.19-.08-.2-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.5 7.5 0 0 1 8 3.99c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.96.08 2.16.51.57.82 1.3.82 2.19 0 3.12-1.87 3.81-3.65 4.01.29.25.54.74.54 1.5 0 1.08-.01 1.95-.01 2.22 0 .22.15.47.55.39A8.04 8.04 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"></path>
         </svg>
@@ -55,7 +55,7 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="ocean-fallback" aria-hidden="true"></div>
       <noscript><p class="ocean-noscript">当前显示静态海面预览。启用 JavaScript 即可调节实时海洋。 / Enable JavaScript for the live ocean.</p></noscript>
-      <iframe id="ocean-frame" class="ocean-frame" title="Interactive Open Sea WebGPU ocean" tabindex="-1" aria-hidden="true"></iframe>
+      <iframe id="ocean-frame" class="ocean-frame" title="Interactive Backspace WebGPU ocean" tabindex="-1" aria-hidden="true"></iframe>
       <div class="grain" aria-hidden="true"></div>
       <div class="chart-lines" aria-hidden="true"></div>
 
@@ -125,8 +125,8 @@
           <span class="capture-glass"><span data-i18n="captureGlass">通透度</span><output id="capture-opacity-output">64%</output></span>
         </div>
         <div class="harness-capture-stage">
-          <img class="harness-capture harness-capture-dark" src="./harness-dark-overview-40.jpg" data-motion-src="./media/harness-dark-overview-40.gif" loading="lazy" decoding="async" alt="Real Open Sea skin running in DeepSeek Harness dark mode" draggable="false">
-          <img class="harness-capture harness-capture-light" src="./harness-light-overview-40.jpg" data-motion-src="./media/harness-light-overview-40.gif" loading="lazy" decoding="async" alt="Real Open Sea skin running in DeepSeek Harness light mode" draggable="false">
+          <img class="harness-capture harness-capture-dark" src="./harness-dark-overview-40.jpg" data-motion-src="./media/harness-dark-overview-40.gif" loading="lazy" decoding="async" alt="Real Backspace skin running in DeepSeek Harness dark mode" draggable="false">
+          <img class="harness-capture harness-capture-light" src="./harness-light-overview-40.jpg" data-motion-src="./media/harness-light-overview-40.gif" loading="lazy" decoding="async" alt="Real Backspace skin running in DeepSeek Harness light mode" draggable="false">
           <div class="capture-glass-layer" aria-hidden="true"></div>
           <div class="capture-status" aria-hidden="true"><i></i><span>REAL HARNESS · 40% GLASS RECORDING</span></div>
         </div>
@@ -145,7 +145,7 @@
 
     <section class="feature-section section-shell" id="features" aria-labelledby="features-title">
       <div class="section-heading reveal">
-        <span class="section-number">02 / WHY OPEN SEA</span>
+        <span class="section-number">02 / WHY BACKSPACE</span>
         <h2 id="features-title" data-i18n="featuresTitle">一片真正属于<br>工作流的海</h2>
         <p data-i18n="featuresBody">它不是覆盖在界面上的视频。海面、天空、太阳和反射由 GPU 实时生成，控制变化会立刻反馈到你的工作空间。</p>
       </div>
@@ -182,11 +182,11 @@
       </div>
       <div class="gallery-grid">
         <figure class="gallery-item gallery-dark reveal">
-          <img src="./harness-dark-overview-40.jpg" data-motion-src="./media/harness-dark-overview-40.gif" loading="lazy" alt="Open Sea in DeepSeek Harness dark mode">
+          <img src="./harness-dark-overview-40.jpg" data-motion-src="./media/harness-dark-overview-40.gif" loading="lazy" alt="Backspace in DeepSeek Harness dark mode">
           <figcaption><span>01 · DARK CURRENT</span><b data-i18n="galleryDark">深色全景</b></figcaption>
         </figure>
         <figure class="gallery-item gallery-light reveal">
-          <img src="./harness-light-overview-40.jpg" data-motion-src="./media/harness-light-overview-40.gif" loading="lazy" alt="Open Sea in DeepSeek Harness light mode">
+          <img src="./harness-light-overview-40.jpg" data-motion-src="./media/harness-light-overview-40.gif" loading="lazy" alt="Backspace in DeepSeek Harness light mode">
           <figcaption><span>02 · PALE WATER</span><b data-i18n="galleryLight">浅色全景</b></figcaption>
         </figure>
         <figure class="gallery-item reveal">
@@ -211,33 +211,33 @@
           <div class="install-card-head"><span>01</span><strong data-i18n="recommended">推荐</strong></div>
           <h3 data-i18n="desktopTitle">🖥️ 官方客户端 · Windows / Mac</h3>
           <p data-i18n="desktopBody">无需终端：在桌面端打开「插件」→「添加插件」，输入下面的包名，安装后选择「立即启用」。可使用大陆镜像；未同步时切换官方 npm 源。</p>
-          <div class="code-line"><code>open-sea-skin@1.2.5</code><button type="button" data-copy="open-sea-skin@1.2.5" data-copy-kind="package" data-i18n-aria="copyPackage" aria-label="复制包名" data-i18n="copyButton">复制</button></div>
-          <a class="install-guide-link" id="desktop-guide-link" href="https://github.com/d-dev0101/open-sea-skin/blob/main/docs/install.zh.md"><span data-i18n="desktopGuide">中文安装指南与常见报错</span><span>↗</span></a>
+          <div class="code-line"><code>dsh-backspace@1.2.5</code><button type="button" data-copy="dsh-backspace@1.2.5" data-copy-kind="package" data-i18n-aria="copyPackage" aria-label="复制包名" data-i18n="copyButton">复制</button></div>
+          <a class="install-guide-link" id="desktop-guide-link" href="https://github.com/hetonghao/dsh-backspace/blob/main/docs/install.zh.md"><span data-i18n="desktopGuide">中文安装指南与常见报错</span><span>↗</span></a>
         </article>
         <article class="install-card reveal">
           <div class="install-card-head"><span>02</span><strong>HARNESS WEB</strong></div>
           <h3 data-i18n="webTitle">🌐 Harness 网页版</h3>
           <p data-i18n="dshBody">Web 插件一行命令安装 v1.2.5；使用预构建 npm 包，无需访问 GitHub 下载压缩包。</p>
-          <div class="code-line"><code>dsh plugin --profile web add open-sea-skin@1.2.5</code><button type="button" data-copy="dsh plugin --profile web add open-sea-skin@1.2.5" data-i18n-aria="copy" aria-label="复制命令" data-i18n="copyButton">复制</button></div>
+          <div class="code-line"><code>dsh plugin --profile web add dsh-backspace@1.2.5</code><button type="button" data-copy="dsh plugin --profile web add dsh-backspace@1.2.5" data-i18n-aria="copy" aria-label="复制命令" data-i18n="copyButton">复制</button></div>
           <small data-i18n="restart">安装后重新启动 dsh web</small>
         </article>
         <article class="install-card reveal">
           <div class="install-card-head"><span>03</span><strong>CHROME / EDGE</strong></div>
           <h3 data-i18n="browserExtension">浏览器扩展</h3>
           <p data-i18n="browserBody">只为经过识别的 Harness 页面换肤，不会接管新标签页或影响其他本地网站。</p>
-          <a class="download-link" href="https://github.com/d-dev0101/open-sea-skin/releases/download/v1.2.5/open-sea-skin-extension-v1.2.5.zip"><span data-i18n="downloadZip">下载 v1.2.5 ZIP</span><span>↓</span></a>
+          <a class="download-link" href="https://github.com/hetonghao/dsh-backspace/releases/download/v1.2.5/dsh-backspace-extension-v1.2.5.zip"><span data-i18n="downloadZip">下载 v1.2.5 ZIP</span><span>↓</span></a>
         </article>
         <article class="install-card reveal">
           <div class="install-card-head"><span>04</span><strong>STATIC DIST</strong></div>
           <h3 data-i18n="oneCommand">🔧 静态前端 · 进阶</h3>
           <p data-i18n="staticBody">进阶备用：适用于 macOS / Linux 的 Bash。会修改已构建前端；Windows 官方客户端请选择方式 1。</p>
-          <div class="code-line"><code>curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/install.sh | bash</code><button type="button" data-copy="curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/install.sh | bash" data-i18n-aria="copy" aria-label="复制命令" data-i18n="copyButton">复制</button></div>
+          <div class="code-line"><code>curl -fsSL https://raw.githubusercontent.com/hetonghao/dsh-backspace/main/install.sh | bash</code><button type="button" data-copy="curl -fsSL https://raw.githubusercontent.com/hetonghao/dsh-backspace/main/install.sh | bash" data-i18n-aria="copy" aria-label="复制命令" data-i18n="copyButton">复制</button></div>
         </article>
       </div>
       <div class="install-source reveal">
         <span>05</span>
         <div><h3 data-i18n="sourceTitle">🛠️ 源码接入</h3><p data-i18n="sourceBody">供自行编译 Harness 的开发者使用。普通客户端用户请选择方式 1。</p></div>
-        <a href="https://github.com/d-dev0101/open-sea-skin/blob/main/harness-plugin/README.md" data-i18n="sourceGuide">查看源码接入指南</a>
+        <a href="https://github.com/hetonghao/dsh-backspace/blob/main/harness-plugin/README.md" data-i18n="sourceGuide">查看源码接入指南</a>
       </div>
       <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
     </section>
@@ -247,10 +247,10 @@
       <div class="closing-copy reveal">
         <span>OPEN SOURCE · MIT</span>
         <h2 data-i18n="closingTitle">工作可以很深，<br>界面不必沉重。</h2>
-        <p data-i18n="closingBody">Open Sea 免费、开源、本地优先。欢迎把它带进你的 Harness，也欢迎一起把这片海做得更好。</p>
+        <p data-i18n="closingBody">Backspace 免费、开源、本地优先。欢迎把它带进你的 Harness，也欢迎一起把这片海做得更好。</p>
         <div class="closing-actions">
-          <a class="primary-action" href="https://github.com/d-dev0101/open-sea-skin" target="_blank" rel="noreferrer"><span data-i18n="visitGitHub">前往 GitHub</span><span>↗</span></a>
-          <a class="quiet-action" href="https://github.com/d-dev0101/open-sea-skin/releases/tag/v1.2.5"><span data-i18n="viewRelease">查看最新 Release</span><span>→</span></a>
+          <a class="primary-action" href="https://github.com/hetonghao/dsh-backspace" target="_blank" rel="noreferrer"><span data-i18n="visitGitHub">前往 GitHub</span><span>↗</span></a>
+          <a class="quiet-action" href="https://github.com/hetonghao/dsh-backspace/releases/tag/v1.2.5"><span data-i18n="viewRelease">查看最新 Release</span><span>→</span></a>
         </div>
       </div>
       <div class="closing-mark" aria-hidden="true">
@@ -272,10 +272,10 @@
           <path d="M10 30.5c4.5-4 9-4 13.5 0s9 4 14.5 0"></path>
         </svg>
       </span>
-      <span>OPEN SEA</span><small>FOR HARNESS</small>
+      <span>BACKSPACE</span><small>FOR HARNESS</small>
     </a>
-    <p>© 2026 d-dev0101 · MIT LICENSE</p>
-    <div><a href="https://github.com/d-dev0101/open-sea-skin/blob/main/docs/privacy.md" data-i18n="privacyPolicy">隐私</a><a href="https://github.com/d-dev0101/open-sea-skin/issues" data-i18n="issues">问题反馈</a></div>
+    <p>© 2026 hetonghao · MIT LICENSE</p>
+    <div><a href="https://github.com/hetonghao/dsh-backspace/blob/main/docs/privacy.md" data-i18n="privacyPolicy">隐私</a><a href="https://github.com/hetonghao/dsh-backspace/issues" data-i18n="issues">问题反馈</a></div>
   </footer>
 
   <script type="module" src="./app.js"></script>

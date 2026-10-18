@@ -29,10 +29,10 @@ async function recursiveCandidates(root) {
 }
 
 export async function findChromeForTesting(playwrightExecutable) {
-  const explicit = process.env.OSS_CHROME_BIN
+  const explicit = process.env.BACKSPACE_CHROME_BIN
   if (explicit) {
     const match = await existing(resolve(explicit))
-    if (!match) throw new Error(`OSS_CHROME_BIN does not exist: ${explicit}`)
+    if (!match) throw new Error(`BACKSPACE_CHROME_BIN does not exist: ${explicit}`)
     return match
   }
   const candidates = [
@@ -103,7 +103,7 @@ export function watchPageErrors(page, label) {
   return failures
 }
 
-export async function waitForOcean(page, frameSelector = '#__open-sea-skin__') {
+export async function waitForOcean(page, frameSelector = '#__dsh-backspace__') {
   const iframe = page.locator(frameSelector)
   await iframe.waitFor({ state: 'attached', timeout: 30_000 })
   const frame = page.frameLocator(frameSelector)

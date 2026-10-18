@@ -1,26 +1,26 @@
 /** Shared root-scoped viewing state for the background and its settings row. */
 import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-store'
-import type { OpenSeaSettings } from '../settings-contract.ts'
+import type { BackspaceSettings } from '../settings-contract.ts'
 
 /** Reactive state mirrored from the durable settings scope. */
-export interface OpenSeaState extends OpenSeaSettings {
+export interface BackspaceState extends BackspaceSettings {
   /** Whether the first settings snapshot has landed. */
   ready: boolean
   /** Monotonic adoption counter used to reject stale writes. */
   revision: number
 }
 
-type OpenSeaActions = {
-  sync: (draft: OpenSeaState, settings: OpenSeaSettings, revision: number) => void
+type BackspaceActions = {
+  sync: (draft: BackspaceState, settings: BackspaceSettings, revision: number) => void
 }
 
 /**
  * Declare the state shared by the two root-scope slot registrations.
  * @returns a Harness store handle.
  */
-export function createOpenSeaStore(): EngineStoreHandle<OpenSeaState, OpenSeaActions> {
+export function createBackspaceStore(): EngineStoreHandle<BackspaceState, BackspaceActions> {
   return defineStore({
-    init: (): OpenSeaState => ({
+    init: (): BackspaceState => ({
       ready: false,
       revision: -1,
       enabled: true,
@@ -31,7 +31,7 @@ export function createOpenSeaStore(): EngineStoreHandle<OpenSeaState, OpenSeaAct
       quality: 'auto',
     }),
     actions: {
-      sync: (draft, settings: OpenSeaSettings, revision: number) => {
+      sync: (draft, settings: BackspaceSettings, revision: number) => {
         if (revision <= draft.revision) return
         Object.assign(draft, settings, { ready: true, revision })
       },

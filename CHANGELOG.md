@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Open Sea Skin are documented here.
+All notable changes to Backspace are documented here.
 
 ## 1.2.5 — 2026-10-10
 
@@ -48,7 +48,7 @@ All notable changes to Open Sea Skin are documented here.
   background. The sidebar, conversation and details panes no longer differ
   in opacity due to transparent sidebar overrides and stacked conversation fills.
 - Composer cards and dialogs retain their own backgrounds. Disabling or
-  unloading Open Sea restores the desktop's original styles.
+  unloading Backspace restores the desktop's original styles.
 
 ### Tested
 
@@ -114,4 +114,4 @@ All notable changes to Open Sea Skin are documented here.
 
 ## 1.0.0 — 2026-08-14
 
-- Initial Open Sea WebGPU showcase and Chrome/Edge extension.
+- Initial Backspace WebGPU showcase and Chrome/Edge extension.

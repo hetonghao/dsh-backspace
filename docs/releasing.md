@@ -39,8 +39,8 @@ tarballs after verifying registry integrity. Do not independently repack a
 GitHub tarball after publishing npm. The tarball is the self-contained DSH marketplace bundle; the
 repository source also contains the static and native-source installers.
 
-Also attach a byte-identical copy named `open-sea-skin.tgz` to every release.
-The marketplace uses `releases/latest/download/open-sea-skin.tgz`, so this
+Also attach a byte-identical copy named `dsh-backspace.tgz` to every release.
+The marketplace uses `releases/latest/download/dsh-backspace.tgz`, so this
 version-free asset must remain present when publishing a new version.
 
 Release notes should identify the tested Harness commit, describe migrations,
@@ -76,7 +76,7 @@ GitHub assets from those exact bytes. Retain the workflow evidence artifact.
 For an already published version, compare its GitHub asset and registry tarball:
 
 ```sh
-npm view open-sea-skin@1.2.5 dist --json --registry=https://registry.npmjs.org > dist.json
+npm view dsh-backspace@1.2.5 dist --json --registry=https://registry.npmjs.org > dist.json
 node scripts/verify-release.mjs github.tgz registry.tgz dist.json
 ```
 

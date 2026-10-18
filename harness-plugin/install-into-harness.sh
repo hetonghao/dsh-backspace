@@ -11,10 +11,10 @@ if [ -z "$HARNESS_ROOT" ] || [ ! -f "$HARNESS_ROOT/AGENTS.md" ] || [ ! -d "$HARN
 fi
 
 HARNESS_ROOT="$(cd "$HARNESS_ROOT" && pwd)"
-TARGET="$HARNESS_ROOT/packages/client/ui-open-sea-skin"
+TARGET="$HARNESS_ROOT/packages/client/ui-backspace"
 
 if [ -e "$TARGET" ]; then
-  if [ ! -f "$TARGET/package.json" ] || ! grep -qF 'dsh-client-ui-open-sea-skin' "$TARGET/package.json"; then
+  if [ ! -f "$TARGET/package.json" ] || ! grep -qF 'dsh-client-ui-backspace' "$TARGET/package.json"; then
     echo "✗ Refusing to replace unexpected directory: $TARGET" >&2
     exit 1
   fi
@@ -30,4 +30,4 @@ node "$PLUGIN_ROOT/integration/update-harness.mjs" "$HARNESS_ROOT"
 
 echo "✓ Native package copied to $TARGET"
 echo "  Next: cd '$HARNESS_ROOT' && corepack pnpm install --no-frozen-lockfile && corepack pnpm run build"
-echo "  Run Harness from source afterward; Open Sea Skin will appear in General settings."
+echo "  Run Harness from source afterward; Backspace will appear in General settings."

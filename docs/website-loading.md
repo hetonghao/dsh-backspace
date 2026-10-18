@@ -35,10 +35,10 @@ overlay or simulated progress percentage is used.
 
 ```bash
 npm run check
-OSS_HEADLESS=1 npm run test:website
+BACKSPACE_HEADLESS=1 npm run test:website
 ```
 
-Set `OSS_WEBSITE_SCREENSHOTS` to a local output directory to save loading,
+Set `BACKSPACE_WEBSITE_SCREENSHOTS` to a local output directory to save loading,
 ready, mobile-fallback and JavaScript-disabled screenshots. The loading suite
 holds the renderer for 13 seconds, checks that no GIF is requested, then tests
 late readiness, timeout recovery, retry, blocked recordings, message validation

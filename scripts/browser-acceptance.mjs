@@ -15,12 +15,12 @@ const fixture = resolve(root, 'tests/fixtures/harness')
 const genericFixture = resolve(root, 'tests/fixtures/generic')
 const existingNewTabExtension = resolve(root, 'tests/fixtures/existing-newtab-extension')
 const chrome = await findChromeForTesting(chromium.executablePath())
-const headless = process.env.OSS_HEADLESS === '1'
+const headless = process.env.BACKSPACE_HEADLESS === '1'
 
 async function extensionAcceptance() {
   const server = await serveDirectory(fixture)
   const genericServer = await serveDirectory(genericFixture)
-  const profile = await mkdtemp(resolve(tmpdir(), 'open-sea-extension-profile-'))
+  const profile = await mkdtemp(resolve(tmpdir(), 'backspace-extension-profile-'))
   const context = await chromium.launchPersistentContext(profile, {
     executablePath: chrome,
     headless,
@@ -37,42 +37,42 @@ async function extensionAcceptance() {
     const failures = watchPageErrors(page, 'extension')
     await page.goto(server.url, { waitUntil: 'domcontentloaded' })
     const ocean = await waitForOcean(page)
-    assert.equal(await page.locator('#__open-sea-skin__').count(), 1)
-    assert.equal(await page.locator('#__open-sea-skin-btn__').count(), 1)
+    assert.equal(await page.locator('#__dsh-backspace__').count(), 1)
+    assert.equal(await page.locator('#__dsh-backspace-btn__').count(), 1)
 
-    await page.locator('#__open-sea-skin-btn__').click()
-    const panel = page.locator('#__open-sea-skin-panel__.open')
+    await page.locator('#__dsh-backspace-btn__').click()
+    const panel = page.locator('#__dsh-backspace-panel__.open')
     await panel.waitFor()
-    for (const [lang, title, label] of [['zh-CN', '海洋皮肤设置', '波浪大小'], ['en', 'Open Sea skin settings', 'Sea state']]) {
+    for (const [lang, title, label] of [['zh-CN', 'Backspace 皮肤设置', '波浪大小'], ['en', 'Backspace skin settings', 'Sea state']]) {
       await page.evaluate((lang) => { document.documentElement.lang = lang }, lang)
-      await page.waitForFunction((title) => document.querySelector('#__open-sea-skin-btn__').title === title, title)
+      await page.waitForFunction((title) => document.querySelector('#__dsh-backspace-btn__').title === title, title)
       assert.equal(await panel.locator('label').first().textContent(), label)
       assert.equal(await panel.getAttribute('aria-label'), title)
       assert.equal(await panel.locator('input:focus').count(), 1)
     }
-    await setRange(page.locator('#__open-sea-skin-panel__-sea-range'), 82)
-    await setRange(page.locator('#__open-sea-skin-panel__-time-range'), 18)
-    await setRange(page.locator('#__open-sea-skin-panel__-glass-range'), 65)
+    await setRange(page.locator('#__dsh-backspace-panel__-sea-range'), 82)
+    await setRange(page.locator('#__dsh-backspace-panel__-time-range'), 18)
+    await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), 65)
     await page.waitForTimeout(250)
-    const state = await ocean.locator('body').evaluate(() => globalThis.__ossState())
+    const state = await ocean.locator('body').evaluate(() => globalThis.__bsState())
     assert.ok(Math.abs(state.sea - 1.48) < 0.02, JSON.stringify(state))
     assert.ok(Math.abs(state.daylight - 18) < 0.02, JSON.stringify(state))
     assert.equal(state.manualTimeOfDay, true)
-    assert.match(await page.locator('#__open-sea-skin-glass__').textContent(), /rgba\(255, 255, 255, 0\.65\)/)
+    assert.match(await page.locator('#__dsh-backspace-glass__').textContent(), /rgba\(255, 255, 255, 0\.65\)/)
 
     await page.reload({ waitUntil: 'domcontentloaded' })
     await waitForOcean(page)
-    await page.locator('#__open-sea-skin-btn__').click()
-    assert.equal(await page.locator('#__open-sea-skin-panel__-sea-range').inputValue(), '82')
-    assert.equal(await page.locator('#__open-sea-skin-panel__-time-range').inputValue(), '18')
-    assert.equal(await page.locator('#__open-sea-skin-panel__-glass-range').inputValue(), '65')
+    await page.locator('#__dsh-backspace-btn__').click()
+    assert.equal(await page.locator('#__dsh-backspace-panel__-sea-range').inputValue(), '82')
+    assert.equal(await page.locator('#__dsh-backspace-panel__-time-range').inputValue(), '18')
+    assert.equal(await page.locator('#__dsh-backspace-panel__-glass-range').inputValue(), '65')
 
     const genericPage = await context.newPage()
     const genericFailures = watchPageErrors(genericPage, 'generic-localhost')
     await genericPage.goto(genericServer.url, { waitUntil: 'domcontentloaded' })
     await genericPage.waitForTimeout(500)
-    assert.equal(await genericPage.locator('#__open-sea-skin__').count(), 0)
-    assert.equal(await genericPage.locator('#__open-sea-skin-btn__').count(), 0)
+    assert.equal(await genericPage.locator('#__dsh-backspace__').count(), 0)
+    assert.equal(await genericPage.locator('#__dsh-backspace-btn__').count(), 0)
     await genericPage.close()
 
     const newTab = await context.newPage()
@@ -91,7 +91,7 @@ async function extensionAcceptance() {
 }
 
 async function staticDistAcceptance() {
-  const temp = await mkdtemp(resolve(tmpdir(), 'open-sea-dist-acceptance-'))
+  const temp = await mkdtemp(resolve(tmpdir(), 'backspace-dist-acceptance-'))
   const dist = resolve(temp, 'dist')
   await cp(fixture, dist, { recursive: true })
   const install = spawnSync('bash', [resolve(root, 'native-dist/install-skin.sh'), '--dist', dist], {
@@ -109,19 +109,19 @@ async function staticDistAcceptance() {
     const failures = watchPageErrors(page, 'native-dist')
     await page.goto(server.url, { waitUntil: 'domcontentloaded' })
     const ocean = await waitForOcean(page)
-    assert.equal(await page.locator('#__open-sea-skin__').count(), 1)
-    await page.locator('#__open-sea-skin-btn__').click()
-    await setRange(page.locator('#__open-sea-skin-panel__-sea-range'), 24)
-    await setRange(page.locator('#__open-sea-skin-panel__-time-range'), 72)
+    assert.equal(await page.locator('#__dsh-backspace__').count(), 1)
+    await page.locator('#__dsh-backspace-btn__').click()
+    await setRange(page.locator('#__dsh-backspace-panel__-sea-range'), 24)
+    await setRange(page.locator('#__dsh-backspace-panel__-time-range'), 72)
     await page.waitForTimeout(200)
-    const state = await ocean.locator('body').evaluate(() => globalThis.__ossState())
+    const state = await ocean.locator('body').evaluate(() => globalThis.__bsState())
     assert.ok(Math.abs(state.sea - 0.61) < 0.02, JSON.stringify(state))
     assert.ok(Math.abs(state.daylight - 72) < 0.02, JSON.stringify(state))
     await page.reload({ waitUntil: 'domcontentloaded' })
     await waitForOcean(page)
-    await page.locator('#__open-sea-skin-btn__').click()
-    assert.equal(await page.locator('#__open-sea-skin-panel__-sea-range').inputValue(), '24')
-    assert.equal(await page.locator('#__open-sea-skin-panel__-time-range').inputValue(), '72')
+    await page.locator('#__dsh-backspace-btn__').click()
+    assert.equal(await page.locator('#__dsh-backspace-panel__-sea-range').inputValue(), '24')
+    assert.equal(await page.locator('#__dsh-backspace-panel__-time-range').inputValue(), '72')
     assert.deepEqual(failures, [])
   } finally {
     await browser.close()
@@ -132,7 +132,7 @@ async function staticDistAcceptance() {
     cwd: root, encoding: 'utf8',
   })
   assert.equal(uninstall.status, 0, `${uninstall.stdout}\n${uninstall.stderr}`)
-  assert.doesNotMatch(await readFile(resolve(dist, 'index.html'), 'utf8'), /open-sea-skin/)
+  assert.doesNotMatch(await readFile(resolve(dist, 'index.html'), 'utf8'), /dsh-backspace/)
   await rm(temp, { recursive: true, force: true })
 }
 

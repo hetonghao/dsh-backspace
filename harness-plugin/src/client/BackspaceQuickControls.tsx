@@ -1,18 +1,18 @@
-/** Sidebar-foot launcher and compact controls for the native Open Sea skin. */
+/** Sidebar-foot launcher and compact controls for the native Backspace skin. */
 import type { PropsLocale, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ChangeEvent, KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
-import type { createOpenSeaStore } from './store.ts'
-import type { OpenSeaSettingsInjected } from './OpenSeaSettingsRow.tsx'
-import css from './OpenSeaQuickControls.module.css'
+import type { createBackspaceStore } from './store.ts'
+import type { BackspaceSettingsInjected } from './BackspaceSettingsRow.tsx'
+import css from './BackspaceQuickControls.module.css'
 
 /** Props composed by the sidebar action slot, shared store and locale seat. */
-export type OpenSeaQuickControlsProps =
+export type BackspaceQuickControlsProps =
   & PropsRuntime<'sidebar.footer.action'>
-  & PropsStore<ReturnType<typeof createOpenSeaStore>>
-  & PropsLocale<'settings.open-sea'>
-  & OpenSeaSettingsInjected
+  & PropsStore<ReturnType<typeof createBackspaceStore>>
+  & PropsLocale<'settings.backspace'>
+  & BackspaceSettingsInjected
 
 function number(event: ChangeEvent<HTMLInputElement>): number {
   return Number(event.currentTarget.value)
@@ -28,9 +28,9 @@ function WaveIcon() {
 }
 
 /** Compact, always-available controls anchored above the Harness Settings trigger. */
-export function OpenSeaQuickControls({
+export function BackspaceQuickControls({
   wide, useStore, t, setEnabled, setSea, setTime, setGlass, setAutoCycle,
-}: OpenSeaQuickControlsProps) {
+}: BackspaceQuickControlsProps) {
   const state = useStore(snapshot => snapshot)
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement | null>(null)
@@ -99,7 +99,7 @@ export function OpenSeaQuickControls({
         >
           <div className={css.panelHead}>
             <div>
-              <div className={css.eyebrow}>OPEN SEA</div>
+              <div className={css.eyebrow}>BACKSPACE</div>
               <div className={css.panelTitle}>{t('quick.description')}</div>
             </div>
             <button className={css.close} type="button" aria-label={t('quick.close')} onClick={() => { setOpen(false); triggerRef.current?.focus() }}>×</button>

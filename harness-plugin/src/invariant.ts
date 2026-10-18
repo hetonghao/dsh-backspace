@@ -1,13 +1,13 @@
-/** Package-owned invariant companion. @module @deepseek-ai/dsh-client-ui-open-sea-skin/invariant */
+/** Package-owned invariant companion. @module @deepseek-ai/dsh-client-ui-backspace/invariant */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-open-sea-skin'
+const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-backspace'
 
 /** Cordis companion plugin name. */
-export const name = 'client-ui-open-sea-skin-invariant'
+export const name = 'client-ui-backspace-invariant'
 /** Service required before the companion can reserve package ownership. */
 export const inject = ['invariants']
 

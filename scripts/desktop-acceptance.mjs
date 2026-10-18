@@ -10,26 +10,26 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const server = await serveDirectory(root)
 const browser = await chromium.launch({
   executablePath: await findChromeForTesting(chromium.executablePath()),
-  headless: process.env.OSS_HEADLESS === '1', args: chromiumArgs(),
+  headless: process.env.BACKSPACE_HEADLESS === '1', args: chromiumArgs(),
 })
-const baseline = process.env.OSS_DESKTOP_BASELINE === '1'
+const baseline = process.env.BACKSPACE_DESKTOP_BASELINE === '1'
 const output = resolve(root, 'output/playwright')
 await mkdir(output, { recursive: true })
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
   const failures = watchPageErrors(page, 'desktop')
-  await page.route('**/open-sea-skin/**', async route => {
+  await page.route('**/dsh-backspace/**', async route => {
     const url = new URL(route.request().url())
-    const response = await route.fetch({ url: `${server.url}/extension/${url.pathname.split('/open-sea-skin/')[1]}${url.search}` })
+    const response = await route.fetch({ url: `${server.url}/extension/${url.pathname.split('/dsh-backspace/')[1]}${url.search}` })
     await route.fulfill({ response })
   })
   await page.goto(`${server.url}/tests/fixtures/desktop/index.html`)
   await page.evaluate(() => {
-    localStorage.setItem('ossAutoCycle', 'false')
-    localStorage.setItem('ossGlass', '40')
+    localStorage.setItem('bsAutoCycle', 'false')
+    localStorage.setItem('bsGlass', '40')
     window.__ModuleLoader__ = { load({ factory }) {
       const plugin = factory(() => {})
-      plugin.apply({ effect(fn) { window.stopOpenSea = fn() } })
+      plugin.apply({ effect(fn) { window.stopBackspace = fn() } })
     } }
   })
   if (baseline) await page.addScriptTag({ content: execFileSync('git', ['show', 'v1.2.2:plugin/client.js'], { cwd: root, encoding: 'utf8' }) })
@@ -38,7 +38,7 @@ try {
   // The renderer fades its loading veil after marking the canvas ready.
   await page.waitForTimeout(1200)
   await page.screenshot({ path: resolve(output, baseline ? 'desktop-before.png' : 'desktop-dark-40.png') })
-  await page.locator('#__open-sea-skin-btn__').click()
+  await page.locator('#__dsh-backspace-btn__').click()
   let cases = 0
   for (const mode of ['advanced', 'extended']) {
     for (const material of ['transparent', 'off']) {
@@ -49,7 +49,7 @@ try {
             document.body.dataset.dshDesktopMaterial = material
             document.body.toggleAttribute('data-ds-dark-theme', dark)
           }, { mode, material, dark })
-          await setRange(page.locator('#__open-sea-skin-panel__-glass-range'), glass)
+          await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), glass)
           const paints = await page.evaluate(() => {
             const color = el => getComputedStyle(el).backgroundColor
             const alpha = el => {
@@ -79,24 +79,24 @@ try {
     }
   }
   // Live controls, overlay interaction, and full CSS restoration on disposal.
-  await setRange(page.locator('#__open-sea-skin-panel__-glass-range'), 40)
-  await page.locator('#__open-sea-skin-panel__ .oss-close').click()
+  await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), 40)
+  await page.locator('#__dsh-backspace-panel__ .bs-close').click()
   await page.screenshot({ path: resolve(output, 'desktop-light-40.png') })
   await page.locator('.settings button').click()
   assert.equal(await page.locator('dialog').isVisible(), true)
   await page.locator('dialog button').click()
   await page.locator('textarea').fill('Desktop glass regression')
   assert.equal(await page.locator('textarea').inputValue(), 'Desktop glass regression')
-  await page.locator('#__open-sea-skin-btn__').click()
-  await page.locator('#__open-sea-skin-panel__-enabled').uncheck()
-  assert.equal(await page.locator('#__open-sea-skin-glass__').count(), 0)
-  assert.equal(await page.locator('#__open-sea-skin__').count(), 0)
-  await page.locator('#__open-sea-skin-panel__-enabled').check()
+  await page.locator('#__dsh-backspace-btn__').click()
+  await page.locator('#__dsh-backspace-panel__-enabled').uncheck()
+  assert.equal(await page.locator('#__dsh-backspace-glass__').count(), 0)
+  assert.equal(await page.locator('#__dsh-backspace__').count(), 0)
+  await page.locator('#__dsh-backspace-panel__-enabled').check()
   await waitForOcean(page)
-  assert.equal(await page.locator('#__open-sea-skin__').count(), 1)
-  await page.evaluate(() => window.stopOpenSea())
-  assert.equal(await page.locator('#__open-sea-skin-glass__').count(), 0)
-  assert.equal(await page.locator('#__open-sea-skin-btn__').count(), 0)
+  assert.equal(await page.locator('#__dsh-backspace__').count(), 1)
+  await page.evaluate(() => window.stopBackspace())
+  assert.equal(await page.locator('#__dsh-backspace-glass__').count(), 0)
+  assert.equal(await page.locator('#__dsh-backspace-btn__').count(), 0)
   assert.deepEqual(failures, [])
   console.log(`✓ Desktop shell: ${cases} mode/material/theme/opacity combinations, controls, dialogs, disable and disposal`)
 } finally {

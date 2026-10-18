@@ -1,17 +1,17 @@
 <div align="center">
-  <img src="extension/icons/icon128.png" width="80" height="80" alt="Open Sea 海浪标志" />
-  <h1>Open Sea · DeepSeek Harness 海洋皮肤</h1>
+  <img src="extension/icons/icon128.png" width="80" height="80" alt="Backspace 海浪标志" />
+  <h1>Backspace · DeepSeek Harness 海洋皮肤</h1>
   <p><strong>让你的工作空间，拥有自己的海平线。</strong><br>动态海洋主题 · 夕阳光影 · 透明玻璃界面</p>
   <p><strong>简体中文</strong> · <a href="README.en.md">English</a></p>
   <p>
-    <a href="https://github.com/d-dev0101/open-sea-skin/releases"><img src="https://img.shields.io/github/v/release/d-dev0101/open-sea-skin?color=138b8b&amp;label=GitHub%20release" alt="GitHub 最新版本" /></a>
-    <a href="https://www.npmjs.com/package/open-sea-skin"><img src="https://img.shields.io/npm/v/open-sea-skin?color=138b8b&amp;label=npm" alt="npm 已发布版本" /></a>
-    <a href="https://github.com/d-dev0101/open-sea-skin/actions/workflows/ci.yml"><img src="https://github.com/d-dev0101/open-sea-skin/actions/workflows/ci.yml/badge.svg" alt="构建与回归测试" /></a>
+    <a href="https://github.com/hetonghao/dsh-backspace/releases"><img src="https://img.shields.io/github/v/release/hetonghao/dsh-backspace?color=138b8b&amp;label=GitHub%20release" alt="GitHub 最新版本" /></a>
+    <a href="https://www.npmjs.com/package/dsh-backspace"><img src="https://img.shields.io/npm/v/dsh-backspace?color=138b8b&amp;label=npm" alt="npm 已发布版本" /></a>
+    <a href="https://github.com/hetonghao/dsh-backspace/actions/workflows/ci.yml"><img src="https://github.com/hetonghao/dsh-backspace/actions/workflows/ci.yml/badge.svg" alt="构建与回归测试" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-138b8b" alt="MIT 开源许可" /></a>
   </p>
   <h2>👀 安装前，请务必先去官网看效果</h2>
   <p>调一调海浪，找一束夕阳，选一层玻璃。<br><strong>亲手体验之后，再选择适合你的安装方式。</strong></p>
-  <p><a href="https://d-dev0101.github.io/open-sea-skin/"><strong>🌊 官网交互体验</strong></a> · <a href="#install">📦 安装指南</a> · <a href="https://github.com/d-dev0101/open-sea-skin/releases">🚀 下载版本</a> · <a href="https://github.com/d-dev0101/open-sea-skin/issues">💬 问题反馈</a></p>
+  <p><a href="https://hetonghao.github.io/dsh-backspace/"><strong>🌊 官网交互体验</strong></a> · <a href="#install">📦 安装指南</a> · <a href="https://github.com/hetonghao/dsh-backspace/releases">🚀 下载版本</a> · <a href="https://github.com/hetonghao/dsh-backspace/issues">💬 问题反馈</a></p>
 </div>
 
 ## 🚀 官方客户端，三步开始
@@ -19,14 +19,14 @@
 **① 打开「插件 → 添加插件」　② 输入下面的包名　③ 安装后「立即启用」**
 
 ```text
-open-sea-skin@1.2.5
+dsh-backspace@1.2.5
 ```
 
 🖥️ Windows / Mac 通用 · 🇨🇳 可选中国大陆镜像源 · [其他安装方式](#install) · [中文排错指南](docs/install.zh.md)
 
-![Open Sea 在 DeepSeek Harness 中展示的动态海洋背景与透明聊天界面](docs/marketplace/open-sea-harness-cover.png)
+![Backspace 在 DeepSeek Harness 中展示的动态海洋背景与透明聊天界面](docs/marketplace/backspace-harness-cover.png)
 
-**Open Sea 是为 DeepSeek Harness（DSH）制作的开源海洋皮肤与界面美化插件。** 它将实时 WebGPU 动态背景、可调海浪、白天到夕阳的光照，以及半透明玻璃界面带进你的工作空间。支持 DSH 插件、仅作用于 Harness 的 Chrome / Edge 扩展，以及静态前端集成。
+**Backspace 是为 DeepSeek Harness（DSH）制作的开源海洋皮肤与界面美化插件。** 它将实时 WebGPU 动态背景、可调海浪、白天到夕阳的光照，以及半透明玻璃界面带进你的工作空间。支持 DSH 插件、仅作用于 Harness 的 Chrome / Edge 扩展，以及静态前端集成。
 
 > 本项目为社区作品，**不是 DeepSeek 官方产品**。适用对象是 **DeepSeek Harness**，不是 DeepSeek 网页聊天站点；也与 OpenSea NFT 交易平台无关。
 
@@ -50,7 +50,7 @@ open-sea-skin@1.2.5
 
 ## 🎬 DeepSeek Harness 真实效果
 
-以下动图来自原生 Harness 集成，统一为 **40% 玻璃不透明度**。全景基准：波浪大小 **56**、日光 **下午（55）**。想自己调？先打开[官网实时预览](https://d-dev0101.github.io/open-sea-skin/)。
+以下动图来自原生 Harness 集成，统一为 **40% 玻璃不透明度**。全景基准：波浪大小 **56**、日光 **下午（55）**。想自己调？先打开[官网实时预览](https://hetonghao.github.io/dsh-backspace/)。
 
 ### 🌙 深色模式 · 在海面上专注对话
 
@@ -94,7 +94,7 @@ open-sea-skin@1.2.5
 2. 复制下面这一行，粘贴到插件名称输入框：
 
    ```text
-   open-sea-skin@1.2.5
+   dsh-backspace@1.2.5
    ```
 
 3. 中国大陆用户可选择 **「中国大陆镜像源」**；下载失败时可切换 **「官方 npm 源」**。
@@ -103,9 +103,9 @@ open-sea-skin@1.2.5
 
 > 💡 入口是侧栏的「插件」，不是「设置 → 内置插件」。安装时填写包名，不要填写 GitHub 仓库或远程压缩包链接。
 
-**更新旧版：** 在「插件」页卸载旧版 Open Sea，再按上述步骤安装。已核对的官方安装器暂不支持第三方插件原地升级。
-**暂时关闭：** 在皮肤面板关闭海洋，或在「插件」页停用 Open Sea。
-**完整卸载：** 在「插件」页找到 Open Sea，选择卸载。无需运行 Web 卸载命令。
+**更新旧版：** 在「插件」页卸载旧版 Backspace，再按上述步骤安装。已核对的官方安装器暂不支持第三方插件原地升级。
+**暂时关闭：** 在皮肤面板关闭海洋，或在「插件」页停用 Backspace。
+**完整卸载：** 在「插件」页找到 Backspace，选择卸载。无需运行 Web 卸载命令。
 
 📖 [Windows / Mac 中文详细指南与常见报错](docs/install.zh.md) · [下载官方客户端](https://github.com/deepseek-ai/deepseek-harness/releases)
 
@@ -116,7 +116,7 @@ open-sea-skin@1.2.5
 在启动 `dsh web` 的那台电脑上运行。Windows PowerShell 与 macOS 终端使用同一条命令：
 
 ```sh
-dsh plugin --profile web add open-sea-skin@1.2.5
+dsh plugin --profile web add dsh-backspace@1.2.5
 ```
 
 安装完成后，重启正在运行的 `dsh web`，刷新浏览器页面。
@@ -130,7 +130,7 @@ dsh plugin --profile web add open-sea-skin@1.2.5
 
 适用于在浏览器中打开的本机 Harness，Windows / Mac 均可使用。
 
-1. [下载扩展 ZIP](https://github.com/d-dev0101/open-sea-skin/releases/download/v1.2.5/open-sea-skin-extension-v1.2.5.zip)，先解压。
+1. [下载扩展 ZIP](https://github.com/hetonghao/dsh-backspace/releases/download/v1.2.5/dsh-backspace-extension-v1.2.5.zip)，先解压。
 2. 打开 `chrome://extensions` 或 `edge://extensions`，开启 **「开发者模式」**。
 3. 点击 **「加载已解压的扩展程序」**，选择包含 `manifest.json` 的目录。
 4. 回到 `127.0.0.1` 或 `localhost` 上的 Harness 页面，刷新一次。
@@ -147,7 +147,7 @@ dsh plugin --profile web add open-sea-skin@1.2.5
 此方式会修改前端文件。先停止 Harness，[查看脚本](install.sh)，再在 **macOS / Linux 的 Bash** 中执行：
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/hetonghao/dsh-backspace/main/install.sh | bash
 ```
 
 随后重新启动 `dsh web`。Harness 前端升级后，使用 `bash -s -- --update` 重新应用皮肤。
@@ -185,18 +185,18 @@ curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/instal
 <details>
 <summary><strong>如何关闭或卸载？</strong></summary>
 
-**官方客户端：** 在左侧「插件」中停用或卸载 Open Sea。
+**官方客户端：** 在左侧「插件」中停用或卸载 Backspace。
 
 **Harness Web：** 临时关闭可用快捷面板；卸载使用：
 
 ```sh
-dsh plugin --profile web remove open-sea-skin
+dsh plugin --profile web remove dsh-backspace
 ```
 
 随后重启 Harness。浏览器扩展可在扩展管理页移除。静态安装用户先停止 Harness，再运行：
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/install.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/hetonghao/dsh-backspace/main/install.sh | bash -s -- --uninstall
 ```
 
 之后重新启动 Harness。静态卸载器删除自己的加载标记与资源，不删除你的会话。页面无法加载时，请参阅[恢复指南](native-dist/README.md)。
@@ -208,7 +208,7 @@ curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/instal
 
 不做全版本兼容承诺。原生源码集成的验证基线为 Harness `0.1.2-alpha.3`、提交 `dd6322d60`（2026 年 8 月 31 日）。**官方 macOS Desktop `0.2.0-rc.2`** 已在隔离配置中实装 v1.2.5 并目视验证。社区 DSH Desktop Beta `2.0.5-beta.1` 有 24 组外壳回归组合；官方 0.2.x 的 macOS/Windows 页面结构也加入了浏览器回归测试。Windows 原生 Desktop 尚未完成端到端测试。
 
-如果升级后遇到问题，请[提供 Harness 版本、安装方式，以及去除敏感信息的截图或日志](https://github.com/d-dev0101/open-sea-skin/issues)。
+如果升级后遇到问题，请[提供 Harness 版本、安装方式，以及去除敏感信息的截图或日志](https://github.com/hetonghao/dsh-backspace/issues)。
 
 </details>
 
@@ -217,13 +217,13 @@ curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/instal
 
 渲染器支持自适应分辨率、隐藏标签页暂停和减少动态效果。动态 3D 海洋仍会使用 GPU，建议先在官网用自己的设备体验。
 
-皮肤不收集或上传聊天数据；扩展权限仅用于存储设置和访问本地 Harness。这描述的是 Open Sea，不代表宿主应用自身的数据处理行为。[隐私与权限说明 →](docs/privacy.md)
+皮肤不收集或上传聊天数据；扩展权限仅用于存储设置和访问本地 Harness。这描述的是 Backspace，不代表宿主应用自身的数据处理行为。[隐私与权限说明 →](docs/privacy.md)
 
 </details>
 
 ## 🔒 权限与隐私
 
-Open Sea 没有聊天数据上传或分析功能。安装版的海洋渲染脚本、three.js 与字体随包提供。
+Backspace 没有聊天数据上传或分析功能。安装版的海洋渲染脚本、three.js 与字体随包提供。
 浏览器扩展读取页面标记以识别 Harness，并修改界面样式；视觉偏好使用 Chrome / Edge 的同步存储，开启浏览器同步时可能跨设备同步。
 仓库里的旧版 `site/` 演示会从 jsDelivr 加载依赖，不属于安装包或当前官网。详见[中文隐私说明](docs/privacy.md)。
 
@@ -251,7 +251,7 @@ npm run test:website
 | [原生源码集成](harness-plugin/README.md) | Harness 设置与 slots 接入、兼容基线 |
 | [发布指南](docs/releasing.md) | 打包与发布流程 |
 | [更新日志](CHANGELOG.md) | 版本变化与修复记录 |
-| [Issues / Pull requests](https://github.com/d-dev0101/open-sea-skin/issues) | 报错、建议与参与贡献 |
+| [Issues / Pull requests](https://github.com/hetonghao/dsh-backspace/issues) | 报错、建议与参与贡献 |
 | [DSH 插件目录](https://github.com/topics/dsh-plugin) | 探索社区插件生态 |
 
 ## 🤝 反馈与许可
@@ -260,4 +260,4 @@ npm run test:website
 
 项目代码使用 [MIT 开源许可](LICENSE)，第三方代码与字体遵循各自许可，详见[第三方声明](THIRD_PARTY_NOTICES.md)。
 
-<p align="center"><a href="https://d-dev0101.github.io/open-sea-skin/"><strong>🌊 找到你的那片海，先去官网试试看</strong></a></p>
+<p align="center"><a href="https://hetonghao.github.io/dsh-backspace/"><strong>🌊 找到你的那片海，先去官网试试看</strong></a></p>

@@ -1,4 +1,4 @@
-/** Native Open Sea Client half: background slot, glass token layer and settings row. */
+/** Native Backspace Client half: background slot, glass token layer and settings row. */
 import type { BoundActions } from '@deepseek-ai/dsh-client-ui-slots'
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
@@ -9,22 +9,22 @@ import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import {
-  DEFAULT_OPEN_SEA_SETTINGS, OPEN_SEA_SETTINGS_NAMESPACE,
-  type OpenSeaQuality, type OpenSeaSettings,
+  DEFAULT_BACKSPACE_SETTINGS, BACKSPACE_SETTINGS_NAMESPACE,
+  type BackspaceQuality, type BackspaceSettings,
 } from '../settings-contract.ts'
-import { OpenSeaBackground } from './OpenSeaBackground.tsx'
-import { OpenSeaSettingsRow, type OpenSeaSettingsInjected } from './OpenSeaSettingsRow.tsx'
-import { OpenSeaQuickControls } from './OpenSeaQuickControls.tsx'
-import { createOpenSeaStore } from './store.ts'
-import { en, zh, type OpenSeaLocaleKey } from './locales.ts'
+import { BackspaceBackground } from './BackspaceBackground.tsx'
+import { BackspaceSettingsRow, type BackspaceSettingsInjected } from './BackspaceSettingsRow.tsx'
+import { BackspaceQuickControls } from './BackspaceQuickControls.tsx'
+import { createBackspaceStore } from './store.ts'
+import { en, zh, type BackspaceLocaleKey } from './locales.ts'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-open-sea-skin'
-const SETTINGS_NS = 'settings.open-sea'
+const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-backspace'
+const SETTINGS_NS = 'settings.backspace'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
-    /** Native Open Sea settings copy. */
-    'settings.open-sea': OpenSeaLocaleKey
+    /** Native Backspace settings copy. */
+    'settings.backspace': BackspaceLocaleKey
   }
 }
 
@@ -61,14 +61,14 @@ export const inject = ['slots', 'locale', 'theme', 'connection', 'remote', 'sett
  * @param ctx - Client Cordis root context.
  */
 export function apply(ctx: ClientContext): void {
-  const host = ctx.settingsScope.bind<OpenSeaSettings>({ namespace: OPEN_SEA_SETTINGS_NAMESPACE })
-  const store = createOpenSeaStore()
+  const host = ctx.settingsScope.bind<BackspaceSettings>({ namespace: BACKSPACE_SETTINGS_NAMESPACE })
+  const store = createBackspaceStore()
   let actions: BoundActions<typeof store> | undefined
   let revision = 0
   let tokenKey = ''
   let disposeTokens: (() => void) | undefined
 
-  const applyTokens = (next: OpenSeaSettings): void => {
+  const applyTokens = (next: BackspaceSettings): void => {
     const key = `${next.enabled}:${next.glass}`
     if (key === tokenKey) return
     tokenKey = key
@@ -80,7 +80,7 @@ export function apply(ctx: ClientContext): void {
   const adopt = (): void => {
     const snapshot = host.getSnapshot()
     if (snapshot.status !== 'ready' || snapshot.value === undefined) return
-    const next: OpenSeaSettings = { ...DEFAULT_OPEN_SEA_SETTINGS, ...snapshot.value }
+    const next: BackspaceSettings = { ...DEFAULT_BACKSPACE_SETTINGS, ...snapshot.value }
     revision += 1
     actions?.sync(next, revision)
     applyTokens(next)
@@ -90,21 +90,21 @@ export function apply(ctx: ClientContext): void {
     adopt()
   }
 
-  ctx.effect(() => host.subscribe(adopt), 'ui-open-sea-skin: settings adoption')
-  ctx.effect(() => () => { disposeTokens?.() }, 'ui-open-sea-skin: glass token layer')
-  ctx.effect(() => ctx.locale.register(SETTINGS_NS, { zh, en }), 'ui-open-sea-skin: settings dictionaries')
+  ctx.effect(() => host.subscribe(adopt), 'ui-backspace: settings adoption')
+  ctx.effect(() => () => { disposeTokens?.() }, 'ui-backspace: glass token layer')
+  ctx.effect(() => ctx.locale.register(SETTINGS_NS, { zh, en }), 'ui-backspace: settings dictionaries')
   adopt()
 
   ctx.slots.inject('shell.background', () => ctx.slots.register({
     name: 'shell.background',
     store,
     inject: (bound) => { bind(bound); return {} },
-  }, OpenSeaBackground))
+  }, BackspaceBackground))
 
-  const write = (field: keyof OpenSeaSettings, value: unknown): void => {
+  const write = (field: keyof BackspaceSettings, value: unknown): void => {
     void host.set(field, value)
   }
-  const settingsFace = (bound: BoundActions<typeof store>): OpenSeaSettingsInjected => {
+  const settingsFace = (bound: BoundActions<typeof store>): BackspaceSettingsInjected => {
     bind(bound)
     return {
       setEnabled: value => { write('enabled', value) },
@@ -114,23 +114,23 @@ export function apply(ctx: ClientContext): void {
       },
       setGlass: value => { write('glass', value) },
       setAutoCycle: value => { write('autoCycle', value) },
-      setQuality: (value: OpenSeaQuality) => { write('quality', value) },
+      setQuality: (value: BackspaceQuality) => { write('quality', value) },
     }
   }
   ctx.slots.inject('settings.general.item', () => ctx.slots.register({
     name: 'settings.general.item',
-    id: 'open-sea-skin',
+    id: 'dsh-backspace',
     order: 30,
     store,
     locale: SETTINGS_NS,
     inject: settingsFace,
-  }, OpenSeaSettingsRow))
+  }, BackspaceSettingsRow))
   ctx.slots.inject('sidebar.footer.action', () => ctx.slots.register({
     name: 'sidebar.footer.action',
-    id: 'open-sea-skin-controls',
+    id: 'dsh-backspace-controls',
     order: 20,
     store,
     locale: SETTINGS_NS,
     inject: settingsFace,
-  }, OpenSeaQuickControls))
+  }, BackspaceQuickControls))
 }

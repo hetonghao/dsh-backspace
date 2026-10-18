@@ -1,14 +1,14 @@
-/** General-settings contribution for the native Open Sea plugin. */
+/** General-settings contribution for the native Backspace plugin. */
 import type { PropsLocale, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ChangeEvent } from 'react'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
-import type { OpenSeaQuality } from '../settings-contract.ts'
-import type { OpenSeaLocaleKey } from './locales.ts'
-import type { createOpenSeaStore } from './store.ts'
-import css from './OpenSeaSettingsRow.module.css'
+import type { BackspaceQuality } from '../settings-contract.ts'
+import type { BackspaceLocaleKey } from './locales.ts'
+import type { createBackspaceStore } from './store.ts'
+import css from './BackspaceSettingsRow.module.css'
 
 /** Settings writes supplied by the plugin apply closure. */
-export interface OpenSeaSettingsInjected {
+export interface BackspaceSettingsInjected {
   /** Enable or disable the skin. */
   setEnabled: (value: boolean) => void
   /** Persist the Gerstner wave strength. */
@@ -20,28 +20,28 @@ export interface OpenSeaSettingsInjected {
   /** Enable or disable the automatic daylight cycle. */
   setAutoCycle: (value: boolean) => void
   /** Persist the renderer quality policy. */
-  setQuality: (value: OpenSeaQuality) => void
+  setQuality: (value: BackspaceQuality) => void
 }
 
 /** Props derived from the General item slot, shared store and locale seat. */
-export type OpenSeaSettingsRowProps =
+export type BackspaceSettingsRowProps =
   & PropsRuntime<'settings.general.item'>
-  & PropsStore<ReturnType<typeof createOpenSeaStore>>
-  & PropsLocale<'settings.open-sea'>
-  & OpenSeaSettingsInjected
+  & PropsStore<ReturnType<typeof createBackspaceStore>>
+  & PropsLocale<'settings.backspace'>
+  & BackspaceSettingsInjected
 
 function number(event: ChangeEvent<HTMLInputElement>): number {
   return Number(event.currentTarget.value)
 }
 
 /**
- * Render the Open Sea switch, sliders, cycle toggle and quality selector.
+ * Render the Backspace switch, sliders, cycle toggle and quality selector.
  * @param props - composed slot props.
  * @returns the settings row.
  */
-export function OpenSeaSettingsRow({
+export function BackspaceSettingsRow({
   useStore, t, setEnabled, setSea, setTime, setGlass, setAutoCycle, setQuality,
-}: OpenSeaSettingsRowProps) {
+}: BackspaceSettingsRowProps) {
   const state = useStore(snapshot => snapshot)
   const disabled = !state.ready || !state.enabled
   return (
@@ -85,9 +85,9 @@ export function OpenSeaSettingsRow({
 
       <label className={css.line}>
         <span className={css.title}>{t('quality')}</span>
-        <select className={css.select} value={state.quality} disabled={disabled} onChange={event => { setQuality(event.currentTarget.value as OpenSeaQuality) }}>
+        <select className={css.select} value={state.quality} disabled={disabled} onChange={event => { setQuality(event.currentTarget.value as BackspaceQuality) }}>
           {(['auto', 'low', 'high'] as const).map(value => (
-            <option key={value} value={value}>{t(`quality.${value}` as OpenSeaLocaleKey)}</option>
+            <option key={value} value={value}>{t(`quality.${value}` as BackspaceLocaleKey)}</option>
           ))}
         </select>
       </label>

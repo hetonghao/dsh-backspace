@@ -7,7 +7,7 @@ import { chromiumArgs, findChromeForTesting, serveDirectory, setRange } from './
 const server = await serveDirectory('pages-dist')
 const browser = await chromium.launch({ headless: true,
   executablePath: await findChromeForTesting(chromium.executablePath()), args: chromiumArgs() })
-const screenshotDir = process.env.OSS_WEBSITE_SCREENSHOTS
+const screenshotDir = process.env.BACKSPACE_WEBSITE_SCREENSHOTS
 if (screenshotDir) await mkdir(screenshotDir, { recursive: true })
 async function screenshot(page, name) {
   if (screenshotDir) await page.screenshot({ path: resolve(screenshotDir, `${name}.png`) })
@@ -37,7 +37,7 @@ try {
   assert.match(await page.locator('#renderer-status').innerText(), /Preparing live ocean/)
   release()
   await page.locator('#renderer-status.ready').waitFor({ timeout: 45_000 })
-  await page.waitForFunction(() => document.querySelector('#ocean-frame').contentWindow.__ossState().sea > 1.4)
+  await page.waitForFunction(() => document.querySelector('#ocean-frame').contentWindow.__bsState().sea > 1.4)
   await page.waitForTimeout(700)
   await screenshot(page, 'ready-desktop')
   await page.locator('.harness-window').scrollIntoViewIfNeeded()
@@ -54,7 +54,7 @@ try {
   await failure.route('**/*.gif', route => route.abort())
   await failure.goto(server.url, { waitUntil: 'domcontentloaded' })
   await failure.locator('#renderer-status.fallback').waitFor()
-  await failure.evaluate(() => window.postMessage({ type: 'oss-website-renderer', status: 'ready', attempt: '1' }, location.origin))
+  await failure.evaluate(() => window.postMessage({ type: 'bs-website-renderer', status: 'ready', attempt: '1' }, location.origin))
   assert.equal(await failure.locator('#ocean-frame.ready').count(), 0)
   await posterLoaded(failure)
   assert.equal(await failure.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true)

@@ -11,7 +11,7 @@ on:
       - 'shared/vendor/**'
       - 'extension/skin.html'
       - 'extension/icons/icon48.png'
-      - 'docs/marketplace/open-sea-harness-cover.png'
+      - 'docs/marketplace/backspace-harness-cover.png'
       - 'docs/screenshots/**'
       - 'scripts/build-pages.mjs'
       - 'package.json'

@@ -11,7 +11,7 @@ import {
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const output = resolve(root, 'docs/screenshots')
-const harnessUrl = process.env.OSS_HARNESS_URL || 'http://127.0.0.1:3080'
+const harnessUrl = process.env.BACKSPACE_HARNESS_URL || 'http://127.0.0.1:3080'
 const chrome = await findChromeForTesting(chromium.executablePath())
 await mkdir(output, { recursive: true })
 
@@ -27,7 +27,7 @@ async function openSettings(page) {
     dialog = page.getByRole('dialog', { name: /^(设置|Settings)$/ })
     await dialog.waitFor()
   }
-  const title = dialog.getByText(/海洋皮肤|Open Sea Skin/, { exact: true })
+  const title = dialog.getByText(/Backspace/, { exact: true })
   await title.waitFor()
   const section = title.locator('xpath=ancestor::section[1]')
   assert.equal(await section.locator('input[type="range"]').count(), 3, 'native settings must expose three ranges')
@@ -64,7 +64,7 @@ function interpolate(from, to, count) {
 }
 
 async function captureGif(page, name, steps, applyStep) {
-  const frames = await mkdtemp(resolve(tmpdir(), `open-sea-${name.replace(/\.gif$/, '')}-`))
+  const frames = await mkdtemp(resolve(tmpdir(), `backspace-${name.replace(/\.gif$/, '')}-`))
   try {
     for (const [index, step] of steps.entries()) {
       await applyStep(step, index)
@@ -93,15 +93,15 @@ async function captureGif(page, name, steps, applyStep) {
 }
 
 async function state(page) {
-  const handle = await page.locator('#__open-sea-skin__').elementHandle()
+  const handle = await page.locator('#__dsh-backspace__').elementHandle()
   const frame = await handle?.contentFrame()
   assert.ok(frame, 'native background iframe must have a frame')
-  return frame.evaluate(() => globalThis.__ossState())
+  return frame.evaluate(() => globalThis.__bsState())
 }
 
 async function rpc(page, method, payload) {
   const response = await page.evaluate(async ({ method, payload }) => {
-    const rpcId = `open-sea-gallery-${Date.now()}-${Math.random()}`
+    const rpcId = `backspace-gallery-${Date.now()}-${Math.random()}`
     const result = await fetch(`/api/${method}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -115,7 +115,7 @@ async function rpc(page, method, payload) {
 
 async function applyBaselineSettings(page) {
   await rpc(page, 'settings.update', {
-    ns: 'ui-open-sea-skin',
+    ns: 'ui-backspace',
     patch: { enabled: true, ...BASELINE, autoCycle: false, quality: 'auto' },
   })
 }
@@ -237,7 +237,7 @@ async function captureHarness() {
     await page.keyboard.press('Escape')
     await panel.waitFor({ state: 'hidden' })
     await rpc(page, 'settings.update', {
-      ns: 'ui-open-sea-skin',
+      ns: 'ui-backspace',
       patch: { enabled: true, sea: 45, time: 55, glass: 72, autoCycle: true, quality: 'auto' },
     })
     await rpc(page, 'settings.update', { ns: 'ui-theme', patch: { preference: 'system' } })

@@ -1,6 +1,6 @@
 {
-  "name": "@deepseek-ai/dsh-client-ui-open-sea-skin",
-  "description": "Native Open Sea WebGPU background and settings for DeepSeek Harness",
+  "name": "@deepseek-ai/dsh-client-ui-backspace",
+  "description": "Native Backspace WebGPU background and settings for DeepSeek Harness",
   "version": "0.1.0",
   "private": true,
   "type": "module",

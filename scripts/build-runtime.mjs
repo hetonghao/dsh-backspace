@@ -78,4 +78,4 @@ emitTree('shared/vendor', [
   'harness-plugin/assets/vendor',
 ])
 
-if (!check) console.log('Open Sea runtime copies are up to date.')
+if (!check) console.log('Backspace runtime copies are up to date.')

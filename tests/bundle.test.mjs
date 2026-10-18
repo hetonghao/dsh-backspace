@@ -35,29 +35,29 @@ function captureRoute() {
   return route
 }
 
-test('DSH Host bundle serves only local Open Sea assets', async () => {
+test('DSH Host bundle serves only local Backspace assets', async () => {
   const route = captureRoute()
   assert.equal(route.kind, 'prefix')
-  assert.equal(route.path, '/open-sea-skin')
+  assert.equal(route.path, '/dsh-backspace')
 
   const page = createResponse()
-  await route.handler({ method: 'GET', url: '/open-sea-skin/skin.html' }, page)
+  await route.handler({ method: 'GET', url: '/dsh-backspace/skin.html' }, page)
   assert.equal(page.status, 200)
   assert.equal(page.headers['content-type'], 'text/html; charset=utf-8')
-  assert.match(page.body.toString(), /Open Sea/)
+  assert.match(page.body.toString(), /Backspace/)
 
   const head = createResponse()
-  await route.handler({ method: 'HEAD', url: '/open-sea-skin/styles.css' }, head)
+  await route.handler({ method: 'HEAD', url: '/dsh-backspace/styles.css' }, head)
   assert.equal(head.status, 200)
   assert.equal(head.body, undefined)
   assert.ok(Number(head.headers['content-length']) > 0)
 
   const traversal = createResponse()
-  await route.handler({ method: 'GET', url: '/open-sea-skin/%2e%2e%2fpackage.json' }, traversal)
+  await route.handler({ method: 'GET', url: '/dsh-backspace/%2e%2e%2fpackage.json' }, traversal)
   assert.equal(traversal.status, 403)
 
   const method = createResponse()
-  await route.handler({ method: 'POST', url: '/open-sea-skin/skin.html' }, method)
+  await route.handler({ method: 'POST', url: '/dsh-backspace/skin.html' }, method)
   assert.equal(method.status, 405)
   assert.equal(method.headers.allow, 'GET, HEAD')
 })

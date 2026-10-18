@@ -8,24 +8,24 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const server = await serveDirectory(root)
 const browser = await chromium.launch({
   executablePath: await findChromeForTesting(chromium.executablePath()),
-  headless: process.env.OSS_HEADLESS === '1', args: chromiumArgs(),
+  headless: process.env.BACKSPACE_HEADLESS === '1', args: chromiumArgs(),
 })
 
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
   const failures = watchPageErrors(page, 'official desktop')
-  await page.route('**/open-sea-skin/**', async route => {
+  await page.route('**/dsh-backspace/**', async route => {
     const url = new URL(route.request().url())
-    const response = await route.fetch({ url: `${server.url}/extension/${url.pathname.split('/open-sea-skin/')[1]}${url.search}` })
+    const response = await route.fetch({ url: `${server.url}/extension/${url.pathname.split('/dsh-backspace/')[1]}${url.search}` })
     await route.fulfill({ response })
   })
   await page.goto(`${server.url}/tests/fixtures/official-desktop/index.html`)
   await page.evaluate(() => {
-    localStorage.setItem('ossAutoCycle', 'false')
-    localStorage.setItem('ossGlass', '40')
+    localStorage.setItem('bsAutoCycle', 'false')
+    localStorage.setItem('bsGlass', '40')
     window.__ModuleLoader__ = { load({ factory }) {
       const plugin = factory(() => {})
-      plugin.apply({ effect(fn) { window.stopOpenSea = fn() } })
+      plugin.apply({ effect(fn) { window.stopBackspace = fn() } })
     } }
   })
   await page.addScriptTag({ path: resolve(root, 'plugin/client.js') })
@@ -67,8 +67,8 @@ try {
       assert.ok(paints.settings >= .96, 'settings stays legible over the ocean')
     }
   }
-  await page.evaluate(() => window.stopOpenSea())
-  assert.equal(await page.locator('#__open-sea-skin-glass__').count(), 0)
+  await page.evaluate(() => window.stopBackspace())
+  assert.equal(await page.locator('#__dsh-backspace-glass__').count(), 0)
   assert.deepEqual(failures, [])
   console.log('✓ Official Desktop 0.2.x shell: unified columns and readable settings in macOS/Windows light/dark modes')
 } finally {

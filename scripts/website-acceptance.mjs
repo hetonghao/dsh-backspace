@@ -12,7 +12,7 @@ const chrome = await findChromeForTesting(chromium.executablePath())
 const server = await serveDirectory(pages)
 const browser = await chromium.launch({
   executablePath: chrome,
-  headless: process.env.OSS_HEADLESS === '1',
+  headless: process.env.BACKSPACE_HEADLESS === '1',
   args: chromiumArgs(),
 })
 
@@ -35,7 +35,7 @@ try {
   assert.equal(await page.locator('#capture-opacity-output').textContent(), '64%')
   assert.equal(await page.locator('.nav-github svg').count(), 1)
   assert.equal(await page.locator('.brand-mark .brand-symbol').count(), 2)
-  assert.equal(await page.locator('.install-card.recommended [data-copy]').getAttribute('data-copy'), 'open-sea-skin@1.2.5')
+  assert.equal(await page.locator('.install-card.recommended [data-copy]').getAttribute('data-copy'), 'dsh-backspace@1.2.5')
   assert.match(await page.locator('.install-card.recommended').innerText(), /插件.*添加插件/s)
   assert.match(await page.locator('#desktop-guide-link').getAttribute('href'), /install.zh.md$/)
   assert.equal(await page.locator('.install-source').count(), 1)
@@ -43,7 +43,7 @@ try {
   await page.locator('.install-card.recommended').scrollIntoViewIfNeeded()
   await page.waitForFunction(() => getComputedStyle(document.querySelector('.install-card.recommended')).opacity === '1')
   await page.locator('.install-card.recommended').scrollIntoViewIfNeeded()
-  if (process.env.OSS_SCREENSHOTS) await page.screenshot({ path: `${process.env.OSS_SCREENSHOTS}/install-desktop.png` })
+  if (process.env.BACKSPACE_SCREENSHOTS) await page.screenshot({ path: `${process.env.BACKSPACE_SCREENSHOTS}/install-desktop.png` })
   await page.locator('.install-card.recommended [data-copy]').click()
   await page.locator('#copy-status').getByText('包名已复制').waitFor()
 
@@ -57,7 +57,7 @@ try {
   assert.equal(await page.locator('#sea-state').inputValue(), '44')
   assert.equal(await page.locator('#daylight').inputValue(), '18')
   assert.equal(await page.locator('#transparency').inputValue(), '68')
-  const sunset = await ocean.locator('body').evaluate(() => globalThis.__ossState())
+  const sunset = await ocean.locator('body').evaluate(() => globalThis.__bsState())
   assert.ok(Math.abs(sunset.sea - 0.91) < 0.02, JSON.stringify(sunset))
   assert.ok(Math.abs(sunset.daylight - 18) < 0.02, JSON.stringify(sunset))
 
@@ -95,7 +95,7 @@ try {
   await page.locator('#language-toggle').click()
   await page.locator('.install-card.recommended').scrollIntoViewIfNeeded()
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true)
-  if (process.env.OSS_SCREENSHOTS) await page.screenshot({ path: `${process.env.OSS_SCREENSHOTS}/install-mobile.png` })
+  if (process.env.BACKSPACE_SCREENSHOTS) await page.screenshot({ path: `${process.env.BACKSPACE_SCREENSHOTS}/install-mobile.png` })
 
   assert.deepEqual(failedResponses, [])
   assert.deepEqual(failures, [])

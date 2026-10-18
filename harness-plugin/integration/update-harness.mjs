@@ -19,7 +19,7 @@ function editIfPresent(relativePath, transform) {
 function insertOnce(text, marker, needle, replacement, file) {
   if (text.includes(marker)) return text
   if (!text.includes(needle)) {
-    throw new Error(`${file} has changed upstream; could not find the Open Sea integration anchor`)
+    throw new Error(`${file} has changed upstream; could not find the Backspace integration anchor`)
   }
   return text.replace(needle, replacement)
 }
@@ -65,9 +65,9 @@ edit('packages/client/ui-layout/src/client/AppFrame.module.css', text => {
   )
   text = insertOnce(
     text,
-    'isolation: isolate; /* Open Sea background stacking context */',
+    'isolation: isolate; /* Backspace background stacking context */',
     '  position: relative; /* anchors the drag handles, which straddle column borders */',
-    '  position: relative; /* anchors the drag handles, which straddle column borders */\n  isolation: isolate; /* Open Sea background stacking context */',
+    '  position: relative; /* anchors the drag handles, which straddle column borders */\n  isolation: isolate; /* Backspace background stacking context */',
     'ui-layout/src/client/AppFrame.module.css',
   )
 
@@ -85,31 +85,31 @@ edit('packages/client/ui-layout/src/client/AppFrame.module.css', text => {
 // still need the explicit namespace entry, so patch it only when present.
 editIfPresent('packages/host/apiproxy/src/api-proxy.ts', text => insertOnce(
   text,
-  "'ui-open-sea-skin'",
+  "'ui-backspace'",
   "'agent-loop', 'shell', 'locale', 'permission', 'ui-conversation', 'ui-theme', 'web-search-deepseek',",
-  "'agent-loop', 'shell', 'locale', 'permission', 'ui-conversation', 'ui-theme', 'ui-open-sea-skin', 'web-search-deepseek',",
+  "'agent-loop', 'shell', 'locale', 'permission', 'ui-conversation', 'ui-theme', 'ui-backspace', 'web-search-deepseek',",
   'host/apiproxy/src/api-proxy.ts',
 ))
 
 edit('tsconfig.client.json', text => insertOnce(
   text,
-  './packages/client/ui-open-sea-skin',
+  './packages/client/ui-backspace',
   '    { "path": "./packages/client/ui-layout" },',
-  '    { "path": "./packages/client/ui-layout" },\n    { "path": "./packages/client/ui-open-sea-skin" },',
+  '    { "path": "./packages/client/ui-layout" },\n    { "path": "./packages/client/ui-backspace" },',
   'tsconfig.client.json',
 ))
 
 edit('packages/bundle/web-app/cordis.patch.yml', text => insertOnce(
   text,
-  '    - id: ui-open-sea-skin',
+  '    - id: ui-backspace',
   "    - id: ui-layout\n      name: '@deepseek-ai/dsh-client-ui-layout'",
-  `    - id: ui-layout\n      name: '@deepseek-ai/dsh-client-ui-layout'\n\n    - id: ui-open-sea-skin\n      name: '@deepseek-ai/dsh-client-ui-open-sea-skin'`,
+  `    - id: ui-layout\n      name: '@deepseek-ai/dsh-client-ui-layout'\n\n    - id: ui-backspace\n      name: '@deepseek-ai/dsh-client-ui-backspace'`,
   'packages/bundle/web-app/cordis.patch.yml',
 ))
 
 edit('packages/bundle/web-app/package.json', text => {
   const manifest = JSON.parse(text)
-  const name = '@deepseek-ai/dsh-client-ui-open-sea-skin'
+  const name = '@deepseek-ai/dsh-client-ui-backspace'
   if (manifest.dependencies[name] === 'workspace:^') return text
   manifest.dependencies[name] = 'workspace:^'
   manifest.dependencies = Object.fromEntries(Object.entries(manifest.dependencies).sort(([a], [b]) => a.localeCompare(b)))

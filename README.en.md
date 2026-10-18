@@ -1,17 +1,17 @@
 <div align="center">
-  <img src="extension/icons/icon128.png" width="80" height="80" alt="Open Sea wave logo" />
-  <h1>Open Sea Skin · DeepSeek Harness Ocean Theme</h1>
+  <img src="extension/icons/icon128.png" width="80" height="80" alt="Backspace wave logo" />
+  <h1>Backspace · DeepSeek Harness Ocean Theme</h1>
   <p><strong>A living ocean behind your workspace.</strong><br>实时海洋 · 夕阳光影 · 透明玻璃界面</p>
   <p><a href="README.md">简体中文</a> · <strong>English</strong></p>
   <p>
-    <a href="https://github.com/d-dev0101/open-sea-skin/releases"><img src="https://img.shields.io/github/v/release/d-dev0101/open-sea-skin?color=138b8b&amp;label=GitHub%20release" alt="Latest GitHub release" /></a>
-    <a href="https://www.npmjs.com/package/open-sea-skin"><img src="https://img.shields.io/npm/v/open-sea-skin?color=138b8b&amp;label=npm" alt="Published npm version" /></a>
-    <a href="https://github.com/d-dev0101/open-sea-skin/actions/workflows/ci.yml"><img src="https://github.com/d-dev0101/open-sea-skin/actions/workflows/ci.yml/badge.svg" alt="Build and regression tests" /></a>
+    <a href="https://github.com/hetonghao/dsh-backspace/releases"><img src="https://img.shields.io/github/v/release/hetonghao/dsh-backspace?color=138b8b&amp;label=GitHub%20release" alt="Latest GitHub release" /></a>
+    <a href="https://www.npmjs.com/package/dsh-backspace"><img src="https://img.shields.io/npm/v/dsh-backspace?color=138b8b&amp;label=npm" alt="Published npm version" /></a>
+    <a href="https://github.com/hetonghao/dsh-backspace/actions/workflows/ci.yml"><img src="https://github.com/hetonghao/dsh-backspace/actions/workflows/ci.yml/badge.svg" alt="Build and regression tests" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-138b8b" alt="MIT license" /></a>
   </p>
   <h2>👀 Before installing, try the live website</h2>
   <p>Move the waves. Find your sunset. Tune the glass.<br><strong>Preview the skin yourself before choosing an installation method.</strong></p>
-  <p><a href="https://d-dev0101.github.io/open-sea-skin/"><strong>🌊 Interactive demo</strong></a> · <a href="#install">📦 Install</a> · <a href="https://github.com/d-dev0101/open-sea-skin/releases">🚀 Releases</a> · <a href="https://github.com/d-dev0101/open-sea-skin/issues">💬 Get help</a></p>
+  <p><a href="https://hetonghao.github.io/dsh-backspace/"><strong>🌊 Interactive demo</strong></a> · <a href="#install">📦 Install</a> · <a href="https://github.com/hetonghao/dsh-backspace/releases">🚀 Releases</a> · <a href="https://github.com/hetonghao/dsh-backspace/issues">💬 Get help</a></p>
 </div>
 
 ## 🚀 Official Desktop in three steps
@@ -19,14 +19,14 @@
 **① Plugins → Add plugin　② Paste the package below　③ Install → Enable now**
 
 ```text
-open-sea-skin@1.2.5
+dsh-backspace@1.2.5
 ```
 
 Windows / Mac · npm and mainland China mirror · [Other methods](#install)
 
-![Open Sea dynamic ocean theme running inside DeepSeek Harness with a transparent chat interface](docs/marketplace/open-sea-harness-cover.png)
+![Backspace dynamic ocean theme running inside DeepSeek Harness with a transparent chat interface](docs/marketplace/backspace-harness-cover.png)
 
-**Open Sea Skin is an open-source ocean theme and appearance plugin for DeepSeek Harness (DSH).** It adds a real-time WebGPU animated background, adjustable waves, daylight-to-sunset lighting, and a translucent glass interface. Use it as a DSH plugin, a Harness-only Chrome/Edge extension, or a static frontend integration.
+**Backspace is an open-source ocean theme and appearance plugin for DeepSeek Harness (DSH).** It adds a real-time WebGPU animated background, adjustable waves, daylight-to-sunset lighting, and a translucent glass interface. Use it as a DSH plugin, a Harness-only Chrome/Edge extension, or a static frontend integration.
 
 > Community-made, not an official DeepSeek product. This skin targets **DeepSeek Harness**, not the DeepSeek chat website. It is unrelated to the OpenSea NFT marketplace.
 
@@ -48,9 +48,9 @@ Windows / Mac · npm and mainland China mirror · [Other methods](#install)
 
 <a id="gallery"></a>
 
-## 🎬 Open Sea inside DeepSeek Harness
+## 🎬 Backspace inside DeepSeek Harness
 
-These recordings show the native Harness integration at **40% glass opacity**. Overview settings: wave size **56**, daylight **Afternoon (55)**. The [interactive website](https://d-dev0101.github.io/open-sea-skin/) lets you try the controls before installing.
+These recordings show the native Harness integration at **40% glass opacity**. Overview settings: wave size **56**, daylight **Afternoon (55)**. The [interactive website](https://hetonghao.github.io/dsh-backspace/) lets you try the controls before installing.
 
 ### 🌙 Dark mode · an ocean behind your conversation
 
@@ -64,7 +64,7 @@ These recordings show the native Harness integration at **40% glass opacity**. O
 
 Daylight stays at Afternoon while wave size changes, then returns to 56.
 
-![Adjusting the Open Sea wave-size slider inside DeepSeek Harness](docs/screenshots/harness-wave-control-40.gif)
+![Adjusting the Backspace wave-size slider inside DeepSeek Harness](docs/screenshots/harness-wave-control-40.gif)
 
 ### 🌅 Sunlight control · midday to sunset
 
@@ -94,7 +94,7 @@ Wave size stays at 56 while the light moves from Midday to Dusk.
 2. Paste this exact package name and version:
 
    ```text
-   open-sea-skin@1.2.5
+   dsh-backspace@1.2.5
    ```
 
 3. Choose the official npm registry, or the mainland China mirror if that works better on your network.
@@ -103,9 +103,9 @@ Wave size stays at 56 while the light moves from Midday to Dusk.
 
 > 💡 Use the sidebar's Plugins page, not Settings → Built-in plugins. Enter the package name rather than a GitHub repository or remote tarball URL.
 
-**Update:** uninstall the older Open Sea version in Plugins, then install the version above. The reviewed official installer does not update third-party bundles in place.
-**Disable:** turn off the ocean in the skin controls, or disable Open Sea in Plugins.
-**Uninstall:** remove Open Sea from Plugins. Web-profile commands do not remove Desktop plugins.
+**Update:** uninstall the older Backspace version in Plugins, then install the version above. The reviewed official installer does not update third-party bundles in place.
+**Disable:** turn off the ocean in the skin controls, or disable Backspace in Plugins.
+**Uninstall:** remove Backspace from Plugins. Web-profile commands do not remove Desktop plugins.
 
 📖 [Detailed guide and troubleshooting](docs/dsh-plugin.md#dsh-desktop) · [Official Desktop downloads](https://github.com/deepseek-ai/deepseek-harness/releases)
 
@@ -116,7 +116,7 @@ Wave size stays at 56 while the light moves from Midday to Dusk.
 Run this on the machine that runs `dsh web`. The command is the same in Windows PowerShell and the macOS terminal:
 
 ```sh
-dsh plugin --profile web add open-sea-skin@1.2.5
+dsh plugin --profile web add dsh-backspace@1.2.5
 ```
 
 Restart your running `dsh web` process and reload the browser. This installs into the Web profile, **not Official Desktop**.
@@ -129,7 +129,7 @@ Restart your running `dsh web` process and reload the browser. This installs int
 
 For local Harness pages in a browser, on Windows or Mac.
 
-1. [Download the extension ZIP](https://github.com/d-dev0101/open-sea-skin/releases/download/v1.2.5/open-sea-skin-extension-v1.2.5.zip) and unzip it.
+1. [Download the extension ZIP](https://github.com/hetonghao/dsh-backspace/releases/download/v1.2.5/dsh-backspace-extension-v1.2.5.zip) and unzip it.
 2. Open `chrome://extensions` or `edge://extensions`; enable **Developer mode**.
 3. Choose **Load unpacked** and select the extracted folder containing `manifest.json`.
 4. Reload your Harness page on `127.0.0.1` or `localhost`.
@@ -146,7 +146,7 @@ For local Harness pages in a browser, on Windows or Mac.
 This changes frontend files. Stop Harness, [review the script](install.sh), and run in **Bash on macOS / Linux**:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/hetonghao/dsh-backspace/main/install.sh | bash
 ```
 
 Restart `dsh web`. Reapply with `bash -s -- --update` after a Harness frontend upgrade.
@@ -184,18 +184,18 @@ No. The extension targets a verified local DeepSeek Harness page. It does not re
 <details>
 <summary><strong>How do I disable or uninstall the skin?</strong></summary>
 
-For **Official Desktop**, disable or uninstall Open Sea in the sidebar Plugins page.
+For **Official Desktop**, disable or uninstall Backspace in the sidebar Plugins page.
 
 For **Harness Web**, turn off the ocean in the quick-controls panel, or remove the plugin with:
 
 ```sh
-dsh plugin --profile web remove open-sea-skin
+dsh plugin --profile web remove dsh-backspace
 ```
 
 Restart Harness. Remove the browser extension through the browser's extensions page. For a static installation, stop Harness and run:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/d-dev0101/open-sea-skin/main/install.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/hetonghao/dsh-backspace/main/install.sh | bash -s -- --uninstall
 ```
 
 Then restart Harness. The static installer removes its own marked loader/assets, not your sessions. See the [recovery guide](native-dist/README.md) if a page fails to load.
@@ -207,7 +207,7 @@ Then restart Harness. The static installer removes its own marked loader/assets,
 
 No blanket compatibility claim. Native source integration was verified against Harness `0.1.2-alpha.3`, commit `dd6322d60` (August 31, 2026). **Official macOS Desktop `0.2.0-rc.2`** was installed and visually verified with v1.2.5 in an isolated profile. The community DSH Desktop Beta `2.0.5-beta.1` shell has 24 fixture combinations; the official 0.2.x macOS/Windows shell has additional browser regression coverage. Native Windows Desktop is not yet E2E tested.
 
-If an update breaks the skin, [report your Harness version, installation method and a redacted screenshot/log](https://github.com/d-dev0101/open-sea-skin/issues).
+If an update breaks the skin, [report your Harness version, installation method and a redacted screenshot/log](https://github.com/hetonghao/dsh-backspace/issues).
 
 </details>
 
@@ -216,7 +216,7 @@ If an update breaks the skin, [report your Harness version, installation method 
 
 The renderer uses adaptive resolution, hidden-tab pause and reduced-motion handling. Animated 3D rendering still uses GPU resources; try the demo on your device first.
 
-The skin does not collect or transmit chat data. Extension permissions are limited to storage and the local Harness hosts. This statement describes Open Sea, not the host application's own behavior. [Privacy & permissions →](docs/privacy.md)
+The skin does not collect or transmit chat data. Extension permissions are limited to storage and the local Harness hosts. This statement describes Backspace, not the host application's own behavior. [Privacy & permissions →](docs/privacy.md)
 
 </details>
 
@@ -248,7 +248,7 @@ npm run test:website
 | [Native source integration](harness-plugin/README.md) | Harness settings/slots integration and pinned compatibility |
 | [Release guide](docs/releasing.md) | Packaging and publishing |
 | [Changelog](CHANGELOG.md) | Fixes and version history |
-| [Contributing through Issues / PRs](https://github.com/d-dev0101/open-sea-skin/issues) | Bug reports, ideas and improvements |
+| [Contributing through Issues / PRs](https://github.com/hetonghao/dsh-backspace/issues) | Bug reports, ideas and improvements |
 | [DSH plugin topic](https://github.com/topics/dsh-plugin) | Explore the wider community ecosystem |
 
 ## 🤝 Community & license
@@ -257,4 +257,4 @@ Made for people who want a more personal DeepSeek Harness workspace. Feedback, b
 
 Project code is [MIT licensed](LICENSE). third-party code and fonts retain their own licenses; see [Third-party notices](THIRD_PARTY_NOTICES.md).
 
-<p align="center"><a href="https://d-dev0101.github.io/open-sea-skin/"><strong>🌊 Find your sea — try the live demo</strong></a></p>
+<p align="center"><a href="https://hetonghao.github.io/dsh-backspace/"><strong>🌊 Find your sea — try the live demo</strong></a></p>

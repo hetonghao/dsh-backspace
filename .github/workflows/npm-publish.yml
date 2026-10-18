@@ -45,8 +45,8 @@ jobs:
         run: |
           mkdir -p release-audit
           npm pack --ignore-scripts --pack-destination release-audit --json > release-audit/pack.json
-          node -e 'const fs=require("fs"); const p=require("./release-audit/pack.json")[0]; fs.copyFileSync("release-audit/"+p.filename,"release-audit/open-sea-skin.tgz")'
-          npm publish release-audit/open-sea-skin.tgz --ignore-scripts --access public
+          node -e 'const fs=require("fs"); const p=require("./release-audit/pack.json")[0]; fs.copyFileSync("release-audit/"+p.filename,"release-audit/dsh-backspace.tgz")'
+          npm publish release-audit/dsh-backspace.tgz --ignore-scripts --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Verify registry bytes before attaching GitHub assets
@@ -55,12 +55,12 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           VERSION=$(node -p 'require("./package.json").version')
-          npm view "open-sea-skin@$VERSION" dist --json --registry=https://registry.npmjs.org > release-audit/dist.json
+          npm view "dsh-backspace@$VERSION" dist --json --registry=https://registry.npmjs.org > release-audit/dist.json
           URL=$(node -p 'require("./release-audit/dist.json").tarball')
           curl --fail --location --retry 5 "$URL" -o release-audit/registry.tgz
-          node release-tooling/scripts/verify-release.mjs release-audit/open-sea-skin.tgz release-audit/registry.tgz release-audit/dist.json
-          (cd release-audit && sha256sum "open-sea-skin-$VERSION.tgz" open-sea-skin.tgz > SHA256SUMS)
-          gh release upload "$RELEASE_TAG" "release-audit/open-sea-skin-$VERSION.tgz" release-audit/open-sea-skin.tgz release-audit/SHA256SUMS
+          node release-tooling/scripts/verify-release.mjs release-audit/dsh-backspace.tgz release-audit/registry.tgz release-audit/dist.json
+          (cd release-audit && sha256sum "dsh-backspace-$VERSION.tgz" dsh-backspace.tgz > SHA256SUMS)
+          gh release upload "$RELEASE_TAG" "release-audit/dsh-backspace-$VERSION.tgz" release-audit/dsh-backspace.tgz release-audit/SHA256SUMS
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,6 +1,6 @@
 # Architecture
 
-Open Sea Skin has one renderer and three delivery paths. `shared/` is the
+Backspace has one renderer and three delivery paths. `shared/` is the
 canonical implementation; `npm run build` copies it into the extension,
 static installer, and native Harness package. `site/` is the original
 CDN-backed showcase and is intentionally preserved byte-for-byte.
@@ -17,7 +17,7 @@ CDN-backed showcase and is intentionally preserved byte-for-byte.
 
 The extension and static paths concatenate `skin-core.js` with one persistence
 adapter at build time. Their generated `content.js` and `loader.js` therefore
-cannot drift. Every path claims the same `#__open-sea-skin__` id before
+cannot drift. Every path claims the same `#__dsh-backspace__` id before
 starting WebGPU, preventing duplicate renderers when two installation methods
 are enabled together.
 
@@ -30,7 +30,7 @@ integrations:
 
 - adds a frame-owned `shell.background` slot behind all three columns;
 - registers the client package in TypeScript, the Web bundle and Cordis graph;
-- explicitly exposes the `ui-open-sea-skin` settings namespace through the
+- explicitly exposes the `ui-backspace` settings namespace through the
   loopback Web settings allowlist;
 - isolates the layout frame's stacking context and places the background at
   `z-index: -1`, without creating per-column stacking contexts.
@@ -47,7 +47,7 @@ The native package contributes:
 - `sidebar.footer.action`: always-available “Skin settings” launcher;
 - `settings.general.item`: full settings row;
 - `ctx.theme.overrideTokens()`: reversible glass palette;
-- Host settings schema and traversal-safe `/open-sea-skin` asset route.
+- Host settings schema and traversal-safe `/dsh-backspace` asset route.
 
 The background waits for the settings scope to reach `ready` before its first
 render. That prevents a flash of defaults and ensures persisted sea, daylight,

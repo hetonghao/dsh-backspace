@@ -1,7 +1,7 @@
 /**
- * Native Open Sea Host half: registers durable preferences and serves the
- * self-contained WebGPU scene under `/open-sea-skin`.
- * @module @deepseek-ai/dsh-client-ui-open-sea-skin
+ * Native Backspace Host half: registers durable preferences and serves the
+ * self-contained WebGPU scene under `/dsh-backspace`.
+ * @module @deepseek-ai/dsh-client-ui-backspace
  */
 import { readFile } from 'node:fs/promises'
 import { extname, resolve, sep } from 'node:path'
@@ -10,21 +10,21 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-settings'
 import type {} from '@deepseek-ai/dsh-host-webserver'
-import { OpenSeaSettingsSchema } from './settings.ts'
-import { OPEN_SEA_SETTINGS_NAMESPACE } from './settings-contract.ts'
+import { BackspaceSettingsSchema } from './settings.ts'
+import { BACKSPACE_SETTINGS_NAMESPACE } from './settings-contract.ts'
 
 export {
-  DEFAULT_OPEN_SEA_SETTINGS,
-  OPEN_SEA_QUALITIES,
-  OPEN_SEA_SETTINGS_NAMESPACE,
-  type OpenSeaQuality,
-  type OpenSeaSettings,
+  DEFAULT_BACKSPACE_SETTINGS,
+  BACKSPACE_QUALITIES,
+  BACKSPACE_SETTINGS_NAMESPACE,
+  type BackspaceQuality,
+  type BackspaceSettings,
 } from './settings-contract.ts'
 
 /** Stable Cordis plugin name. */
-export const name = 'client-ui-open-sea-skin'
+export const name = 'client-ui-backspace'
 
-const ROUTE = '/open-sea-skin'
+const ROUTE = '/dsh-backspace'
 // Normalize away URL's trailing slash so the containment check adds exactly
 // one platform separator on macOS, Linux and Windows.
 const ASSET_ROOT = resolve(fileURLToPath(new URL('../assets/', import.meta.url)))
@@ -83,13 +83,13 @@ async function serveAsset(req: IncomingMessage, res: ServerResponse): Promise<vo
  */
 export function apply(ctx: Context): void {
   ctx.inject(['settings'], (settingsCtx) => {
-    settingsCtx.settings.register(OPEN_SEA_SETTINGS_NAMESPACE, OpenSeaSettingsSchema)
+    settingsCtx.settings.register(BACKSPACE_SETTINGS_NAMESPACE, BackspaceSettingsSchema)
   })
   ctx.inject(['webServer'], (httpCtx) => {
     httpCtx.effect(() => httpCtx.webServer.register({
       kind: 'prefix',
       path: ROUTE,
       handler: serveAsset,
-    }), 'client-ui-open-sea-skin: static assets')
+    }), 'client-ui-backspace: static assets')
   })
 }

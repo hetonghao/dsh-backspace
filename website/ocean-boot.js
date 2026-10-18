@@ -1,6 +1,6 @@
 // Website-only handshake: loading the module is not the same as drawing a frame.
 function notify(status) {
-  parent.postMessage({ type: 'oss-website-renderer', status,
+  parent.postMessage({ type: 'bs-website-renderer', status,
     attempt: new URLSearchParams(location.search).get('attempt') }, location.origin);
 }
 const observer = new MutationObserver(() => {

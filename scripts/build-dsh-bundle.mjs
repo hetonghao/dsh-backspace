@@ -9,11 +9,11 @@ const core = readFileSync(resolve(root, 'shared/skin-core.js'), 'utf8')
 
 const adapter = String.raw`
   const KEYS = Object.freeze({
-    enabled: 'ossEnabled',
-    sea: 'ossSea',
-    time: 'ossTime',
-    glass: 'ossGlass',
-    autoCycle: 'ossAutoCycle',
+    enabled: 'bsEnabled',
+    sea: 'bsSea',
+    time: 'bsTime',
+    glass: 'bsGlass',
+    autoCycle: 'bsAutoCycle',
   });
 
   function readSetting(key, fallback) {
@@ -27,11 +27,11 @@ const adapter = String.raw`
     }
   }
 
-  exports.name = 'open-sea-skin-client';
+  exports.name = 'dsh-backspace-client';
   exports.inject = [];
   exports.apply = function apply(ctx) {
-    const controller = globalThis.OpenSeaSkinCore.createController({
-      assetUrl: (path) => '/open-sea-skin/' + path,
+    const controller = globalThis.BackspaceSkinCore.createController({
+      assetUrl: (path) => '/dsh-backspace/' + path,
       storage: {
         get: async (defaults) => ({
           enabled: readSetting('enabled', defaults.enabled),
@@ -52,14 +52,14 @@ const adapter = String.raw`
       },
     });
     void controller.start();
-    ctx.effect(() => () => controller.stop(), 'open-sea-skin: browser surface');
+    ctx.effect(() => () => controller.stop(), 'dsh-backspace: browser surface');
   };
 
   return module.exports;
 }});
 `
 
-const expected = `// GENERATED from shared/skin-core.js. Run npm run build after editing shared sources.\nwindow.__ModuleLoader__.load({ id: "open-sea-skin", factory: (require) => {\n  var module = { exports: {} };\n  var exports = module.exports;\n${core}\n${adapter}`
+const expected = `// GENERATED from shared/skin-core.js. Run npm run build after editing shared sources.\nwindow.__ModuleLoader__.load({ id: "dsh-backspace", factory: (require) => {\n  var module = { exports: {} };\n  var exports = module.exports;\n${core}\n${adapter}`
 
 if (check) {
   if (!existsSync(target) || readFileSync(target, 'utf8') !== expected) {

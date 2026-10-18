@@ -1,6 +1,6 @@
 # Third-party notices
 
-Open Sea Skin vendors the following dependencies so the extension and both
+Backspace vendors the following dependencies so the extension and both
 Harness installation paths make no runtime network requests.
 
 ## three.js 0.178.0

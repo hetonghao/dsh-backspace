@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Open Sea Skin static-dist installer for DeepSeek Harness.
+# Backspace static-dist installer for DeepSeek Harness.
 set -euo pipefail
 
 SKIN_SRC="$(cd "$(dirname "$0")" && pwd)"
@@ -13,7 +13,7 @@ Usage: bash native-dist/install-skin.sh [options]
 
 Options:
   --update          Refresh an existing installation (same safe operation as install)
-  --uninstall       Remove Open Sea assets and only the injected loader block
+  --uninstall       Remove Backspace assets and only the injected loader block
   --dist PATH       Use one explicit Harness frontend dist directory
   --dry-run         Print the matched dist directories without modifying them
   -h, --help        Show this help
@@ -85,12 +85,12 @@ import sys
 path = Path(sys.argv[1])
 text = path.read_text(encoding='utf-8')
 text = re.sub(
-    r'\s*<!-- open-sea-skin:begin -->.*?<!-- open-sea-skin:end -->\s*',
+    r'\s*<!-- dsh-backspace:begin -->.*?<!-- dsh-backspace:end -->\s*',
     '\n', text, flags=re.DOTALL,
 )
 # Upgrade from the original one-tag installer without preserving its stale marker.
-text = text.replace('<script type="module" src="/open-sea-skin/loader.js"></script>', '')
-text = text.replace('<!-- open-sea-skin:installed -->', '')
+text = text.replace('<script type="module" src="/dsh-backspace/loader.js"></script>', '')
+text = text.replace('<!-- dsh-backspace:installed -->', '')
 path.write_text(text, encoding='utf-8')
 PYEOF
 }
@@ -102,9 +102,9 @@ import sys
 
 path = Path(sys.argv[1])
 text = path.read_text(encoding='utf-8')
-block = '''<!-- open-sea-skin:begin -->
-<script src="/open-sea-skin/loader.js" defer></script>
-<!-- open-sea-skin:end -->'''
+block = '''<!-- dsh-backspace:begin -->
+<script src="/dsh-backspace/loader.js" defer></script>
+<!-- dsh-backspace:end -->'''
 anchor = '</head>'
 if anchor not in text:
     raise SystemExit('✗ index.html has no </head> injection anchor')
@@ -120,27 +120,27 @@ for dist in "${DISTS[@]}"; do
   strip_loader "$index"
 
   if [ "$MODE" = "uninstall" ]; then
-    rm -rf -- "$dist/open-sea-skin"
-    rm -f -- "$index.oss-backup"
+    rm -rf -- "$dist/dsh-backspace"
+    rm -f -- "$index.bs-backup"
     echo "  Removed the injected loader block and skin assets."
     continue
   fi
 
-  cp "$index" "$index.oss-backup"
-  rm -rf -- "$dist/open-sea-skin"
-  mkdir -p "$dist/open-sea-skin"
+  cp "$index" "$index.bs-backup"
+  rm -rf -- "$dist/dsh-backspace"
+  mkdir -p "$dist/dsh-backspace"
   cp "$SKIN_SRC/loader.js" "$SKIN_SRC/skin.html" "$SKIN_SRC/ocean.js" \
-    "$SKIN_SRC/styles.css" "$dist/open-sea-skin/"
-  cp -R "$SKIN_SRC/vendor" "$dist/open-sea-skin/vendor"
+    "$SKIN_SRC/styles.css" "$dist/dsh-backspace/"
+  cp -R "$SKIN_SRC/vendor" "$dist/dsh-backspace/vendor"
   inject_loader "$index"
-  echo "  Installed assets and loader; backup: $index.oss-backup"
+  echo "  Installed assets and loader; backup: $index.bs-backup"
 done
 
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "✓ Dry run complete; no files changed."
 elif [ "$MODE" = "uninstall" ]; then
-  echo "✓ Open Sea Skin was removed. Restart Harness, keep its server running, then reload the browser."
+  echo "✓ Backspace was removed. Restart Harness, keep its server running, then reload the browser."
 else
-  echo "✓ Open Sea Skin is installed. Restart Harness, keep its server running, then reload the browser."
+  echo "✓ Backspace is installed. Restart Harness, keep its server running, then reload the browser."
   echo "  Run with --update after Harness upgrades."
 fi

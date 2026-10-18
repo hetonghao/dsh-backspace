@@ -3,17 +3,17 @@
 [中文安装与排错指南](install.zh.md) · [Choose your installation](../README.en.md#install)
 
 The repository root is a self-contained DeepSeek Harness bundle. It adds one
-Host row (`open-sea-skin`), one Web client module, and a read-only local asset
+Host row (`dsh-backspace`), one Web client module, and a read-only local asset
 route. It does not modify the Harness checkout.
 
 ## Install a release
 
 ```sh
-dsh plugin --profile web add open-sea-skin@1.2.5
+dsh plugin --profile web add dsh-backspace@1.2.5
 dsh web
 ```
 
-Open Sea appears behind the Web UI. The **Skin settings** button at the lower
+Backspace appears behind the Web UI. The **Skin settings** button at the lower
 left opens the wave, daylight, glass-opacity, and day-cycle controls. Settings
 are saved locally in that browser profile.
 
@@ -32,14 +32,14 @@ plugin manager—no download folder, terminal, or profile editing:
 2. Enter this exact package name and version:
 
    ```text
-   open-sea-skin@1.2.5
+   dsh-backspace@1.2.5
    ```
 
 3. Choose **Install**, review the package details, then **Enable now**.
 4. In Harness, use the lower-left **Skin settings** control. Set glass opacity
    to **40%** if you want the ocean to show clearly.
 
-If Open Sea 1.2.3 is already installed, uninstall that package in **Plugins**
+If Backspace 1.2.3 is already installed, uninstall that package in **Plugins**
 before adding 1.2.5. The official `0.2.0-rc.2` Add plugin dialog does not
 perform in-place upgrades. If the selected mainland China mirror has not yet
 synchronized 1.2.5, choose the **official npm registry** in the same dialog.
@@ -54,7 +54,7 @@ does not repair a cached URL resolution. The [official plugin manager
 documentation](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.2.0-rc.2/packages/client/ui-plugin-manager/README.md) describes the package-name and registry controls.
 Native Windows Desktop has not been E2E tested.
 
-The exact `open-sea-skin@1.2.5` package was installed successfully from both
+The exact `dsh-backspace@1.2.5` package was installed successfully from both
 the official npm registry and the mainland China mirror with the bundled CLI
 in an isolated official macOS Desktop `0.2.0-rc.2` profile. This confirms the
 package and registry paths; the in-app UI flow has not been independently
@@ -62,12 +62,12 @@ completed.
 
 ### Local-package fallback
 
-If both registries are unavailable, [download the v1.2.5 tarball](https://github.com/d-dev0101/open-sea-skin/releases/download/v1.2.5/open-sea-skin-1.2.5.tgz)
+If both registries are unavailable, [download the v1.2.5 tarball](https://github.com/hetonghao/dsh-backspace/releases/download/v1.2.5/dsh-backspace-1.2.5.tgz)
 to Downloads. Fully quit Desktop, then use the `dsh` executable bundled with
 your Desktop app—not a separate npm CLI. Standard macOS app path:
 
 ```sh
-"/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh" plugin --profile desktop add "$HOME/Downloads/open-sea-skin-1.2.5.tgz"
+"/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh" plugin --profile desktop add "$HOME/Downloads/dsh-backspace-1.2.5.tgz"
 ```
 
 Reopen Desktop afterward. This **local file** install was tested in an isolated
@@ -87,14 +87,14 @@ the complete error output (redact credentials and private paths). Do not
 enable arbitrary dependency build scripts or delete your Harness profile.
 
 
-The install should add an `open-sea-skin` row to the selected profile and load
+The install should add an `dsh-backspace` row to the selected profile and load
 these same-origin URLs with HTTP 200 responses:
 
 ```text
-/plugins/open-sea-skin/client.js
-/open-sea-skin/skin.html
-/open-sea-skin/styles.css
-/open-sea-skin/ocean.js
+/plugins/dsh-backspace/client.js
+/dsh-backspace/skin.html
+/dsh-backspace/styles.css
+/dsh-backspace/ocean.js
 ```
 
 If the launcher does not appear, confirm the command used the same profile as
@@ -106,17 +106,17 @@ Install a newer published npm version with the same `add` command. To remove
 the package and its profile row:
 
 ```sh
-dsh plugin --profile web remove open-sea-skin
+dsh plugin --profile web remove dsh-backspace
 ```
 
 Browser appearance values remain local and harmless after removal. Clear the
-`ossEnabled`, `ossSea`, `ossTime`, `ossGlass`, and `ossAutoCycle` local-storage
+`bsEnabled`, `bsSea`, `bsTime`, `bsGlass`, and `bsAutoCycle` local-storage
 keys only if you also want to reset those preferences.
 
 ## Other installation paths
 
 Use the static installer when a packaged Harness frontend cannot use DSH
-bundles. Use the source integration only when the complete Open Sea section
+bundles. Use the source integration only when the complete Backspace section
 must appear inside Harness **Settings → General**. Do not combine installation
 paths; the duplicate guard prevents two renderers, but one path is simpler to
 update and remove.

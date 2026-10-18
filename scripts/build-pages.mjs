@@ -14,7 +14,7 @@ cpSync(resolve(root, 'shared/ocean.js'), resolve(output, 'ocean.js'))
 cpSync(resolve(root, 'shared/styles.css'), resolve(output, 'styles.css'))
 cpSync(resolve(root, 'shared/vendor'), resolve(output, 'vendor'), { recursive: true })
 cpSync(resolve(root, 'extension/icons/icon48.png'), resolve(output, 'icon48.png'))
-cpSync(resolve(root, 'docs/marketplace/open-sea-harness-cover.png'), resolve(output, 'og.png'))
+cpSync(resolve(root, 'docs/marketplace/backspace-harness-cover.png'), resolve(output, 'og.png'))
 
 const media = resolve(output, 'media')
 mkdirSync(media, { recursive: true })

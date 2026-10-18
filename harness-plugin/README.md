@@ -1,12 +1,12 @@
-# @deepseek-ai/dsh-client-ui-open-sea-skin
+# @deepseek-ai/dsh-client-ui-backspace
 
 English | [中文](README.zh.md)
 
-Native DeepSeek Harness plugin for the Open Sea realtime WebGPU background. The Host half registers the `ui-open-sea-skin` settings schema and serves self-contained renderer assets at `/open-sea-skin`; the Client half contributes the background through `shell.background`, adds a lower-left quick-control action and a General-settings row, and layers glass values through `ctx.theme.overrideTokens()`.
+Native DeepSeek Harness plugin for the Backspace realtime WebGPU background. The Host half registers the `ui-backspace` settings schema and serves self-contained renderer assets at `/dsh-backspace`; the Client half contributes the background through `shell.background`, adds a lower-left quick-control action and a General-settings row, and layers glass values through `ctx.theme.overrideTokens()`.
 
 ## Integrate into a Harness checkout
 
-From the Open Sea Skin repository:
+From the Backspace repository:
 
 ```sh
 bash harness-plugin/install-into-harness.sh /absolute/path/to/deepseek-harness
@@ -16,20 +16,20 @@ corepack pnpm run build
 corepack pnpm dsh web
 ```
 
-The installer copies this package to `packages/client/ui-open-sea-skin` and idempotently adds the required client aggregate reference, Web bundle dependency, Cordis row, settings exposure and layout-owned `shell.background` slot. It also migrates the earlier per-column stacking rule that could place the conversation composer above Settings. It is verified against Harness `0.1.2-alpha.3`, commit `dd6322d60` (2026-08-31); if those integration anchors change upstream, it stops without guessing.
+The installer copies this package to `packages/client/ui-backspace` and idempotently adds the required client aggregate reference, Web bundle dependency, Cordis row, settings exposure and layout-owned `shell.background` slot. It also migrates the earlier per-column stacking rule that could place the conversation composer above Settings. It is verified against Harness `0.1.2-alpha.3`, commit `dd6322d60` (2026-08-31); if those integration anchors change upstream, it stops without guessing.
 
-Use the lower-left **Skin settings** action for sea, daylight and glass controls, or open **Settings → General → Open Sea Skin** for every option. Manual daylight input disables the cycle until the cycle checkbox is re-enabled.
+Use the lower-left **Skin settings** action for sea, daylight and glass controls, or open **Settings → General → Backspace** for every option. Manual daylight input disables the cycle until the cycle checkbox is re-enabled.
 
 ## Architecture
 
 - `src/index.ts`: Host settings registration plus a traversal-safe static resource route.
 - `src/client/index.ts`: Client plugin assembly, durable settings adoption and reversible theme-token layer.
-- `src/client/OpenSeaBackground.tsx`: same-origin background iframe registered through the layout slot.
-- `src/client/OpenSeaSettingsRow.tsx`: bilingual, keyboard-accessible General settings contribution.
-- `src/client/OpenSeaQuickControls.tsx`: native sidebar action and compact dialog.
+- `src/client/BackspaceBackground.tsx`: same-origin background iframe registered through the layout slot.
+- `src/client/BackspaceSettingsRow.tsx`: bilingual, keyboard-accessible General settings contribution.
+- `src/client/BackspaceQuickControls.tsx`: native sidebar action and compact dialog.
 - `assets/`: generated copy of the canonical renderer under the repository's `shared/` directory.
 
-The extension and static-dist installers use the same DOM ids (`#__open-sea-skin__`, `#__open-sea-skin-btn__`). The native component checks the shared iframe id before mounting, so enabling more than one installation path never starts a second renderer.
+The extension and static-dist installers use the same DOM ids (`#__dsh-backspace__`, `#__dsh-backspace-btn__`). The native component checks the shared iframe id before mounting, so enabling more than one installation path never starts a second renderer.
 
 ## Model Experience
 

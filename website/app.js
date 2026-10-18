@@ -10,7 +10,7 @@ const translations = {
     daylight: '日光', daylightNote: '正午到黄昏', transparency: '界面通透度', transparencyNote: '让海洋浮现',
     uiMode: '界面模式', dark: '深色', light: '浅色', realCapture: '真实 Harness 实录', captureGlass: '通透度',
     settings: '设置', taskTitle: '打造一片可交互的海', modelMode: '标准模式⌄', welcome: '探索未至之境',
-    welcomeBody: 'Open Sea 让 DeepSeek Harness 的工作空间随海况与光线呼吸。', composer: '描述你想构建的内容',
+    welcomeBody: 'Backspace 让 DeepSeek Harness 的工作空间随海况与光线呼吸。', composer: '描述你想构建的内容',
     detailsTitle: '当前环境', rendering: '渲染', privacy: '隐私', local: '本地', fps: '帧率', scroll: '继续探索',
     factOne: '只作用于 Harness', factOneBody: '不接管新标签页', factTwo: '五组 Gerstner 波', factThree: '自适应性能',
     factFour: '可逆安装', factFourBody: '五种入口，按需选择', featuresTitle: '一片真正属于<br>工作流的海',
@@ -27,7 +27,7 @@ const translations = {
     browserExtension: '🧩 浏览器扩展', browserBody: '只为经过识别的 Harness 页面换肤，不会接管新标签页或影响其他本地网站。',
     downloadZip: '下载 v1.2.5 ZIP', oneCommand: '🔧 静态前端 · 进阶', staticBody: '进阶备用：适用于 macOS / Linux 的 Bash。会修改已构建前端；Windows 官方客户端请选择方式 1。',
     copy: '复制命令', copied: '命令已复制', copyFailed: '复制失败，请手动选择命令', copyPackage: '复制包名', copiedPackage: '包名已复制', copyPackageFailed: '复制失败，请手动选择包名',
-    closingTitle: '工作可以很深，<br>界面不必沉重。', closingBody: 'Open Sea 免费、开源、本地优先。欢迎把它带进你的 Harness，也欢迎一起把这片海做得更好。',
+    closingTitle: '工作可以很深，<br>界面不必沉重。', closingBody: 'Backspace 免费、开源、本地优先。欢迎把它带进你的 Harness，也欢迎一起把这片海做得更好。',
     visitGitHub: '前往 GitHub', viewRelease: '查看最新 Release', privacyPolicy: '隐私', issues: '问题反馈',
     timeDusk: '黄昏', timeGolden: '金色时刻', timeAfternoon: '下午', timeNoon: '正午',
   },
@@ -42,7 +42,7 @@ const translations = {
     daylight: 'Daylight', daylightNote: 'Noon to dusk', transparency: 'UI transparency', transparencyNote: 'Reveal the ocean',
     uiMode: 'Interface mode', dark: 'Dark', light: 'Light', realCapture: 'Real Harness recording', captureGlass: 'Transparency',
     settings: 'Settings', taskTitle: 'Build an interactive sea', modelMode: 'Standard mode⌄', welcome: 'Explore what lies beyond',
-    welcomeBody: 'Open Sea lets the DeepSeek Harness workspace breathe with sea state and light.', composer: 'Describe what you want to build',
+    welcomeBody: 'Backspace lets the DeepSeek Harness workspace breathe with sea state and light.', composer: 'Describe what you want to build',
     detailsTitle: 'Current environment', rendering: 'Rendering', privacy: 'Privacy', local: 'Local', fps: 'Frame rate', scroll: 'Keep exploring',
     factOne: 'Harness only', factOneBody: 'Never replaces New Tab', factTwo: 'Five Gerstner waves', factThree: 'Adaptive performance',
     factFour: 'Reversible install', factFourBody: 'Five install paths', featuresTitle: 'An ocean made<br>for the workflow',
@@ -59,7 +59,7 @@ const translations = {
     browserExtension: 'Browser extension', browserBody: 'Skins verified Harness pages only. It never replaces New Tab or touches other localhost apps.',
     downloadZip: 'Download v1.2.5 ZIP', oneCommand: '🔧 Static frontend · advanced', staticBody: 'Advanced fallback for Bash on macOS / Linux. Modifies a built frontend; use option 1 for Official Desktop.',
     copy: 'Copy command', copied: 'Command copied', copyFailed: 'Copy failed—select the command manually', copyPackage: 'Copy package name', copiedPackage: 'Package name copied', copyPackageFailed: 'Copy failed—select the package name manually',
-    closingTitle: 'The work can be deep.<br>The interface can feel light.', closingBody: 'Open Sea is free, open source, and local-first. Bring it into your Harness—and help us make this ocean even better.',
+    closingTitle: 'The work can be deep.<br>The interface can feel light.', closingBody: 'Backspace is free, open source, and local-first. Bring it into your Harness—and help us make this ocean even better.',
     visitGitHub: 'Visit GitHub', viewRelease: 'View latest release', privacyPolicy: 'Privacy', issues: 'Issues',
     timeDusk: 'Dusk', timeGolden: 'Golden hour', timeAfternoon: 'Afternoon', timeNoon: 'Midday',
   },
@@ -146,7 +146,7 @@ function updateOutputs() {
 function sendOceanState() {
   if (!oceanFrame.contentWindow) return;
   oceanFrame.contentWindow.postMessage({
-    type: 'oss-set',
+    type: 'bs-set',
     sea: state.sea,
     t: state.daylight,
     auto: false,
@@ -258,7 +258,7 @@ function startOcean() {
 
 window.addEventListener('message', event => {
   if (event.origin !== location.origin || event.source !== oceanFrame.contentWindow) return;
-  if (event.data?.type !== 'oss-website-renderer' || event.data.attempt !== String(oceanAttempt)) return;
+  if (event.data?.type !== 'bs-website-renderer' || event.data.attempt !== String(oceanAttempt)) return;
   if (event.data.status === 'ready' || (event.data.status === 'fallback' && state.renderer !== 'ready')) {
     settleOcean(event.data.status);
   }
@@ -283,11 +283,11 @@ function applyLanguage(lang) {
   }
   languageToggle.textContent = lang === 'zh' ? 'EN' : '中文';
   document.getElementById('desktop-guide-link').href = lang === 'zh'
-    ? 'https://github.com/d-dev0101/open-sea-skin/blob/main/docs/install.zh.md'
-    : 'https://github.com/d-dev0101/open-sea-skin/blob/main/docs/dsh-plugin.md#dsh-desktop';
+    ? 'https://github.com/hetonghao/dsh-backspace/blob/main/docs/install.zh.md'
+    : 'https://github.com/hetonghao/dsh-backspace/blob/main/docs/dsh-plugin.md#dsh-desktop';
   document.title = lang === 'zh'
-    ? 'Open Sea · DeepSeek Harness 海洋皮肤'
-    : 'Open Sea · Ocean skin for DeepSeek Harness';
+    ? 'Backspace · DeepSeek Harness 海洋皮肤'
+    : 'Backspace · Ocean skin for DeepSeek Harness';
   updateOutputs();
   updateRendererStatus(state.renderer);
 }

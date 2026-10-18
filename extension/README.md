@@ -1,6 +1,6 @@
-# Open Sea Skin — WebGPU 实时海洋皮肤（Chrome / Edge 扩展）
+# Backspace — WebGPU 实时海洋皮肤（Chrome / Edge 扩展）
 
-只为 DeepSeek Harness 添加「Open Sea」实时海洋背景：在本机 Harness 界面
+只为 DeepSeek Harness 添加「Backspace」实时海洋背景：在本机 Harness 界面
 （`http://127.0.0.1/*`、`http://localhost/*`）背后渲染海洋，并把界面面板变成
 半透明玻璃。扩展不会接管新标签页、修改浏览器主页或影响用户已有的新标签页扩展，
 也不会修改其他本地网站。
@@ -20,7 +20,7 @@
 
 ## 与原始站点版的区别（占用优化）
 
-| 项目 | 原始 `open-sea/` | 本扩展 |
+| 项目 | 原始 `site/` | 本扩展 |
 | --- | --- | --- |
 | 海面网格 | 440×440（19.4 万顶点） | 256×256（6.6 万顶点，省约 8 MB 显存） |
 | 像素比 | 固定 min(dpr, 2) | 上限 1.5 + 按帧率自适应 0.5–1.0 缩放 |
@@ -49,4 +49,4 @@
 - `popup.html` / `popup.js` — 皮肤开关
 - `vendor/` — 本地化并压缩过的 three.js 0.178（webgpu/tsl/addons）+ Geist 字体
 
-原始网站版本保留在 `../open-sea/`，未做任何改动。
+原始网站版本保留在 `../site/`，未做任何改动。

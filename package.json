@@ -1,17 +1,17 @@
 {
-  "name": "open-sea-skin",
+  "name": "dsh-backspace",
   "version": "1.2.5",
   "type": "module",
   "description": "Realtime WebGPU ocean skin for DeepSeek Harness on Chrome and Edge",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/d-dev0101/open-sea-skin.git"
+    "url": "git+https://github.com/hetonghao/dsh-backspace.git"
   },
-  "homepage": "https://d-dev0101.github.io/open-sea-skin/",
+  "homepage": "https://hetonghao.github.io/dsh-backspace/",
   "publishConfig": {
     "access": "public"
   },
-  "bugs": "https://github.com/d-dev0101/open-sea-skin/issues",
+  "bugs": "https://github.com/hetonghao/dsh-backspace/issues",
   "keywords": [
     "deepseek-harness",
     "dsh-plugin",

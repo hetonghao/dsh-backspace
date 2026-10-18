@@ -2,7 +2,7 @@
 
 ## Supported version
 
-Security fixes are applied to the latest tagged release of Open Sea Skin.
+Security fixes are applied to the latest tagged release of Backspace.
 
 ## Reporting a vulnerability
 

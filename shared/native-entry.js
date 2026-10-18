@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const KEYS = {
-    enabled: 'ossEnabled', sea: 'ossSea', time: 'ossTime', glass: 'ossGlass', autoCycle: 'ossAutoCycle',
+    enabled: 'bsEnabled', sea: 'bsSea', time: 'bsTime', glass: 'bsGlass', autoCycle: 'bsAutoCycle',
   };
   const read = (key, fallback) => {
     try {
@@ -12,8 +12,8 @@
       return Number(value);
     } catch { return fallback; }
   };
-  const controller = globalThis.OpenSeaSkinCore.createController({
-    assetUrl: (path) => `/open-sea-skin/${path}`,
+  const controller = globalThis.BackspaceSkinCore.createController({
+    assetUrl: (path) => `/dsh-backspace/${path}`,
     storage: {
       get: async (defaults) => ({
         enabled: read('enabled', defaults.enabled),
