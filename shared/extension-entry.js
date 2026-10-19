@@ -29,7 +29,8 @@
             skinTime: defaults.time,
             skinGlass: defaults.glass,
             skinAutoCycle: defaults.autoCycle,
-            skinNativeChat: defaults.nativeChat,
+            skinChatCustom: defaults.chatCustom,
+            skinChatOpacity: defaults.chatOpacity,
           });
           return {
             enabled: stored.skinEnabled,
@@ -37,7 +38,8 @@
             time: stored.skinTime,
             glass: stored.skinGlass,
             autoCycle: stored.skinAutoCycle,
-            nativeChat: stored.skinNativeChat,
+            chatCustom: stored.skinChatCustom,
+            chatOpacity: stored.skinChatOpacity,
           };
         },
         set: (patch) => chrome.storage.sync.set({
@@ -46,7 +48,8 @@
           ...(patch.time === undefined ? {} : { skinTime: patch.time }),
           ...(patch.glass === undefined ? {} : { skinGlass: patch.glass }),
           ...(patch.autoCycle === undefined ? {} : { skinAutoCycle: patch.autoCycle }),
-          ...(patch.nativeChat === undefined ? {} : { skinNativeChat: patch.nativeChat }),
+          ...(patch.chatCustom === undefined ? {} : { skinChatCustom: patch.chatCustom }),
+          ...(patch.chatOpacity === undefined ? {} : { skinChatOpacity: patch.chatOpacity }),
         }),
       },
       listen: (notify) => {
@@ -58,7 +61,8 @@
           if (changes.skinTime) patch.time = changes.skinTime.newValue;
           if (changes.skinGlass) patch.glass = changes.skinGlass.newValue;
           if (changes.skinAutoCycle) patch.autoCycle = changes.skinAutoCycle.newValue;
-          if (changes.skinNativeChat) patch.nativeChat = changes.skinNativeChat.newValue;
+          if (changes.skinChatCustom) patch.chatCustom = changes.skinChatCustom.newValue;
+          if (changes.skinChatOpacity) patch.chatOpacity = changes.skinChatOpacity.newValue;
           if (Object.keys(patch).length > 0) notify(patch);
         };
         chrome.storage.onChanged.addListener(listener);

@@ -78,6 +78,61 @@ try {
       }
     }
   }
+  // Independent conversation background: the conversation gets its own
+  // opacity, while the sidebar and details columns keep the workspace glass.
+  // The details column is the one that regressed while developing this: it
+  // carries a nested fill, so it must stay at exactly one layer.
+  const measure = (page) => page.evaluate(() => {
+    const alpha = (element) => {
+      const values = getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 1]
+      return values.length === 4 ? values[3] : 1
+    }
+    const effective = (selector) => {
+      let total = 0
+      for (let node = document.querySelector(selector); node && node !== document.body; node = node.parentElement) {
+        total = 1 - (1 - total) * (1 - alpha(node))
+      }
+      return total
+    }
+    return {
+      conversation: effective('.conversationRoot'),
+      sidebar: effective('.sidebarRoot'),
+      details: effective('.detailsRoot'),
+    }
+  })
+  const chatBox = page.locator('#__dsh-backspace-panel__-chat')
+  const chatSlider = page.locator('#__dsh-backspace-panel__-chat-range')
+  await page.evaluate(() => {
+    document.body.dataset.dshDesktopMode = 'advanced'
+    document.body.dataset.dshDesktopMaterial = 'transparent'
+    document.body.toggleAttribute('data-ds-dark-theme', true)
+  })
+  await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), 40)
+  const sharedPaints = await measure(page)
+  for (const [key, value] of Object.entries(sharedPaints)) {
+    assert.ok(Math.abs(value - .4) < .005, `shared glass: ${key} ${JSON.stringify(sharedPaints)}`)
+  }
+  assert.equal(await chatSlider.isVisible(), false, 'conversation slider is hidden by default')
+  await chatBox.check()
+  assert.equal(await chatSlider.isVisible(), true, 'conversation slider appears with its switch')
+  for (const [percent, expected] of [[100, 1], [65, .65], [40, .4]]) {
+    await setRange(chatSlider, percent)
+    const paints = await measure(page)
+    assert.ok(Math.abs(paints.conversation - expected) < .02,
+      `${percent}%: conversation ${JSON.stringify(paints)} expected ${expected}`)
+    for (const key of ['sidebar', 'details']) {
+      assert.ok(Math.abs(paints[key] - .4) < .02, `${percent}%: ${key} keeps the workspace glass ${JSON.stringify(paints)}`)
+    }
+    // One layer only: no nested fill may compound on top of the column paint.
+    assert.ok(paints.conversation <= expected + .02, `${percent}%: conversation does not compound ${JSON.stringify(paints)}`)
+  }
+  await chatBox.uncheck()
+  assert.equal(await chatSlider.isVisible(), false, 'conversation slider hides when the switch is off')
+  const restored = await measure(page)
+  for (const [key, value] of Object.entries(restored)) {
+    assert.ok(Math.abs(value - .4) < .005, `switch off restores shared glass: ${key} ${JSON.stringify(restored)}`)
+  }
+
   // Live controls, overlay interaction, and full CSS restoration on disposal.
   await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), 40)
   await page.locator('#__dsh-backspace-panel__ .bs-close').click()

@@ -14,7 +14,8 @@ const adapter = String.raw`
     time: 'bsTime',
     glass: 'bsGlass',
     autoCycle: 'bsAutoCycle',
-    nativeChat: 'bsNativeChat',
+    chatCustom: 'bsChatCustom',
+    chatOpacity: 'bsChatOpacity',
   });
 
   function readSetting(key, fallback) {
@@ -22,7 +23,7 @@ const adapter = String.raw`
       const value = localStorage.getItem(KEYS[key]);
       if (value === null) return fallback;
       if (key === 'enabled' || key === 'autoCycle') return value !== 'false';
-      if (key === 'nativeChat') return value === 'true';
+      if (key === 'chatCustom') return value === 'true';
       return Number(value);
     } catch {
       return fallback;
@@ -41,7 +42,8 @@ const adapter = String.raw`
           time: readSetting('time', defaults.time),
           glass: readSetting('glass', defaults.glass),
           autoCycle: readSetting('autoCycle', defaults.autoCycle),
-          nativeChat: readSetting('nativeChat', defaults.nativeChat),
+          chatCustom: readSetting('chatCustom', defaults.chatCustom),
+          chatOpacity: readSetting('chatOpacity', defaults.chatOpacity),
         }),
         set: async (patch) => {
           try {

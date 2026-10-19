@@ -83,32 +83,46 @@ test('shared controller retains duplicate guards, a11y and resilient anchors', a
   ]) assert.ok(core.includes(required), required)
 })
 
-test('the native-conversation switch keeps the center column on Harness colors', async () => {
+test('the conversation panel has its own background opacity', async () => {
   const core = await text('shared/skin-core.js')
-  // Persisted, exposed in the panel, and off by default.
-  assert.match(core, /nativeChat: false/)
-  assert.match(core, /nativeChat: raw\.nativeChat === true/)
-  assert.match(core, /id="\$\{IDS\.panel\}-native"/)
-  assert.match(core, /'native', 'nativeChat'/)
-  // Native color comes from Harness's own palette, never hardcoded hex values.
+  // Off by default, and persisted as two independent values.
+  assert.match(core, /chatCustom: false/)
+  assert.match(core, /chatOpacity: 100/)
+  assert.match(core, /chatCustom: raw\.chatCustom === true/)
+  assert.match(core, /chatOpacity: clamp\(raw\.chatOpacity, CHAT_OPACITY_MIN, CHAT_OPACITY_MAX/)
+  // The slider spans 40-100% and is bound to the switch that reveals it.
+  assert.match(core, /CHAT_OPACITY_MIN = 40/)
+  assert.match(core, /CHAT_OPACITY_MAX = 100/)
+  assert.match(core, /min="\$\{CHAT_OPACITY_MIN\}" max="\$\{CHAT_OPACITY_MAX\}"/)
+  assert.match(core, /chatRow\.hidden = !state\.chatCustom/)
+  // 100% must stay Harness-native: the paint comes from Harness's own palette,
+  // never from a hex value copied out of one build.
   assert.match(core, /var\(--dsw-static-neutral-bluish-950/)
   assert.match(core, /var\(--dsw-static-neutral-bluish-00/)
-  assert.match(core, /glassCss\(state\.glass, state\.nativeChat\)/)
-  // Opting in must drop the center column out of the transparency rules.
-  assert.match(core, /nativeChat \? \[\] : \[/)
-  assert.match(core, /officialColumns = nativeChat \? ':first-child, \[data-rightbar-col\]'/)
+  assert.match(core, /if \(percent >= CHAT_OPACITY_MAX\) return nativeBase\(theme\)/)
+  // Below 100% the same color is scaled, so every step is a real opacity.
+  assert.match(core, /color-mix\(in srgb, \$\{nativeBase\(theme\)\} \$\{percent\}%, transparent\)/)
+  assert.match(core, /glassCss\(state\.glass, state\.chatCustom, state\.chatOpacity\)/)
+  // Switching the control off restores the shared workspace glass unchanged.
+  assert.match(core, /const chat = chatCustom \? chatPercent\(chatOpacity\) : null/)
+  assert.match(core, /const independent = chat !== null/)
+  assert.match(core, /\$\{independent \? conversationCss\(chat\) : ''\}/)
   // Every supported shell keeps a documented conversation root.
   for (const root of ['.wSkVaW_root', '[data-slot="conversation"]', '.dshDesktopConversationSurface', '[data-shell-overlay]']) {
     assert.ok(core.includes(root), root)
   }
 })
 
-test('every install adapter persists the native-conversation switch', async () => {
+test('every install adapter persists the independent conversation background', async () => {
   for (const target of ['shared/native-entry.js', 'shared/extension-entry.js', 'scripts/build-dsh-bundle.mjs']) {
-    assert.match(await text(target), /nativeChat/, target)
+    const source = await text(target)
+    assert.match(source, /chatCustom/, target)
+    assert.match(source, /chatOpacity/, target)
   }
-  assert.match(await text('plugin/client.js'), /bsNativeChat/)
-  assert.match(await text('extension/content.js'), /skinNativeChat/)
+  assert.match(await text('plugin/client.js'), /bsChatCustom/)
+  assert.match(await text('plugin/client.js'), /bsChatOpacity/)
+  assert.match(await text('extension/content.js'), /skinChatCustom/)
+  assert.match(await text('extension/content.js'), /skinChatOpacity/)
 })
 
 test('the browser extension injects only into a verified Harness page', async () => {

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
-import { chromiumArgs, findChromeForTesting, serveDirectory, waitForOcean, watchPageErrors } from './browser-support.mjs'
+import { chromiumArgs, findChromeForTesting, serveDirectory, setRange, waitForOcean, watchPageErrors } from './browser-support.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const server = await serveDirectory(root)
@@ -72,34 +72,115 @@ try {
   assert.deepEqual(failures, [])
   console.log('✓ Official Desktop 0.2.x shell: unified columns and readable settings in macOS/Windows light/dark modes')
 
-  // Native conversation: the center column must fall back to Harness's own
-  // palette while the sidebar keeps the ocean-backed glass.
-  const box = page.locator('#__dsh-backspace-panel__-native')
+  // Independent conversation background: the center column has its own
+  // opacity, while the sidebars keep the workspace glass.
+  const box = page.locator('#__dsh-backspace-panel__-chat')
+  const slider = page.locator('#__dsh-backspace-panel__-chat-range')
   await page.addScriptTag({ path: resolve(root, 'plugin/client.js') })
   await waitForOcean(page)
   await page.locator('#__dsh-backspace-btn__').click()
+  // The slider stays out of the way until the switch enables it.
+  assert.equal(await slider.isVisible(), false, 'slider is hidden while the conversation follows the glass')
   await box.check()
+  assert.equal(await slider.isVisible(), true, 'slider appears once the switch is on')
+  assert.equal(await slider.inputValue(), '100', '100% is the default and matches native')
   for (const dark of [true, false]) {
     await page.evaluate((dark) => { document.body.toggleAttribute('data-ds-dark-theme', dark) }, dark)
     const paints = await page.evaluate(() => {
       const column = document.querySelector('div:has(> [data-shell-overlay]) > :nth-child(2)')
       const style = getComputedStyle(column)
-      const sidebar = (() => {
+      const alphaOf = (element) => {
+        const values = getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 1]
+        return values.length === 4 ? values[3] : 1
+      }
+      const effective = (selector) => {
         let total = 0
-        for (let node = document.querySelector('.sidebar'); node && node !== document.body; node = node.parentElement) {
-          const values = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 1]
-          const value = values.length === 4 ? values[3] : 1
-          total = 1 - (1 - total) * (1 - value)
+        for (let node = document.querySelector(selector); node && node !== document.body; node = node.parentElement) {
+          total = 1 - (1 - total) * (1 - alphaOf(node))
         }
         return total
-      })()
-      return { background: style.backgroundColor, token: style.getPropertyValue('--dsw-alias-bg-base').trim(), sidebar }
+      }
+      // Resolve the paint to RGB too: alpha alone cannot tell a correct
+      // dark column from a light one, and a theme-prefix bug once painted the
+      // dark-mode conversation white while every alpha assertion still passed.
+      const channels = style.backgroundColor.match(/[\d.]+/g).map(Number)
+      const rgb = style.backgroundColor.startsWith('color(')
+        ? channels.slice(0, 3).map((value) => Math.round(value * 255))
+        : channels.slice(0, 3)
+      return {
+        background: style.backgroundColor,
+        rgb,
+        token: style.getPropertyValue('--dsw-alias-bg-base').trim(),
+        sidebar: effective('.sidebar'),
+        details: effective('[data-dockkit-content]'),
+        conversation: effective('div:has(> [data-shell-overlay]) > :nth-child(2)'),
+      }
     })
-    assert.ok(!paints.background.startsWith('rgba(0, 0, 0, 0)'), `native column stays opaque: ${JSON.stringify(paints)}`)
-    assert.ok(paints.token === '#151517' || paints.token === '#fff', `native column uses the static palette: ${JSON.stringify(paints)}`)
-    assert.ok(Math.abs(paints.sidebar - .4) < .02, `sidebar keeps glass: ${JSON.stringify(paints)}`)
+    const theme = dark ? 'dark' : 'light'
+    assert.ok(!paints.background.startsWith('rgba(0, 0, 0, 0)'), `100% stays opaque: ${JSON.stringify(paints)}`)
+    assert.ok(paints.token === '#151517' || paints.token === '#fff', `100% uses the static palette: ${JSON.stringify(paints)}`)
+    assert.deepEqual(paints.rgb, dark ? [21, 21, 23] : [255, 255, 255],
+      `${theme}: the conversation keeps Harness's own colour ${JSON.stringify(paints)}`)
+    assert.ok(Math.abs(paints.sidebar - .4) < .02, `sidebar keeps the workspace glass: ${JSON.stringify(paints)}`)
+    assert.ok(Math.abs(paints.details - .4) < .02, `details keeps the workspace glass: ${JSON.stringify(paints)}`)
+
+    // Every step below 100% must be a genuinely lower conversation opacity
+    // while the sidebars stay put.
+    for (const percent of [40, 65, 90]) {
+      await setRange(slider, percent)
+      const stepped = await page.evaluate(() => {
+        const column = document.querySelector('div:has(> [data-shell-overlay]) > :nth-child(2)')
+        const alphaOf = (element) => {
+          const values = getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 1]
+          return values.length === 4 ? values[3] : 1
+        }
+        const effective = (selector) => {
+          let total = 0
+          for (let node = document.querySelector(selector); node && node !== document.body; node = node.parentElement) {
+            total = 1 - (1 - total) * (1 - alphaOf(node))
+          }
+          return total
+        }
+        const channels = getComputedStyle(column).backgroundColor.match(/[\d.]+/g).map(Number)
+        return {
+          conversation: effective('div:has(> [data-shell-overlay]) > :nth-child(2)'),
+          sidebar: effective('.sidebar'),
+          rgb: getComputedStyle(column).backgroundColor.startsWith('color(')
+            ? channels.slice(0, 3).map((value) => Math.round(value * 255))
+            : channels.slice(0, 3),
+        }
+      })
+      assert.ok(Math.abs(stepped.conversation - percent / 100) < .02,
+        `${theme}/${percent}%: conversation ${JSON.stringify(stepped)}`)
+      assert.deepEqual(stepped.rgb, dark ? [21, 21, 23] : [255, 255, 255],
+        `${theme}/${percent}%: the hue is Harness's own ${JSON.stringify(stepped)}`)
+      assert.ok(Math.abs(stepped.sidebar - .4) < .02, `sidebar unaffected at ${percent}%: ${JSON.stringify(stepped)}`)
+    }
+    await setRange(slider, 100)
   }
-  console.log('✓ Native conversation keeps Harness colors in the center while sidebar/details stay glass')
+  // Switching it off must be identical to the shared-glass default.
+  await box.uncheck()
+  assert.equal(await slider.isVisible(), false, 'slider hides again when the switch is off')
+  const shared = await page.evaluate(() => {
+    const alphaOf = (element) => {
+      const values = getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 1]
+      return values.length === 4 ? values[3] : 1
+    }
+    const effective = (selector) => {
+      let total = 0
+      for (let node = document.querySelector(selector); node && node !== document.body; node = node.parentElement) {
+        total = 1 - (1 - total) * (1 - alphaOf(node))
+      }
+      return total
+    }
+    return {
+      conversation: effective('div:has(> [data-shell-overlay]) > :nth-child(2)'),
+      sidebar: effective('.sidebar'),
+    }
+  })
+  assert.ok(Math.abs(shared.conversation - .4) < .02, `conversation follows the glass when off: ${JSON.stringify(shared)}`)
+  assert.ok(Math.abs(shared.sidebar - .4) < .02, `sidebar follows the glass when off: ${JSON.stringify(shared)}`)
+  console.log('✓ Independent conversation background: 40-100% slider, native at 100%, sidebars unaffected')
 } finally {
   await browser.close()
   await server.close()

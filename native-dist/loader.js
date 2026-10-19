@@ -21,8 +21,16 @@
     time: 55,
     glass: 72,
     autoCycle: true,
-    nativeChat: false,
+    chatCustom: false,
+    chatOpacity: 100,
   });
+
+  // The conversation column shares the workspace glass until the independent
+  // control is switched on; at 100% it is indistinguishable from unthemed
+  // Harness. Keep these bounds in one place: the slider, normalize() and the
+  // generated CSS must agree on them.
+  const CHAT_OPACITY_MIN = 40;
+  const CHAT_OPACITY_MAX = 100;
 
   const COPY = Object.freeze({
     zh: {
@@ -33,10 +41,11 @@
       glass: '玻璃不透明度',
       enable: '启用 Backspace 皮肤',
       autoCycle: '自动昼夜循环',
-      nativeChat: '对话面板保持原生背景',
+      chatCustom: '对话面板独立背景调整',
+      chatOpacity: '对话面板不透明度',
       reset: '恢复默认',
-      resetNote: '恢复全部默认设置（波浪 45 / 日光 55 / 玻璃 72 / 自动循环开 / 原生对话面板关）',
-      note: '调节即时生效并自动保存；手动设定「日光」后会停止自动昼夜循环。开启「对话面板保持原生背景」后，中间对话区不再应用皮肤，只用原色显示，左右侧栏仍保留玻璃与海面。',
+      resetNote: '恢复全部默认设置（波浪 45 / 日光 55 / 玻璃 72 / 自动循环开 / 对话面板跟随主玻璃）',
+      note: '调节即时生效并自动保存；手动设定「日光」后会停止自动昼夜循环。开启「对话面板独立背景调整」后，可以用下面的拖动条单独设定中间对话区的背景浓度，100% 即 Harness 原生背景；关闭时对话区跟随上面的「玻璃不透明度」，左右侧栏始终使用主玻璃。',
       times: ['黄昏', '金色时刻', '下午', '正午'],
     },
     en: {
@@ -47,9 +56,11 @@
       glass: 'Glass opacity',
       enable: 'Enable Backspace skin',
       autoCycle: 'Automatic day cycle',
+      chatCustom: 'Independent conversation background',
+      chatOpacity: 'Conversation opacity',
       reset: 'Reset to defaults',
-      resetNote: 'Restore all defaults (sea 45 / daylight 55 / glass 72 / auto cycle on)',
-      note: 'Changes apply immediately and save automatically. Setting daylight manually stops the automatic day cycle.',
+      resetNote: 'Restore all defaults (sea 45 / daylight 55 / glass 72 / auto cycle on / conversation follows the workspace glass)',
+      note: 'Changes apply immediately and save automatically. Setting daylight manually stops the automatic day cycle. Turning on the independent conversation background lets the slider below set how strongly the center column is tinted; 100% is Harness\'s native background. Switch it off and the conversation follows the glass opacity above, while the sidebars always use the workspace glass.',
       times: ['Dusk', 'Golden hour', 'Afternoon', 'Midday'],
     },
   });
@@ -72,7 +83,8 @@
       time: clamp(raw.time, 0, 100, DEFAULTS.time),
       glass: clamp(raw.glass, 40, 90, DEFAULTS.glass),
       autoCycle: raw.autoCycle !== false,
-      nativeChat: raw.nativeChat === true,
+      chatCustom: raw.chatCustom === true,
+      chatOpacity: clamp(raw.chatOpacity, CHAT_OPACITY_MIN, CHAT_OPACITY_MAX, DEFAULTS.chatOpacity),
     };
   }
 
@@ -123,54 +135,142 @@
     },
   });
 
+  // The conversation column may be given its own opacity. At 100% it has to be
+  // indistinguishable from unthemed Harness, so the paint is always derived from
+  // Harness's own static palette instead of a hex value copied from one build.
+  // color-mix() then scales that native color to any opacity the slider allows.
+  function nativeBase(theme) {
+    return theme === 'dark'
+      ? 'var(--dsw-static-neutral-bluish-950, #151517)'
+      : 'var(--dsw-static-neutral-bluish-00, #fff)';
+  }
+
+  function chatPercent(opacity) {
+    return clamp(opacity, CHAT_OPACITY_MIN, CHAT_OPACITY_MAX, CHAT_OPACITY_MAX);
+  }
+
+  function chatPaint(theme, opacity) {
+    const percent = chatPercent(opacity);
+    if (percent >= CHAT_OPACITY_MAX) return nativeBase(theme);
+    return `color-mix(in srgb, ${nativeBase(theme)} ${percent}%, transparent)`;
+  }
+
+  function chatTokens(theme, opacity) {
+    const percent = chatPercent(opacity);
+    const tokens = NATIVE_TOKENS[theme];
+    if (percent >= CHAT_OPACITY_MAX) return tokens;
+    return Object.fromEntries(Object.entries(tokens)
+      .map(([name, value]) => [name, `color-mix(in srgb, ${value} ${percent}%, transparent)`]));
+  }
+
   // Every supported shell exposes the conversation column with a different
   // root: classic Harness Web (`.wSkVaW_root`), the slot wrapper, the community
   // desktop frame and the official 0.2.x AppFrame, whose only stable marker is
   // the shell overlay sibling. Redeclaring Harness's own palette tokens inside
-  // that subtree restores native color for every nested surface that paints
-  // `var(--dsw-alias-bg-*)`, independently of the glass layer above it.
-  const NATIVE_CHAT_ROOTS = Object.freeze([
+  // that subtree keeps every nested surface that paints `var(--dsw-alias-bg-*)`
+  // in step with the column instead of with the workspace glass.
+  const CONVERSATION_ROOTS = Object.freeze([
     '.wSkVaW_root',
     '[data-slot="conversation"]',
     '.dshDesktopConversationSurface',
     'div:has(> [data-shell-overlay]) > :nth-child(2):not([data-shell-overlay])',
   ]);
 
-  function nativeChatCss() {
-    const declarations = (tokens) => Object.entries(tokens)
-      .map(([name, value]) => `  ${name}: ${value} !important;`)
+  // Only the outermost column of each shell may paint the background. Painting
+  // both a wrapper and the surface nested inside it would stack two translucent
+  // layers and render the transcript darker than the slider promises.
+  const CONVERSATION_PAINTS = Object.freeze([
+    '.wSkVaW_root',
+    'body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) .dshDesktopConversationSurface',
+    'html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :nth-child(2)',
+  ]);
+
+  function conversationCss(opacity) {
+    // Rename only the property names: the values must keep pointing at
+    // Harness's own --dsw-static-neutral-bluish-* palette.
+    const declarations = (theme, rename) => Object.entries(chatTokens(theme, opacity))
+      .map(([name, value]) => `  ${rename(name)}: ${value};`)
       .join('\n');
-    const rule = (root, tokens, base) => `${root} {\n${declarations(tokens)}\n  background: ${base} !important;\n}`;
+    const themed = (theme) => `${declarations(theme, (name) => `--bs-chat-${name.slice('--dsw-'.length)}`)}
+  --bs-chat-base: ${chatPaint(theme, opacity)};`;
+    // Theme is resolved once, at the variable-definition level, where a
+    // `body[data-ds-dark-theme]` prefix is valid on its own. The paint rules
+    // below stay theme-agnostic: prefixing every shell root instead would emit
+    // impossible selectors such as `body[x] html ... body ...`, silently
+    // falling back to Harness's light palette in dark mode.
+    const roots = CONVERSATION_ROOTS.join(',\n');
+    const paints = CONVERSATION_PAINTS.join(',\n');
+    const aliases = Object.keys(NATIVE_TOKENS.light)
+      .map((name) => `  ${name}: var(--bs-chat-${name.slice('--dsw-'.length)}) !important;`)
+      .join('\n');
     return `
-/* Native conversation: only the sidebar and details columns keep glass. The
-   center column repaints Harness's own palette, so the ocean never shows
-   through the transcript. */
-${NATIVE_CHAT_ROOTS.map((root) => rule(root, NATIVE_TOKENS.light, 'var(--dsw-static-neutral-bluish-00, #fff)')).join('\n')}
-${NATIVE_CHAT_ROOTS.map((root) => rule(`body[data-ds-dark-theme] ${root}`, NATIVE_TOKENS.dark, 'var(--dsw-static-neutral-bluish-950, #151517)')).join('\n')}`;
+/* Independent conversation background: only this column changes, and only up
+   to its own opacity. The sidebars always keep the workspace glass. */
+:root {
+${themed('light')}
+}
+body[data-ds-dark-theme] {
+${themed('dark')}
+}
+${roots} {
+${aliases}
+}
+${paints} {
+  background: var(--bs-chat-base) !important;
+}`;
   }
 
-  function glassCss(glass, nativeChat) {
+  function glassCss(glass, chatCustom, chatOpacity) {
     const light = glass / 100;
     const dark = Math.max(0.40, light - 0.12);
-    // A native conversation column is painted opaque by nativeChatCss, so it
-    // must be dropped from every transparency rule below instead of fought with
-    // equal-specificity overrides.
+    // The conversation column gets its own opacity only when the independent
+    // control is on. Alpha composites, so a conversation that must end up
+    // lighter than the workspace glass cannot sit on top of a shared frame
+    // paint: the frame would always show through. In that mode each column
+    // paints exactly one layer of its own instead, which also keeps nested
+    // fills from compounding.
+    const chat = chatCustom ? chatPercent(chatOpacity) : null;
+    const independent = chat !== null;
     const communitySurfaces = [
-      '.dshDesktopSidebarSurface',
-      ...(nativeChat ? [] : [
+      ...(independent ? [] : ['.dshDesktopSidebarSurface']),
+      ...(independent ? [] : [
         '.dshDesktopConversationSurface',
         '.dshDesktopConversationSurface > *',
         '.dshDesktopConversationSurface [data-phase="hero"]',
         '.dshDesktopConversationSurface [data-phase="active"]',
         '.dshDesktopConversationSurface [data-phase="settling"]',
       ]),
-      '.dshDesktopDetailsSurface',
+      ...(independent ? [] : ['.dshDesktopDetailsSurface']),
       '.dshDesktopMacCaptionRow',
       '.dshDesktopWindowsCaptionRow',
-      '.dshDesktopDetailsSurface > *',
+      ...(independent ? [] : ['.dshDesktopDetailsSurface > *']),
     ];
-    const officialColumns = nativeChat ? ':first-child, [data-rightbar-col]' : ':first-child, :nth-child(2), [data-rightbar-col]';
-    const legacyRoots = nativeChat ? '.pI_x6G_sidebarCol,\n.hHd-Xa_root' : '.wSkVaW_root,\n.pI_x6G_sidebarCol,\n.hHd-Xa_root';
+    const officialColumns = independent ? '' : ':first-child, :nth-child(2), [data-rightbar-col]';
+    const legacyRoots = independent ? '.pI_x6G_sidebarCol,\n.hHd-Xa_root' : '.wSkVaW_root,\n.pI_x6G_sidebarCol,\n.hHd-Xa_root';
+    // Frames and column paints are only rearranged for the independent mode;
+    // the shared-glass output stays byte-identical to the default path.
+    const independentCss = independent ? `
+/* Independent conversation background: the shared frame paint would otherwise
+   show through every column, so it is handed back to the columns themselves.
+   Each column paints once; nested fills stay transparent. */
+body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) .dshDesktopFrame,
+html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) {
+  background: transparent !important;
+}
+body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) :is(
+  .dshDesktopSidebarSurface,
+  .dshDesktopDetailsSurface
+),
+html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :is(:first-child, [data-rightbar-col]) {
+  background: var(--dsw-alias-bg-base) !important;
+}
+body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) :is(
+  .dshDesktopConversationSurface > *,
+  .dshDesktopConversationSurface [data-phase],
+  .dshDesktopDetailsSurface > *
+) {
+  background: transparent !important;
+}` : '';
     return `
 /* Backspace: one translucent shell; nested fills must not compound. */
 body {
@@ -206,11 +306,11 @@ body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) 
 body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) .dshDesktopSidebarSurface {
   --dsw-specific-sidebar-fill: transparent !important;
 }
-body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) :is(
+${communitySurfaces.length > 0 ? `body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) :is(
   ${communitySurfaces.join(',\n  ')}
 ) {
   background: transparent !important;
-}
+}` : ''}
 /* Official Harness Desktop 0.2.x uses a different AppFrame from the
    community desktop wrapper. Its sidebar, center, conversation and docked
    rightbar each paint a surface; translucent paints compound into a much
@@ -219,8 +319,8 @@ body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) 
 html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) {
   background: var(--dsw-alias-bg-base) !important;
 }
-html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :is(${officialColumns}),
-html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :nth-child(2) [data-phase],
+${officialColumns ? `html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :is(${officialColumns}),
+`: ''}html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :nth-child(2) [data-phase],
 html:is([data-platform="darwin"], [data-windows-titlebar]) body #root [data-rightbar-col] [data-dockkit-host="dock"] > [data-dockkit-content] {
   background: transparent !important;
 }
@@ -238,7 +338,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
 /* Legacy Harness builds: these CSS-module hashes are best-effort fallbacks. */
 ${legacyRoots} {
   background: transparent !important;
-}${nativeChat ? nativeChatCss() : ''}`;
+}${independentCss}${independent ? conversationCss(chat) : ''}`;
   }
 
   function uiCss() {
@@ -269,6 +369,10 @@ ${legacyRoots} {
 #${IDS.panel} .bs-close { background:none; border:0; color:rgba(255,255,255,.55); font-size:18px; line-height:1; cursor:pointer; padding:3px 6px; border-radius:6px; }
 #${IDS.panel} .bs-close:hover { color:#fff; background:rgba(255,255,255,.08); }
 #${IDS.panel} .bs-row { margin-top:13px; }
+/* The conversation slider is a child of its switch: indented, and hidden
+   entirely (including from the tab order) while the switch is off. */
+#${IDS.panel} .bs-sub { margin-top:9px; padding-left:11px; border-left:2px solid rgba(143,233,228,.28); }
+#${IDS.panel} .bs-sub[hidden] { display:none; }
 #${IDS.panel} .bs-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:9px; font-size:11px; letter-spacing:.1em; color:rgba(255,255,255,.7); }
 #${IDS.panel} .bs-value { font-variant-numeric:tabular-nums; }
 #${IDS.panel} input[type='range'] { appearance:none; display:block; width:100%; height:14px; margin:0; padding:0; background:transparent; cursor:pointer; }
@@ -316,7 +420,7 @@ ${legacyRoots} {
 
     const updateGlass = () => {
       const style = document.getElementById(IDS.glass);
-      if (style) style.textContent = glassCss(state.glass, state.nativeChat);
+      if (style) style.textContent = glassCss(state.glass, state.chatCustom, state.chatOpacity);
     };
 
     const postToOcean = () => {
@@ -395,7 +499,7 @@ ${legacyRoots} {
 
       const style = document.createElement('style');
       style.id = IDS.glass;
-      style.textContent = glassCss(state.glass, state.nativeChat);
+      style.textContent = glassCss(state.glass, state.chatCustom, state.chatOpacity);
       (document.head || document.documentElement).appendChild(style);
       ownsSurface = true;
       return true;
@@ -429,7 +533,8 @@ ${legacyRoots} {
         <div class="bs-row"><div class="bs-head"><label for="${IDS.panel}-glass-range">${copy.glass}</label><output class="bs-value" id="${IDS.panel}-glass" for="${IDS.panel}-glass-range"></output></div><input type="range" id="${IDS.panel}-glass-range" min="40" max="90" step="1" /></div>
         <div class="bs-row bs-switch"><label for="${IDS.panel}-enabled">${copy.enable}</label><input type="checkbox" id="${IDS.panel}-enabled" /></div>
         <div class="bs-row bs-switch"><label for="${IDS.panel}-cycle">${copy.autoCycle}</label><input type="checkbox" id="${IDS.panel}-cycle" /></div>
-        <div class="bs-row bs-switch"><label for="${IDS.panel}-native">${copy.nativeChat}</label><input type="checkbox" id="${IDS.panel}-native" /></div>
+        <div class="bs-row bs-switch"><label for="${IDS.panel}-chat">${copy.chatCustom}</label><input type="checkbox" id="${IDS.panel}-chat" /></div>
+        <div class="bs-row bs-sub" id="${IDS.panel}-chat-row"><div class="bs-head"><label for="${IDS.panel}-chat-range">${copy.chatOpacity}</label><output class="bs-value" id="${IDS.panel}-chat-value" for="${IDS.panel}-chat-range"></output></div><input type="range" id="${IDS.panel}-chat-range" min="${CHAT_OPACITY_MIN}" max="${CHAT_OPACITY_MAX}" step="1" /></div>
         <div class="bs-row"><button type="button" class="bs-reset">${copy.reset}</button></div>
         <p class="bs-note">${copy.resetNote}<br>${copy.note}</p>`;
 
@@ -444,7 +549,10 @@ ${legacyRoots} {
       const glassOut = panel.querySelector(`#${IDS.panel}-glass`);
       const enabledBox = panel.querySelector(`#${IDS.panel}-enabled`);
       const cycleBox = panel.querySelector(`#${IDS.panel}-cycle`);
-      const nativeBox = panel.querySelector(`#${IDS.panel}-native`);
+      const chatBox = panel.querySelector(`#${IDS.panel}-chat`);
+      const chatRow = panel.querySelector(`#${IDS.panel}-chat-row`);
+      const chatRange = panel.querySelector(`#${IDS.panel}-chat-range`);
+      const chatOut = panel.querySelector(`#${IDS.panel}-chat-value`);
       const resetBtn = panel.querySelector('.bs-reset');
 
       const syncUi = () => {
@@ -456,7 +564,12 @@ ${legacyRoots} {
         glassOut.textContent = `${state.glass}%`;
         enabledBox.checked = state.enabled;
         cycleBox.checked = state.autoCycle;
-        nativeBox.checked = state.nativeChat;
+        chatBox.checked = state.chatCustom;
+        chatRange.value = String(state.chatOpacity);
+        chatOut.textContent = `${state.chatOpacity}%`;
+        // The slider belongs to the switch: hide it while the conversation
+        // follows the workspace glass so the panel keeps one obvious meaning.
+        chatRow.hidden = !state.chatCustom;
       };
       syncUi();
 
@@ -468,7 +581,7 @@ ${legacyRoots} {
         button.setAttribute('aria-label', copy.button);
         panel.setAttribute('aria-label', copy.button);
         panel.querySelector('.bs-close').setAttribute('aria-label', copy.close);
-        for (const [suffix, key] of [['sea-range', 'sea'], ['time-range', 'time'], ['glass-range', 'glass'], ['enabled', 'enable'], ['cycle', 'autoCycle'], ['native', 'nativeChat']]) {
+        for (const [suffix, key] of [['sea-range', 'sea'], ['time-range', 'time'], ['glass-range', 'glass'], ['enabled', 'enable'], ['cycle', 'autoCycle'], ['chat', 'chatCustom'], ['chat-range', 'chatOpacity']]) {
           panel.querySelector(`label[for="${IDS.panel}-${suffix}"]`).textContent = copy[key];
         }
         resetBtn.textContent = copy.reset;
@@ -513,9 +626,16 @@ ${legacyRoots} {
         void save({ autoCycle: state.autoCycle });
         postToOcean();
       });
-      on(nativeBox, 'change', () => {
-        state.nativeChat = nativeBox.checked;
-        void save({ nativeChat: state.nativeChat });
+      on(chatBox, 'change', () => {
+        state.chatCustom = chatBox.checked;
+        chatRow.hidden = !state.chatCustom;
+        void save({ chatCustom: state.chatCustom });
+        updateGlass();
+      });
+      on(chatRange, 'input', () => {
+        state.chatOpacity = clamp(chatRange.value, CHAT_OPACITY_MIN, CHAT_OPACITY_MAX, DEFAULTS.chatOpacity);
+        chatOut.textContent = `${state.chatOpacity}%`;
+        void save({ chatOpacity: state.chatOpacity });
         updateGlass();
       });
       on(resetBtn, 'click', () => {
@@ -638,14 +758,15 @@ ${legacyRoots} {
     time: 'bsTime',
     glass: 'bsGlass',
     autoCycle: 'bsAutoCycle',
-    nativeChat: 'bsNativeChat',
+    chatCustom: 'bsChatCustom',
+    chatOpacity: 'bsChatOpacity',
   };
   const read = (key, fallback) => {
     try {
       const value = localStorage.getItem(KEYS[key]);
       if (value === null) return fallback;
       if (key === 'enabled' || key === 'autoCycle') return value !== 'false';
-      if (key === 'nativeChat') return value === 'true';
+      if (key === 'chatCustom') return value === 'true';
       return Number(value);
     } catch { return fallback; }
   };
@@ -658,7 +779,8 @@ ${legacyRoots} {
         time: read('time', defaults.time),
         glass: read('glass', defaults.glass),
         autoCycle: read('autoCycle', defaults.autoCycle),
-        nativeChat: read('nativeChat', defaults.nativeChat),
+        chatCustom: read('chatCustom', defaults.chatCustom),
+        chatOpacity: read('chatOpacity', defaults.chatOpacity),
       }),
       set: async (patch) => {
         try {

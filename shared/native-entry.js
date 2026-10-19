@@ -7,14 +7,15 @@
     time: 'bsTime',
     glass: 'bsGlass',
     autoCycle: 'bsAutoCycle',
-    nativeChat: 'bsNativeChat',
+    chatCustom: 'bsChatCustom',
+    chatOpacity: 'bsChatOpacity',
   };
   const read = (key, fallback) => {
     try {
       const value = localStorage.getItem(KEYS[key]);
       if (value === null) return fallback;
       if (key === 'enabled' || key === 'autoCycle') return value !== 'false';
-      if (key === 'nativeChat') return value === 'true';
+      if (key === 'chatCustom') return value === 'true';
       return Number(value);
     } catch { return fallback; }
   };
@@ -27,7 +28,8 @@
         time: read('time', defaults.time),
         glass: read('glass', defaults.glass),
         autoCycle: read('autoCycle', defaults.autoCycle),
-        nativeChat: read('nativeChat', defaults.nativeChat),
+        chatCustom: read('chatCustom', defaults.chatCustom),
+        chatOpacity: read('chatOpacity', defaults.chatOpacity),
       }),
       set: async (patch) => {
         try {
