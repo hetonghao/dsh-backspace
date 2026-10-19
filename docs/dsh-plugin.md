@@ -17,6 +17,13 @@ Backspace appears behind the Web UI. The **Skin settings** button at the lower
 left opens the wave, daylight, glass-opacity, and day-cycle controls. Settings
 are saved locally in that browser profile.
 
+**Native conversation background** is a separate switch in the same panel,
+off by default. Turning it on removes the skin from the center conversation
+column and repaints that column with Harness's own palette tokens, so text
+renders on the stock background while the sidebar and details columns keep
+their glass and ocean. It works on Harness Web, the community desktop wrapper
+and the official Desktop AppFrame.
+
 Use the explicit version above so a stale registry or mirror cannot silently
 select 1.2.3, which lacks the official Desktop glass fix. A mainland China
 mirror may take time to synchronize a new npm release; use the official npm
@@ -38,6 +45,8 @@ plugin manager—no download folder, terminal, or profile editing:
 3. Choose **Install**, review the package details, then **Enable now**.
 4. In Harness, use the lower-left **Skin settings** control. Set glass opacity
    to **40%** if you want the ocean to show clearly.
+5. To keep only the sidebars skinned, enable **Native conversation background**
+   in the same panel. The center column then renders in Harness's own colors.
 
 If Backspace 1.2.3 is already installed, uninstall that package in **Plugins**
 before adding 1.2.5. The official `0.2.0-rc.2` Add plugin dialog does not

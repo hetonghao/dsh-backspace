@@ -2,13 +2,19 @@
 (() => {
   'use strict';
   const KEYS = {
-    enabled: 'bsEnabled', sea: 'bsSea', time: 'bsTime', glass: 'bsGlass', autoCycle: 'bsAutoCycle',
+    enabled: 'bsEnabled',
+    sea: 'bsSea',
+    time: 'bsTime',
+    glass: 'bsGlass',
+    autoCycle: 'bsAutoCycle',
+    nativeChat: 'bsNativeChat',
   };
   const read = (key, fallback) => {
     try {
       const value = localStorage.getItem(KEYS[key]);
       if (value === null) return fallback;
       if (key === 'enabled' || key === 'autoCycle') return value !== 'false';
+      if (key === 'nativeChat') return value === 'true';
       return Number(value);
     } catch { return fallback; }
   };
@@ -21,6 +27,7 @@
         time: read('time', defaults.time),
         glass: read('glass', defaults.glass),
         autoCycle: read('autoCycle', defaults.autoCycle),
+        nativeChat: read('nativeChat', defaults.nativeChat),
       }),
       set: async (patch) => {
         try {

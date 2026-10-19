@@ -83,6 +83,34 @@ test('shared controller retains duplicate guards, a11y and resilient anchors', a
   ]) assert.ok(core.includes(required), required)
 })
 
+test('the native-conversation switch keeps the center column on Harness colors', async () => {
+  const core = await text('shared/skin-core.js')
+  // Persisted, exposed in the panel, and off by default.
+  assert.match(core, /nativeChat: false/)
+  assert.match(core, /nativeChat: raw\.nativeChat === true/)
+  assert.match(core, /id="\$\{IDS\.panel\}-native"/)
+  assert.match(core, /'native', 'nativeChat'/)
+  // Native color comes from Harness's own palette, never hardcoded hex values.
+  assert.match(core, /var\(--dsw-static-neutral-bluish-950/)
+  assert.match(core, /var\(--dsw-static-neutral-bluish-00/)
+  assert.match(core, /glassCss\(state\.glass, state\.nativeChat\)/)
+  // Opting in must drop the center column out of the transparency rules.
+  assert.match(core, /nativeChat \? \[\] : \[/)
+  assert.match(core, /officialColumns = nativeChat \? ':first-child, \[data-rightbar-col\]'/)
+  // Every supported shell keeps a documented conversation root.
+  for (const root of ['.wSkVaW_root', '[data-slot="conversation"]', '.dshDesktopConversationSurface', '[data-shell-overlay]']) {
+    assert.ok(core.includes(root), root)
+  }
+})
+
+test('every install adapter persists the native-conversation switch', async () => {
+  for (const target of ['shared/native-entry.js', 'shared/extension-entry.js', 'scripts/build-dsh-bundle.mjs']) {
+    assert.match(await text(target), /nativeChat/, target)
+  }
+  assert.match(await text('plugin/client.js'), /bsNativeChat/)
+  assert.match(await text('extension/content.js'), /skinNativeChat/)
+})
+
 test('the browser extension injects only into a verified Harness page', async () => {
   const entry = await text('shared/extension-entry.js')
   assert.match(entry, /document\.title !== 'DeepSeek Harness'/)

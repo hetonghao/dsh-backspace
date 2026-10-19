@@ -2,6 +2,21 @@
 
 All notable changes to Backspace are documented here.
 
+## Unreleased
+
+### Added
+
+- **Native conversation background** switch in the skin settings panel. When
+  enabled, the center conversation column stops applying the skin and repaints
+  itself from Harness's own `--dsw-static-neutral-bluish-*` palette, so the
+  transcript renders on the stock background while the sidebar and details
+  columns keep their glass and ocean. Off by default; stored as `bsNativeChat`
+  (localStorage) / `skinNativeChat` (extension sync storage). The switch is
+  wired through all install paths: DSH bundle, static installer and MV3
+  extension. The center column is also removed from the transparency rules for
+  the community desktop frame and the official 0.2.x AppFrame, so the two
+  layers no longer fight over equal specificity.
+
 ## 1.2.5 — 2026-10-10
 
 ### Fixed

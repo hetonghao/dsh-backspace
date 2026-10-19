@@ -24,6 +24,7 @@ window.__ModuleLoader__.load({ id: "dsh-backspace", factory: (require) => {
     time: 55,
     glass: 72,
     autoCycle: true,
+    nativeChat: false,
   });
 
   const COPY = Object.freeze({
@@ -35,9 +36,10 @@ window.__ModuleLoader__.load({ id: "dsh-backspace", factory: (require) => {
       glass: '玻璃不透明度',
       enable: '启用 Backspace 皮肤',
       autoCycle: '自动昼夜循环',
+      nativeChat: '对话面板保持原生背景',
       reset: '恢复默认',
-      resetNote: '恢复全部默认设置（波浪 45 / 日光 55 / 玻璃 72 / 自动循环开）',
-      note: '调节即时生效并自动保存；手动设定「日光」后会停止自动昼夜循环。',
+      resetNote: '恢复全部默认设置（波浪 45 / 日光 55 / 玻璃 72 / 自动循环开 / 原生对话面板关）',
+      note: '调节即时生效并自动保存；手动设定「日光」后会停止自动昼夜循环。开启「对话面板保持原生背景」后，中间对话区不再应用皮肤，只用原色显示，左右侧栏仍保留玻璃与海面。',
       times: ['黄昏', '金色时刻', '下午', '正午'],
     },
     en: {
@@ -73,6 +75,7 @@ window.__ModuleLoader__.load({ id: "dsh-backspace", factory: (require) => {
       time: clamp(raw.time, 0, 100, DEFAULTS.time),
       glass: clamp(raw.glass, 40, 90, DEFAULTS.glass),
       autoCycle: raw.autoCycle !== false,
+      nativeChat: raw.nativeChat === true,
     };
   }
 
@@ -93,9 +96,84 @@ window.__ModuleLoader__.load({ id: "dsh-backspace", factory: (require) => {
     return Number(value.toFixed(2));
   }
 
-  function glassCss(glass) {
+  // The native center column must look like unthemed Harness. Harness declares
+  // its base palette as --dsw-static-neutral-bluish-* on :root and maps the
+  // --dsw-alias-bg-* / --dsw-specific-* aliases onto it. We only override the
+  // aliases, so re-declaring them from the static palette restores native color
+  // inside a subtree without hardcoding hex values from one Harness build.
+  const NATIVE_TOKENS = Object.freeze({
+    light: {
+      '--dsw-alias-bg-base': 'var(--dsw-static-neutral-bluish-00, #fff)',
+      '--dsw-alias-bg-layer-1': 'var(--dsw-static-neutral-bluish-00, #fff)',
+      '--dsw-alias-bg-layer-2': 'var(--dsw-static-neutral-bluish-00, #fff)',
+      '--dsw-alias-bg-layer-3': 'var(--dsw-static-neutral-bluish-00, #fff)',
+      '--dsw-alias-bg-module-platform': 'var(--dsw-static-neutral-bluish-60, #f5f6f7)',
+      '--dsw-alias-bg-multi-select': 'var(--dsw-static-neutral-bluish-60, #f5f6f7)',
+      '--dsw-alias-bg-overlay': 'var(--dsw-static-neutral-bluish-150, #e9ecf2)',
+      '--dsw-specific-sidebar-fill': 'var(--dsw-static-neutral-bluish-50, #f9fafb)',
+      '--dsw-specific-selector': 'var(--dsw-static-neutral-bluish-60, #f5f6f7)',
+    },
+    dark: {
+      '--dsw-alias-bg-base': 'var(--dsw-static-neutral-bluish-950, #151517)',
+      '--dsw-alias-bg-layer-1': 'var(--dsw-static-neutral-bluish-875, #232324)',
+      '--dsw-alias-bg-layer-2': 'var(--dsw-static-neutral-bluish-850, #2c2c2e)',
+      '--dsw-alias-bg-layer-3': 'var(--dsw-static-neutral-bluish-800, #353638)',
+      '--dsw-alias-bg-module-platform': 'var(--dsw-static-neutral-bluish-800, #353638)',
+      '--dsw-alias-bg-multi-select': 'var(--dsw-static-neutral-bluish-800, #353638)',
+      '--dsw-alias-bg-overlay': 'var(--dsw-static-neutral-bluish-700, #61666b)',
+      '--dsw-specific-sidebar-fill': 'var(--dsw-static-neutral-bluish-900, #1b1b1c)',
+      '--dsw-specific-selector': 'var(--dsw-static-neutral-bluish-800, #353638)',
+    },
+  });
+
+  // Every supported shell exposes the conversation column with a different
+  // root: classic Harness Web (`.wSkVaW_root`), the slot wrapper, the community
+  // desktop frame and the official 0.2.x AppFrame, whose only stable marker is
+  // the shell overlay sibling. Redeclaring Harness's own palette tokens inside
+  // that subtree restores native color for every nested surface that paints
+  // `var(--dsw-alias-bg-*)`, independently of the glass layer above it.
+  const NATIVE_CHAT_ROOTS = Object.freeze([
+    '.wSkVaW_root',
+    '[data-slot="conversation"]',
+    '.dshDesktopConversationSurface',
+    'div:has(> [data-shell-overlay]) > :nth-child(2):not([data-shell-overlay])',
+  ]);
+
+  function nativeChatCss() {
+    const declarations = (tokens) => Object.entries(tokens)
+      .map(([name, value]) => `  ${name}: ${value} !important;`)
+      .join('\n');
+    const rule = (root, tokens, base) => `${root} {\n${declarations(tokens)}\n  background: ${base} !important;\n}`;
+    return `
+/* Native conversation: only the sidebar and details columns keep glass. The
+   center column repaints Harness's own palette, so the ocean never shows
+   through the transcript. */
+${NATIVE_CHAT_ROOTS.map((root) => rule(root, NATIVE_TOKENS.light, 'var(--dsw-static-neutral-bluish-00, #fff)')).join('\n')}
+${NATIVE_CHAT_ROOTS.map((root) => rule(`body[data-ds-dark-theme] ${root}`, NATIVE_TOKENS.dark, 'var(--dsw-static-neutral-bluish-950, #151517)')).join('\n')}`;
+  }
+
+  function glassCss(glass, nativeChat) {
     const light = glass / 100;
     const dark = Math.max(0.40, light - 0.12);
+    // A native conversation column is painted opaque by nativeChatCss, so it
+    // must be dropped from every transparency rule below instead of fought with
+    // equal-specificity overrides.
+    const communitySurfaces = [
+      '.dshDesktopSidebarSurface',
+      ...(nativeChat ? [] : [
+        '.dshDesktopConversationSurface',
+        '.dshDesktopConversationSurface > *',
+        '.dshDesktopConversationSurface [data-phase="hero"]',
+        '.dshDesktopConversationSurface [data-phase="active"]',
+        '.dshDesktopConversationSurface [data-phase="settling"]',
+      ]),
+      '.dshDesktopDetailsSurface',
+      '.dshDesktopMacCaptionRow',
+      '.dshDesktopWindowsCaptionRow',
+      '.dshDesktopDetailsSurface > *',
+    ];
+    const officialColumns = nativeChat ? ':first-child, [data-rightbar-col]' : ':first-child, :nth-child(2), [data-rightbar-col]';
+    const legacyRoots = nativeChat ? '.pI_x6G_sidebarCol,\n.hHd-Xa_root' : '.wSkVaW_root,\n.pI_x6G_sidebarCol,\n.hHd-Xa_root';
     return `
 /* Backspace: one translucent shell; nested fills must not compound. */
 body {
@@ -132,16 +210,7 @@ body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) 
   --dsw-specific-sidebar-fill: transparent !important;
 }
 body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) :is(
-  .dshDesktopSidebarSurface,
-  .dshDesktopConversationSurface,
-  .dshDesktopDetailsSurface,
-  .dshDesktopMacCaptionRow,
-  .dshDesktopWindowsCaptionRow,
-  .dshDesktopConversationSurface > *,
-  .dshDesktopConversationSurface [data-phase="hero"],
-  .dshDesktopConversationSurface [data-phase="active"],
-  .dshDesktopConversationSurface [data-phase="settling"],
-  .dshDesktopDetailsSurface > *
+  ${communitySurfaces.join(',\n  ')}
 ) {
   background: transparent !important;
 }
@@ -153,7 +222,7 @@ body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) 
 html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) {
   background: var(--dsw-alias-bg-base) !important;
 }
-html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :is(:first-child, :nth-child(2), [data-rightbar-col]),
+html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :is(${officialColumns}),
 html:is([data-platform="darwin"], [data-windows-titlebar]) body #root div:has(> [data-shell-overlay]) > :nth-child(2) [data-phase],
 html:is([data-platform="darwin"], [data-windows-titlebar]) body #root [data-rightbar-col] [data-dockkit-host="dock"] > [data-dockkit-content] {
   background: transparent !important;
@@ -170,11 +239,9 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
   background: rgba(24, 28, 35, .97) !important;
 }
 /* Legacy Harness builds: these CSS-module hashes are best-effort fallbacks. */
-.wSkVaW_root,
-.pI_x6G_sidebarCol,
-.hHd-Xa_root {
+${legacyRoots} {
   background: transparent !important;
-}`;
+}${nativeChat ? nativeChatCss() : ''}`;
   }
 
   function uiCss() {
@@ -252,7 +319,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
 
     const updateGlass = () => {
       const style = document.getElementById(IDS.glass);
-      if (style) style.textContent = glassCss(state.glass);
+      if (style) style.textContent = glassCss(state.glass, state.nativeChat);
     };
 
     const postToOcean = () => {
@@ -331,7 +398,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
 
       const style = document.createElement('style');
       style.id = IDS.glass;
-      style.textContent = glassCss(state.glass);
+      style.textContent = glassCss(state.glass, state.nativeChat);
       (document.head || document.documentElement).appendChild(style);
       ownsSurface = true;
       return true;
@@ -365,6 +432,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
         <div class="bs-row"><div class="bs-head"><label for="${IDS.panel}-glass-range">${copy.glass}</label><output class="bs-value" id="${IDS.panel}-glass" for="${IDS.panel}-glass-range"></output></div><input type="range" id="${IDS.panel}-glass-range" min="40" max="90" step="1" /></div>
         <div class="bs-row bs-switch"><label for="${IDS.panel}-enabled">${copy.enable}</label><input type="checkbox" id="${IDS.panel}-enabled" /></div>
         <div class="bs-row bs-switch"><label for="${IDS.panel}-cycle">${copy.autoCycle}</label><input type="checkbox" id="${IDS.panel}-cycle" /></div>
+        <div class="bs-row bs-switch"><label for="${IDS.panel}-native">${copy.nativeChat}</label><input type="checkbox" id="${IDS.panel}-native" /></div>
         <div class="bs-row"><button type="button" class="bs-reset">${copy.reset}</button></div>
         <p class="bs-note">${copy.resetNote}<br>${copy.note}</p>`;
 
@@ -379,6 +447,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       const glassOut = panel.querySelector(`#${IDS.panel}-glass`);
       const enabledBox = panel.querySelector(`#${IDS.panel}-enabled`);
       const cycleBox = panel.querySelector(`#${IDS.panel}-cycle`);
+      const nativeBox = panel.querySelector(`#${IDS.panel}-native`);
       const resetBtn = panel.querySelector('.bs-reset');
 
       const syncUi = () => {
@@ -390,6 +459,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
         glassOut.textContent = `${state.glass}%`;
         enabledBox.checked = state.enabled;
         cycleBox.checked = state.autoCycle;
+        nativeBox.checked = state.nativeChat;
       };
       syncUi();
 
@@ -401,7 +471,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
         button.setAttribute('aria-label', copy.button);
         panel.setAttribute('aria-label', copy.button);
         panel.querySelector('.bs-close').setAttribute('aria-label', copy.close);
-        for (const [suffix, key] of [['sea-range', 'sea'], ['time-range', 'time'], ['glass-range', 'glass'], ['enabled', 'enable'], ['cycle', 'autoCycle']]) {
+        for (const [suffix, key] of [['sea-range', 'sea'], ['time-range', 'time'], ['glass-range', 'glass'], ['enabled', 'enable'], ['cycle', 'autoCycle'], ['native', 'nativeChat']]) {
           panel.querySelector(`label[for="${IDS.panel}-${suffix}"]`).textContent = copy[key];
         }
         resetBtn.textContent = copy.reset;
@@ -445,6 +515,11 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
         state.autoCycle = cycleBox.checked;
         void save({ autoCycle: state.autoCycle });
         postToOcean();
+      });
+      on(nativeBox, 'change', () => {
+        state.nativeChat = nativeBox.checked;
+        void save({ nativeChat: state.nativeChat });
+        updateGlass();
       });
       on(resetBtn, 'click', () => {
         void save({ ...DEFAULTS }).then(() => {
@@ -564,6 +639,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
     time: 'bsTime',
     glass: 'bsGlass',
     autoCycle: 'bsAutoCycle',
+    nativeChat: 'bsNativeChat',
   });
 
   function readSetting(key, fallback) {
@@ -571,6 +647,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
       const value = localStorage.getItem(KEYS[key]);
       if (value === null) return fallback;
       if (key === 'enabled' || key === 'autoCycle') return value !== 'false';
+      if (key === 'nativeChat') return value === 'true';
       return Number(value);
     } catch {
       return fallback;
@@ -589,6 +666,7 @@ body[data-ds-dark-theme] [data-shortcut-modal="settings"] {
           time: readSetting('time', defaults.time),
           glass: readSetting('glass', defaults.glass),
           autoCycle: readSetting('autoCycle', defaults.autoCycle),
+          nativeChat: readSetting('nativeChat', defaults.nativeChat),
         }),
         set: async (patch) => {
           try {

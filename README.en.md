@@ -42,6 +42,7 @@ Windows / Mac · npm and mainland China mirror · [Other methods](#install)
 | 🌅 Daylight & sunset | Set your own light or enable the twelve-minute day/night cycle. |
 | 🫧 Transparent interface | Adjust glass opacity from **40% to 90%** in light or dark Harness layouts. |
 | 🎛️ Quick controls | Change sea state, sunlight and opacity from the lower-left skin settings panel. |
+| 🪟 Native conversation | With **Native conversation background** on, the center column drops the skin and renders in Harness's own colors; the sidebars keep their glass and ocean. |
 | 🏠 Your homepage stays yours | The extension does not replace new tabs or change your browser homepage. |
 | 🔒 Local assets | Ocean scripts, three.js and fonts ship with the skin; no skin analytics or runtime CDN requests. |
 | ⌨️ Thoughtful controls | Chinese/English UI, keyboard navigation, Escape to close, and reduced-motion support. |
