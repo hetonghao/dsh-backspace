@@ -113,6 +113,27 @@ test('the conversation panel has its own background opacity', async () => {
   }
 })
 
+test('floating Harness surfaces stay opaque over the workspace glass', async () => {
+  const core = await text('shared/skin-core.js')
+  // Harness paints hover preview cards (the edited-file diff popover) with
+  // --dsw-alias-bg-layer-1, and dialogs plus floating dock windows with
+  // --dsw-alias-bg-layer-2. Both are opaque in its own palette; inheriting the
+  // workspace glass alpha let the page behind show through their text.
+  assert.match(core, /const ELEVATED_ALPHA = 0\.97/)
+  assert.ok(core.includes('--dsw-alias-bg-layer-1: rgba(255, 255, 255, ${alpha(ELEVATED_ALPHA)}) !important;'))
+  assert.ok(core.includes('--dsw-alias-bg-layer-2: rgba(255, 255, 255, ${alpha(ELEVATED_ALPHA)}) !important;'))
+  assert.ok(core.includes('--dsw-alias-bg-layer-1: rgba(12, 16, 22, ${alpha(ELEVATED_ALPHA)}) !important;'))
+  assert.ok(core.includes('--dsw-alias-bg-layer-2: rgba(16, 20, 27, ${alpha(ELEVATED_ALPHA)}) !important;'))
+  // The workspace surface keeps the user's glass setting, so the ocean still
+  // shows through the shell itself.
+  assert.ok(core.includes('--dsw-alias-bg-base: rgba(255, 255, 255, ${alpha(light)}) !important;'))
+  assert.ok(core.includes('--dsw-alias-bg-base: rgba(9, 12, 16, ${alpha(dark)}) !important;'))
+  // Every generated install path carries the same rule.
+  for (const target of ['plugin/client.js', 'extension/content.js', 'native-dist/loader.js']) {
+    assert.match(await text(target), /const ELEVATED_ALPHA = 0\.97/, target)
+  }
+})
+
 test('every install adapter persists the independent conversation background', async () => {
   for (const target of ['shared/native-entry.js', 'shared/extension-entry.js', 'scripts/build-dsh-bundle.mjs']) {
     const source = await text(target)

@@ -20,6 +20,14 @@ All notable changes to Backspace are documented here.
 
 ### Fixed
 
+- Floating Harness surfaces no longer inherit the workspace glass opacity.
+  Harness paints its hover preview cards — including the edited-file diff
+  popover — with `--dsw-alias-bg-layer-1`, and dialogs and floating dock
+  windows with `--dsw-alias-bg-layer-2`. Both are opaque in Harness's own
+  palette, but the skin had overridden them with the glass alpha, so page
+  content showed through the preview card's diff text. They now keep a
+  near-opaque `ELEVATED_ALPHA` (0.97, the same value the settings dialog
+  already used) while `--dsw-alias-bg-base` still follows the glass setting.
 - The community desktop details column no longer composites two nested
   translucent fills when the independent conversation background is on.
 

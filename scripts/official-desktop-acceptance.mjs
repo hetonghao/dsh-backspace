@@ -54,17 +54,42 @@ try {
           }
           return result
         }
+        // Floating Harness UI reads these two tokens: layer-1 backs the
+        // hover preview card (edited-file diff popover) and layer-2 backs
+        // dialogs and floating dock windows. Probe the tokens directly so the
+        // assertion cannot drift with whichever element happens to use them.
+        const tokenAlpha = variable => {
+          const probe = document.createElement('div')
+          probe.style.cssText = 'position:fixed;left:-9999px;top:0;width:8px;height:8px'
+          probe.style.backgroundColor = `var(${variable})`
+          document.body.append(probe)
+          const values = getComputedStyle(probe).backgroundColor.match(/[\d.]+/g).map(Number)
+          probe.remove()
+          return values.length === 4 ? values[3] : 1
+        }
         return {
           columns: ['.sidebar', '.conversation', '[data-dockkit-content]'].map(effective),
           composer: alpha('.composer'),
           settings: alpha('[data-shortcut-modal="settings"]'),
+          layerOne: tokenAlpha('--dsw-alias-bg-layer-1'),
+          layerTwo: tokenAlpha('--dsw-alias-bg-layer-2'),
+          base: tokenAlpha('--dsw-alias-bg-base'),
         }
       })
       const expected = .4
       for (const value of paints.columns) assert.ok(Math.abs(value - expected) < .005,
         `${platform}/${dark ? 'dark' : 'light'}: columns ${JSON.stringify(paints.columns)} expected ${expected}`)
-      assert.ok(paints.composer >= .4, 'composer retains its own surface')
+      assert.ok(paints.composer >= .96, `composer keeps its own readable surface, got ${paints.composer}`)
       assert.ok(paints.settings >= .96, 'settings stays legible over the ocean')
+      // A hover preview over the ocean must never show the page through its
+      // text, at any glass setting.
+      assert.ok(paints.layerOne >= .96,
+        `${platform}/${dark ? 'dark' : 'light'}: hover preview layer ${paints.layerOne} must stay opaque`)
+      assert.ok(paints.layerTwo >= .96,
+        `${platform}/${dark ? 'dark' : 'light'}: dialog/floating layer ${paints.layerTwo} must stay opaque`)
+      // ...while the workspace surface still carries the glass setting.
+      assert.ok(Math.abs(paints.base - expected) < .005,
+        `${platform}/${dark ? 'dark' : 'light'}: workspace base ${paints.base} should follow the glass setting`)
     }
   }
   await page.evaluate(() => window.stopBackspace())

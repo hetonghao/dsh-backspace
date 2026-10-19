@@ -32,6 +32,14 @@
   const CHAT_OPACITY_MIN = 40;
   const CHAT_OPACITY_MAX = 100;
 
+  // Layers that float above the workspace must stay readable, so the glass
+  // alpha never applies to them. Harness paints hover previews with
+  // --dsw-alias-bg-layer-1 and dialogs / floating dock windows with layer-2;
+  // both are opaque in its own palette. Overriding them with the workspace
+  // alpha let the page behind bleed through the preview card's diff text.
+  // Keep this the same value the settings dialog already uses.
+  const ELEVATED_ALPHA = 0.97;
+
   const COPY = Object.freeze({
     zh: {
       button: 'Backspace 皮肤设置',
@@ -272,12 +280,16 @@ body:is([data-dsh-desktop-mode="advanced"], [data-dsh-desktop-mode="extended"]) 
   background: transparent !important;
 }` : '';
     return `
-/* Backspace: one translucent shell; nested fills must not compound. */
+/* Backspace: one translucent shell; nested fills must not compound.
+   Only the workspace surface (bg-base) and inline fills carry the glass alpha.
+   layer-1 / layer-2 back floating Harness UI — hover preview cards, dialogs and
+   floating dock windows — which stay near-opaque so their text never shows the
+   page behind it through. */
 body {
   background: transparent !important;
   --dsw-alias-bg-base: rgba(255, 255, 255, ${alpha(light)}) !important;
-  --dsw-alias-bg-layer-1: rgba(255, 255, 255, ${alpha(light)}) !important;
-  --dsw-alias-bg-layer-2: rgba(255, 255, 255, ${alpha(light)}) !important;
+  --dsw-alias-bg-layer-1: rgba(255, 255, 255, ${alpha(ELEVATED_ALPHA)}) !important;
+  --dsw-alias-bg-layer-2: rgba(255, 255, 255, ${alpha(ELEVATED_ALPHA)}) !important;
   --dsw-alias-bg-layer-3: rgba(255, 255, 255, ${alpha(light)}) !important;
   --dsw-alias-bg-module-platform: rgba(245, 246, 247, ${alpha(light + 0.02)}) !important;
   --dsw-alias-bg-multi-select: rgba(245, 246, 247, ${alpha(light + 0.02)}) !important;
@@ -287,8 +299,8 @@ body {
 }
 body[data-ds-dark-theme] {
   --dsw-alias-bg-base: rgba(9, 12, 16, ${alpha(dark)}) !important;
-  --dsw-alias-bg-layer-1: rgba(12, 16, 22, ${alpha(dark)}) !important;
-  --dsw-alias-bg-layer-2: rgba(16, 20, 27, ${alpha(dark)}) !important;
+  --dsw-alias-bg-layer-1: rgba(12, 16, 22, ${alpha(ELEVATED_ALPHA)}) !important;
+  --dsw-alias-bg-layer-2: rgba(16, 20, 27, ${alpha(ELEVATED_ALPHA)}) !important;
   --dsw-alias-bg-layer-3: rgba(20, 25, 33, ${alpha(dark)}) !important;
   --dsw-alias-bg-module-platform: rgba(13, 17, 23, ${alpha(dark + 0.02)}) !important;
   --dsw-alias-bg-multi-select: rgba(13, 17, 23, ${alpha(dark + 0.02)}) !important;
