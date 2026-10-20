@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>速查 · 脱离上游清单</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<p class="kicker">速查手册</p>
+<h1>脱离上游清单</h1>
+<p class="subtitle">
+配套课程：<a href="../lessons/0003-detach-from-upstream.html">第 3 课</a>。
+本页只留可执行项，不重复论证过程。
+</p>
+
+<h2>红线：不能动</h2>
+
+<table>
+<thead><tr><th>项</th><th>原因</th><th>正确做法</th></tr></thead>
+<tbody>
+<tr>
+<td><code>LICENSE</code> 里的上游版权行</td>
+<td>MIT 强制要求保留版权声明与许可全文</td>
+<td>可以<strong>增加</strong>自己的行，不能<strong>替换</strong></td>
+</tr>
+<tr>
+<td><code>THIRD_PARTY_NOTICES.md</code> 里 three.js / Geist 的许可</td>
+<td>同属第三方许可义务</td>
+<td>保留</td>
+</tr>
+<tr>
+<td><code>shared/vendor/licenses/*.txt</code></td>
+<td>许可文件必须随代码分发</td>
+<td>保留</td>
+</tr>
+</tbody>
+</table>
+
+<div class="card">
+<h3>当前 LICENSE 写法（已合规）</h3>
+<pre><code>Copyright (c) 2026 Open Sea Skin contributors (upstream: d-dev0101/open-sea-skin)
+Copyright (c) 2026 Backspace contributors</code></pre>
+<p style="margin-bottom:0">
+两行并列。想突出自己可以调行序或措辞，<strong>但第一行不能删</strong>。
+</p>
+</div>
+
+<h2>MIT 到底要求什么</h2>
+
+<table>
+<thead><tr><th>可以</th><th>必须</th><th>不存在的要求</th></tr></thead>
+<tbody>
+<tr>
+<td>改名、换标识</td>
+<td>附带含版权行的许可全文</td>
+<td>必须写致谢</td>
+</tr>
+<tr>
+<td>闭源分发自己的新增部分</td>
+<td>—</td>
+<td>必须链接上游仓库</td>
+</tr>
+<tr>
+<td>商业化</td>
+<td>—</td>
+<td>必须说明"基于某项目"</td>
+</tr>
+<tr>
+<td>不再自称 fork</td>
+<td>—</td>
+<td>必须通知原作者</td>
+</tr>
+</tbody>
+</table>
+
+<h2>执行清单（按建议顺序）</h2>
+
+<table>
+<thead><tr><th>#</th><th>操作</th><th>可逆</th><th>优先级</th></tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>打通 npm 发布</strong><br><code>npm login</code> → <code>npm publish</code></td>
+<td>否</td>
+<td><strong>最高</strong>（当前文档指引安装一个不存在的包）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>统一两套配置来源</td>
+<td>是</td>
+<td>高（消除字段漂移）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>用 <code>settings.section</code> 写正规设置面板</td>
+<td>是</td>
+<td>高（摆脱 DOM 自绘）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>git remote remove upstream</code></td>
+<td>是</td>
+<td>中（心理洁癖，实际影响小）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>逐步弃用 <code>harness-plugin/</code></td>
+<td>是</td>
+<td>中（减少一个维护面）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>清理 <code>site/</code> 的旧名称</td>
+<td>否（测试锁哈希）</td>
+<td>低（不在发布包内）</td>
+</tr>
+<tr>
+<td>7</td>
+<td>解除 GitHub fork 关系</td>
+<td><strong>否</strong></td>
+<td>低（需平台侧操作）</td>
+</tr>
+<tr>
+<td>8</td>
+<td>重写渲染器降低上游代码占比</td>
+<td>否</td>
+<td>低（工作量最大，且需先有其他成绩）</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note">
+<span class="label">为什么 1 号最紧急</span>
+<code>docs/dsh-plugin.md</code> 和 <code>README.md</code> 都写着让用户执行
+<code>dsh plugin add dsh-backspace@1.2.5</code>，
+但实测 <code>npm view dsh-backspace</code> 返回 <strong>404</strong>——
+这个包从未发布。按文档操作的用户<strong>必然失败</strong>。
+</div>
+
+<h2>fork 关系的真相</h2>
+
+<table>
+<thead><tr><th>概念</th><th>是什么</th><th>怎么改</th></tr></thead>
+<tbody>
+<tr>
+<td><code>upstream</code> remote</td>
+<td>本地 git 配置，指向上游仓库</td>
+<td><code>git remote remove upstream</code>，随时可加回</td>
+</tr>
+<tr>
+<td>GitHub fork 标记<br>（<code>"fork": true</code>）</td>
+<td>GitHub 平台元数据，关联 fork 网络</td>
+<td><strong>删 remote 无效</strong>；需 GitHub Support 或迁移到新仓库</td>
+</tr>
+<tr>
+<td>git 历史里的上游提交</td>
+<td>你仓库的提交历史</td>
+<td>删不掉（除非重写历史，代价极大且破坏可追溯性）</td>
+</tr>
+</tbody>
+</table>
+
+<h2>代码归属现实（2026-10-19 实测）</h2>
+
+<table>
+<thead><tr><th>文件</th><th>总行</th><th>你的行</th><th>你的占比</th></tr></thead>
+<tbody>
+<tr><td><code>shared/skin-core.js</code></td><td>749</td><td>263</td><td>35%</td></tr>
+<tr><td><code>shared/ocean.js</code></td><td>637</td><td>6</td><td>约 1%</td></tr>
+<tr><td><code>shared/styles.css</code></td><td>367</td><td>1</td><td>约 0%</td></tr>
+<tr><td><code>plugin/index.js</code></td><td>79</td><td>5</td><td>约 6%</td></tr>
+<tr><td><strong>全仓库</strong></td><td>18759</td><td>1928</td><td><strong>约 10%</strong></td></tr>
+</tbody>
+</table>
+
+<div class="warn">
+<span class="label">解读</span>
+在自有代码占约 10% 时，「不署名」在技术上做得到，但作品实质仍是上游代码。
+更现实的路径是：<strong>保留合规署名，把精力放在让自有代码成为主体</strong>
+（新背景系统、新配置架构、新 slot 集成都属于这类）。
+</div>
+
+<h2>上游同步状态</h2>
+
+<table>
+<thead><tr><th>项</th><th>值</th></tr></thead>
+<tbody>
+<tr><td>上游 <code>main</code></td><td><code>634583f</code></td></tr>
+<tr><td>上游领先本仓库</td><td><strong>0 个提交</strong></td></tr>
+<tr><td>本仓库领先上游</td><td>4 个提交</td></tr>
+<tr><td>结论</td><td>已完全同步，脱钩不会丢修复（<em>此刻</em>成立，非永久）</td></tr>
+</tbody>
+</table>
+
+<p class="ask-teacher">
+第 7、8 项涉及平台操作和大量重构，建议先做 1–3 项拿到实际收益，再决定要不要走到那一步。
+想让我把某项拆成具体步骤，直接说。
+</p>
+
+</body>
+</html>

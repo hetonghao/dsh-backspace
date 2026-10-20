@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>速查 · 玻璃 token 清单</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<p class="kicker">速查手册</p>
+<h1>玻璃 token 清单</h1>
+<p class="subtitle">
+配套课程：<a href="../lessons/0006-glass-layer-regressions.html">第 6 课</a>。
+本页回答两个问题：<strong>每个 token 该多透明</strong>，以及
+<strong>Harness 升级后怎么重新确认</strong>。
+</p>
+
+<div class="warn">
+<span class="label">本页数字会过期</span>
+下表基于本机安装的 Harness <code>0.2.1</code>。
+消费方统计随版本变化，<strong>页尾的重新生成方法才是长期有效的部分</strong>。
+</div>
+
+<h2>结论：按语义分层</h2>
+
+<table>
+<thead><tr><th>token</th><th>语义</th><th>透明度</th><th>原因</th></tr></thead>
+<tbody>
+<tr>
+<td><code>--dsw-alias-bg-base</code></td>
+<td>工作区表面</td>
+<td><strong>跟随玻璃设置</strong></td>
+<td>这就是"让海面透出来"的那一层</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-layer-1</code></td>
+<td>浮在工作区上的 UI</td>
+<td><strong>0.97 固定</strong></td>
+<td>悬停预览卡、输入框外壳、选中指示器</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-layer-2</code></td>
+<td>更上层浮层</td>
+<td><strong>0.97 固定</strong></td>
+<td>弹窗、浮动窗、胶囊按钮</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-layer-3</code></td>
+<td>小控件</td>
+<td>跟随玻璃</td>
+<td>标签、按钮、输入框，面积小、影响可接受</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-module-platform</code></td>
+<td>模块容器</td>
+<td>跟随玻璃 + 0.02</td>
+<td>标签页、中性标签</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-multi-select</code></td>
+<td>多选态</td>
+<td>跟随玻璃 + 0.02</td>
+<td>面积小</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-overlay</code></td>
+<td>（当前零消费）</td>
+<td>跟随玻璃 + 0.10</td>
+<td>覆盖无害；但当前版本无元素使用</td>
+</tr>
+<tr>
+<td><code>--dsw-specific-sidebar-fill</code></td>
+<td>侧栏填充</td>
+<td>玻璃 − 0.04</td>
+<td>侧栏比对话区略深一点</td>
+</tr>
+<tr>
+<td><code>--dsw-specific-selector</code></td>
+<td>选择器</td>
+<td>跟随玻璃 + 0.02</td>
+<td>小控件</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note">
+<span class="label">0.97 这个数从哪来</span>
+不是拍脑袋：它是<strong>设置弹窗早在 1.2.5 就在用的值</strong>。
+统一到同一个数字，才能让"什么算浮层"只有一个答案。
+低于 0.96 时，弹窗里的长文本叠在海面上会明显发花。
+</div>
+
+<h2>实测：消费方统计（Harness 0.2.1）</h2>
+
+<table>
+<thead><tr><th>token</th><th>规则数</th><th>实际消费的元素</th></tr></thead>
+<tbody>
+<tr><td><code>bg-base</code></td><td>7</td><td>工作区、编辑器、背板</td></tr>
+<tr><td><code>bg-layer-1</code></td><td>4</td><td>悬停预览卡、输入框外壳、选中指示器</td></tr>
+<tr><td><code>bg-layer-2</code></td><td>3</td><td>弹窗、浮动窗、胶囊按钮</td></tr>
+<tr><td><code>bg-layer-3</code></td><td>4</td><td>标签、按钮、输入框</td></tr>
+<tr><td><code>bg-module-platform</code></td><td>2</td><td>标签页、中性标签</td></tr>
+<tr><td><code>bg-overlay</code></td><td><strong>0</strong></td><td><strong>当前无人使用</strong></td></tr>
+<tr><td><code>bg-multi-select</code></td><td>0</td><td>当前无人使用</td></tr>
+<tr><td><code>specific-menu</code></td><td>1</td><td>媒体预览滚区</td></tr>
+</tbody>
+</table>
+
+<h2>历史：四次同类事故</h2>
+
+<table>
+<thead><tr><th>版本</th><th>症状</th><th>真实原因</th></tr></thead>
+<tbody>
+<tr>
+<td>1.2.1</td><td>设置弹窗被对话输入框盖住，点不到</td>
+<td>给列加 <code>z-index</code> 造出了层叠上下文，把弹窗困在里面</td>
+</tr>
+<tr>
+<td>1.2.3</td><td>侧栏比对话区浅，三栏深浅不一</td>
+<td>侧栏叠了半透明填充 + 透明覆盖规则互相打架</td>
+</tr>
+<tr>
+<td>1.2.5</td><td>对话区比两侧暗，中间发黑</td>
+<td>嵌套表面各自半透明，<strong>alpha 复合</strong>了两次</td>
+</tr>
+<tr>
+<td>本次</td><td>悬停预览卡（diff 弹层）文字透出背景</td>
+<td>把浮层 token 也和玻璃一起稀释了</td>
+</tr>
+</tbody>
+</table>
+
+<div class="stop">
+<span class="label">共同机制</span>
+<strong>插件假设了某个 token / 元素的用途，Harness 拿它去画了别的东西。</strong>
+四次症状不同，机制相同。修法必须从"补元素"升级为"按 token 语义分层"。
+</div>
+
+<h2>alpha 会复合：唯一必须记住的硬约束</h2>
+
+<p>
+两层半透明叠在一起，最终不透明度是 <code>1 − (1−a)(1−b)</code>，<strong>不是相加</strong>。
+</p>
+
+<pre><code>0.6 上再叠 0.6 → 1 − 0.4×0.4 = 0.84    （比任何单层都深）
+0.4 上再叠 0.4 → 1 − 0.6×0.6 = 0.64</code></pre>
+
+<p>
+所以：<strong>想得到某个最终透明度，就必须控制"有几层在叠"</strong>。
+1.2.5 的"对话区偏暗"、独立对话背景不得不把框架填充交还各列，都是这条约束的产物。
+</p>
+
+<h2>怎么重新生成这份统计</h2>
+
+<p>Harness 升级后，按这个流程重新确认（macOS 官方客户端）：</p>
+
+<pre><code># 1. 解包前端（一次性）
+npx --yes @electron/asar extract \
+  "/Applications/DeepSeek Harness.app/Contents/Resources/app.asar" \
+  /tmp/asarprobe
+
+CSS=/tmp/asarprobe/dsh/node_modules/@deepseek-ai/dsh-web-frontend/dist/assets
+
+# 2. 统计每个 token 被哪些选择器消费
+cd "$CSS" &amp;&amp; node -e '
+const fs = require("fs");
+const css = fs.readdirSync(".").filter(f =&gt; f.endsWith(".css"))
+  .map(f =&gt; fs.readFileSync(f, "utf8")).join("");
+const toks = ["bg-base","bg-layer-1","bg-layer-2","bg-layer-3","bg-overlay"];
+for (const t of toks) {
+  const hits = [];
+  for (const r of css.split("}")) {
+    if (r.includes("var(--dsw-alias-" + t + ")")) {
+      hits.push(r.slice(r.lastIndexOf("}") + 1).split("{")[0].trim());
+    }
+  }
+  console.log(t, hits.length, hits.slice(0, 4).join(" | "));
+}'</code></pre>
+
+<div class="note">
+<span class="label">判定原则</span>
+<strong>消费方里有"浮在工作区之上"的元素</strong>（弹窗、预览卡、浮动窗）→ 必须不透明。<br>
+<strong>只有"工作区本身"</strong> → 跟随玻璃。<br>
+拿不准时，<strong>选不透明</strong>：读不清文字比不够通透严重得多。
+</div>
+
+<h2>改动这一层时的检查清单</h2>
+
+<ul>
+<li>改的是 token 还是具体元素？<strong>优先改 token</strong>。</li>
+<li>新规则会不会导致<strong>多层叠加</strong>？数一下从根到目标的半透明层数。</li>
+<li>新的 <code>!important</code> 会不会盖掉设置弹窗的独立规则？</li>
+<li>深色模式有没有对应的值？（两套都要改，别只改浅色）</li>
+<li>改完跑 <code>npm run test:desktop</code>，它会断言各列最终透明度和浮层 token。</li>
+</ul>
+
+<p class="ask-teacher">
+想让我针对你当前的 Harness 版本重跑一遍统计、或者把某个 token 的消费方完整列出来，直接说。
+如果你正准备加"背景独立透明度"这类功能，先找我确认层数——那是复合问题最容易翻车的地方。
+</p>
+
+</body>
+</html>

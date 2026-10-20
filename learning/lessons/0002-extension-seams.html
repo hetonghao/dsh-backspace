@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 课 · 扩展接缝地图</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<p class="kicker">Backspace 课程 · 第 2 课</p>
+<h1>扩展接缝地图</h1>
+<p class="subtitle">
+你最关心的问题：想加新背景、加配置项，是只能写代码，还是可以做成壁纸/视频？
+答案取决于<strong>你扩展的是哪一层</strong>——这个仓库其实有四层接缝，难度和成本差一个数量级。
+</p>
+
+<h2><span class="num">1</span>四层接缝，按成本从低到高</h2>
+
+<p>
+"能不能不写代码"这个问法太粗。真正有用的问题是：
+<strong>这个需求能不能被现有接口表达成一个"数据"</strong>。
+四个层次分别对应四种答案。
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 470" role="img" aria-labelledby="fig1-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig1-title">四层扩展接缝：从零代码的内容替换，到只改渲染器，到跨三条路径的契约变更，最后是触及 Harness 本体</title>
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <!-- 轴 -->
+  <path d="M 40 42 L 740 42" stroke="#dfe3e8" stroke-width="1"/>
+  <text x="40" y="30" font-size="10" font-weight="700" fill="#0f6d68" letter-spacing=".6">成本低 · 改动小</text>
+  <text x="740" y="30" font-size="10" font-weight="700" fill="#8c2f2f" letter-spacing=".6" text-anchor="end">成本高 · 风险大</text>
+
+  <!-- L1 -->
+  <rect x="40" y="58" width="164" height="372" rx="6" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.5"/>
+  <text x="52" y="80" font-size="10" font-weight="700" fill="#0f6d68" letter-spacing="1">接缝 ①</text>
+  <text x="52" y="102" font-size="12" font-weight="650" fill="#16181d">内容替换</text>
+  <text x="52" y="120" font-size="9.5" fill="#4a4f57">零代码</text>
+  <path d="M 52 132 L 192 132" stroke="#9fc7c3" stroke-width="1"/>
+
+  <text x="52" y="152" font-size="9.5" fill="#16181d">换调色板</text>
+  <text x="52" y="172" font-size="9.5" fill="#16181d">换波参数</text>
+  <text x="52" y="192" font-size="9.5" fill="#16181d">换文案 / 语言</text>
+
+  <text x="52" y="224" font-size="9" fill="#0f6d68">现有接口：</text>
+  <text x="52" y="240" font-size="8.5" fill="#4a4f57">COPY / DEFAULTS</text>
+  <text x="52" y="256" font-size="8.5" fill="#4a4f57">GERSTNER_DEFS</text>
+  <text x="52" y="272" font-size="8.5" fill="#4a4f57">DAY / DUSK 色表</text>
+
+  <rect x="52" y="292" width="140" height="46" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="122" y="310" font-size="9" font-weight="650" fill="#16181d" text-anchor="middle">改动 1 个文件</text>
+  <text x="122" y="326" font-size="9" fill="#4a4f57" text-anchor="middle">不碰任何接缝</text>
+
+  <text x="52" y="366" font-size="8.5" fill="#4a4f57">适合：</text>
+  <text x="52" y="382" font-size="8.5" fill="#4a4f57">做主题包</text>
+  <text x="52" y="398" font-size="8.5" fill="#4a4f57">季节/节日换色</text>
+  <text x="52" y="414" font-size="8.5" fill="#4a4f57">多语言</text>
+
+  <!-- L2 -->
+  <rect x="222" y="58" width="164" height="372" rx="6" fill="#f2f8f8" stroke="#0f6d68" stroke-dasharray="5 3"/>
+  <text x="234" y="80" font-size="10" font-weight="700" fill="#0f6d68" letter-spacing="1">接缝 ②</text>
+  <text x="234" y="102" font-size="12" font-weight="650" fill="#16181d">换渲染内容</text>
+  <text x="234" y="120" font-size="9.5" fill="#4a4f57">只改渲染器</text>
+  <path d="M 234 132 L 374 132" stroke="#9fc7c3" stroke-width="1"/>
+
+  <text x="234" y="152" font-size="9.5" fill="#16181d">静态壁纸</text>
+  <text x="234" y="172" font-size="9.5" fill="#16181d">视频背景</text>
+  <text x="234" y="192" font-size="9.5" fill="#16181d">渐变 / 粒子</text>
+
+  <text x="234" y="224" font-size="9" fill="#0f6d68">现有接口：</text>
+  <text x="234" y="240" font-size="8.5" fill="#4a4f57">skin.html 单入口</text>
+  <text x="234" y="256" font-size="8.5" fill="#4a4f57">assetUrl(path) 可传参</text>
+  <text x="234" y="272" font-size="8.5" fill="#4a4f57">postMessage bs-set</text>
+
+  <rect x="234" y="292" width="140" height="46" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="304" y="310" font-size="9" font-weight="650" fill="#16181d" text-anchor="middle">新增 1 个页面</text>
+  <text x="304" y="326" font-size="9" fill="#4a4f57" text-anchor="middle">控制器小幅改动</text>
+
+  <text x="234" y="366" font-size="8.5" fill="#4a4f57">代价：</text>
+  <text x="234" y="382" font-size="8.5" fill="#8a4b00">若走视频，</text>
+  <text x="234" y="398" font-size="8.5" fill="#8a4b00">存储要换 IndexedDB</text>
+  <text x="234" y="414" font-size="8.5" fill="#4a4f57">（见第 4 课）</text>
+
+  <!-- L3 -->
+  <rect x="404" y="58" width="164" height="372" rx="6" fill="#fdf3e3" stroke="#8a4b00" stroke-width="1.4"/>
+  <text x="416" y="80" font-size="10" font-weight="700" fill="#8a4b00" letter-spacing="1">接缝 ③</text>
+  <text x="416" y="102" font-size="12" font-weight="650" fill="#16181d">新增配置项</text>
+  <text x="416" y="120" font-size="9.5" fill="#8a4b00">跨三条路径</text>
+  <path d="M 416 132 L 556 132" stroke="#e0c9a3" stroke-width="1"/>
+
+  <text x="416" y="152" font-size="9.5" fill="#16181d">新滑块</text>
+  <text x="416" y="172" font-size="9.5" fill="#16181d">新开关</text>
+  <text x="416" y="192" font-size="9.5" fill="#16181d">新持久化字段</text>
+
+  <text x="416" y="224" font-size="9" fill="#8a4b00">必须同步改：</text>
+  <text x="416" y="240" font-size="8.5" fill="#4a4f57">skin-core（2 处）</text>
+  <text x="416" y="256" font-size="8.5" fill="#4a4f57">2 个 entry 适配器</text>
+  <text x="416" y="272" font-size="8.5" fill="#4a4f57">bundle 脚本内联适配</text>
+
+  <rect x="416" y="292" width="140" height="46" rx="4" fill="#fff" stroke="#e0c9a3"/>
+  <text x="486" y="310" font-size="9" font-weight="650" fill="#16181d" text-anchor="middle">改 5–6 个文件</text>
+  <text x="486" y="326" font-size="9" fill="#8a4b00" text-anchor="middle">漏一处就静默失效</text>
+
+  <text x="416" y="366" font-size="8.5" fill="#4a4f57">典型症状：</text>
+  <text x="416" y="382" font-size="8.5" fill="#4a4f57">桌面版记得住，</text>
+  <text x="416" y="398" font-size="8.5" fill="#4a4f57">扩展重启后丢失</text>
+
+  <!-- L4 -->
+  <rect x="586" y="58" width="154" height="372" rx="6" fill="#fbeceb" stroke="#8c2f2f" stroke-width="1.4"/>
+  <text x="598" y="80" font-size="10" font-weight="700" fill="#8c2f2f" letter-spacing="1">接缝 ④</text>
+  <text x="598" y="102" font-size="12" font-weight="650" fill="#16181d">动 Harness</text>
+  <text x="598" y="120" font-size="9.5" fill="#8c2f2f">最高风险</text>
+  <path d="M 598 132 L 728 132" stroke="#e0b3b3" stroke-width="1"/>
+
+  <text x="598" y="152" font-size="9.5" fill="#16181d">新 slot</text>
+  <text x="598" y="172" font-size="9.5" fill="#16181d">新主题 token</text>
+  <text x="598" y="192" font-size="9.5" fill="#16181d">改宿主结构</text>
+
+  <text x="598" y="224" font-size="9" fill="#8c2f2f">前提：</text>
+  <text x="598" y="240" font-size="8.5" fill="#4a4f57">宿主必须已存在</text>
+  <text x="598" y="256" font-size="8.5" fill="#4a4f57">该 slot；否则</text>
+  <text x="598" y="272" font-size="8.5" fill="#4a4f57">只能改源码</text>
+
+  <rect x="598" y="292" width="130" height="46" rx="4" fill="#fff" stroke="#e0b3b3"/>
+  <text x="663" y="310" font-size="9" font-weight="650" fill="#16181d" text-anchor="middle">改 Harness</text>
+  <text x="663" y="326" font-size="9" fill="#8c2f2f" text-anchor="middle">升级即失效</text>
+
+  <text x="598" y="366" font-size="8.5" fill="#4a4f57">本仓库的</text>
+  <text x="598" y="382" font-size="8.5" fill="#4a4f57">harness-plugin/</text>
+  <text x="598" y="398" font-size="8.5" fill="#4a4f57">就在这一层</text>
+  <text x="598" y="414" font-size="8.5" fill="#8c2f2f">建议逐步退出</text>
+</svg>
+</div>
+<figcaption>
+  四层接缝。<strong>你的两个需求分别落在 ② 和 ③</strong>：
+  新背景属于"换渲染内容"，配置管理属于"新增配置项"。
+  两者都<strong>不需要</strong>动 Harness 本体——这一点很关键。
+</figcaption>
+</figure>
+
+<h2><span class="num">2</span>接缝 ②：新背景到底能不能"不写代码"</h2>
+
+<p>
+直接回答：<strong>不能完全不写代码，但可以把代码量压到很小，并且让用户零代码换素材。</strong>
+区别在于"写代码"是<strong>一次性</strong>的还是每次换素材都要写。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>方案</th><th>要写什么</th><th>用户可换素材</th><th>存储</th><th>可行性</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>静态图片壁纸</td>
+<td>一个 <code>&lt;img&gt;</code> 页面</td>
+<td>是（选本地图）</td>
+<td>IndexedDB Blob</td>
+<td><strong>已验证可行</strong></td>
+</tr>
+<tr>
+<td>视频背景</td>
+<td>一个 <code>&lt;video loop muted&gt;</code> 页面</td>
+<td>是（选本地视频）</td>
+<td>IndexedDB Blob</td>
+<td><strong>已验证可行</strong></td>
+</tr>
+<tr>
+<td>渐变 / 纯色</td>
+<td>几行 CSS</td>
+<td>是（调色）</td>
+<td>localStorage 就够</td>
+<td>最简单</td>
+</tr>
+<tr>
+<td>程序化（粒子/噪声）</td>
+<td>新的 TSL 节点图</td>
+<td>否（参数可调）</td>
+<td>localStorage</td>
+<td>需要着色器功底</td>
+</tr>
+<tr>
+<td>远程视频 / 直播流</td>
+<td>一个 <code>&lt;video src&gt;</code></td>
+<td>是（贴 URL）</td>
+<td>一个字符串</td>
+<td>可行，但破坏"零网络请求"承诺</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>为什么"壁纸/视频"这次真的可以，而以前的架构挡住它</h3>
+
+<p>
+现有适配器把设置存在 <code>localStorage</code> 里，而 localStorage 只能放字符串。
+我实测过：<strong>塞 6MB 进去会直接抛 <code>QuotaExceededError</code></strong>。
+一个视频动辄几十 MB，走老路必然失败。
+</p>
+
+<p>
+但另外两条实测结果给出了出路：
+</p>
+
+<div class="card">
+<p><strong>① 同源 iframe 能读到父页面的 <code>blob:</code> URL。</strong></p>
+<p>
+在父页面 <code>URL.createObjectURL(blob)</code>，把得到的 <code>blob:http://…</code>
+字符串作为查询参数传给 iframe（或 <code>postMessage</code> 过去），
+iframe 里 <code>fetch()</code> 它会返回 <code>200</code> 且内容一致，可以直接喂给
+<code>&lt;video src&gt;</code>。
+</p>
+<p>
+<strong>这意味着：素材不必编码进代码，也不必塞进 localStorage——它可以是用户运行时选的文件。</strong>
+</p>
+</div>
+
+<div class="card">
+<p><strong>② IndexedDB 能存 Blob，并能还原。</strong></p>
+<p>
+实测写入 3MB 的 <code>Blob</code>（<code>video/mp4</code>）后读回：仍是 <code>Blob</code>、
+<code>size</code> 与 <code>type</code> 都正确、<code>createObjectURL</code> 可用。
+<strong>这是壁纸/视频该用的持久化层。</strong>
+</p>
+</div>
+
+<div class="warn">
+<span class="label">别忘了降级</span>
+<code>localStorage</code> 在隐私模式或受限环境会直接抛异常（现有代码已经用
+<code>try/catch</code> 兜住）。IndexedDB 同理需要兜底：读失败就退回程序化海洋，
+绝不能让整个皮肤因为素材读不出而白屏。
+</div>
+
+<h3>最小可行改造：加一个背景类型开关</h3>
+
+<p>
+不需要推翻现有结构。最小改动是让 <code>skin.html</code> 支持按查询参数选背景类型，
+控制器只多传一个字段。伪代码：
+</p>
+
+<pre><code>// skin.html 仍是唯一入口，只是按 type 分派
+const type = new URLSearchParams(location.search).get('type') ?? 'ocean'
+if (type === 'ocean') import('./ocean.js?skin=1')
+if (type === 'image') import('./background-image.js')
+if (type === 'video') import('./background-video.js')
+
+// background-video.js —— 全部内容大约就这么点
+const src = new URLSearchParams(location.search).get('src')  // blob: 或 https:
+const video = document.createElement('video')
+video.src = src; video.muted = true; video.loop = true
+video.playsInline = true; video.autoplay = true
+video.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;object-fit:cover'
+document.body.append(video)
+await video.play().catch(() => { /* 自动播放被拦：保持首帧或退回海洋 */ })
+document.body.classList.add('ready')   // 复用现有的淡入契约</code></pre>
+
+<p>
+注意最后一行：<strong><code>document.body.classList.add('ready')</code> 是现有页面淡入的契约</strong>
+（<code>styles.css</code> 里 <code>body.ready &gt; canvas</code> 靠它触发）。
+新背景必须遵守这条约定，否则要么不显示，要么闪一下。
+</p>
+
+<div class="note">
+<span class="label">这才是"可以通过壁纸、视频生成"的真实含义</span>
+不是"用户完全不用碰代码"，而是：<strong>你写一次背景类型，用户之后换任何素材都不用再改代码。</strong>
+而且这些素材可以是本地的、可以是 AI 生成的、可以是下载的——对代码完全透明。
+</div>
+
+<h2><span class="num">3</span>接缝 ③：配置管理的真实成本</h2>
+
+<p>
+你现在可能觉得"加个配置项"很简单。看看加 <code>chatOpacity</code> 这一个数字，
+上一次提交动了哪些文件：
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 400" role="img" aria-labelledby="fig2-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig2-title">新增一个配置字段需要在六个位置同步修改，其中三处是生成物，任何一处遗漏都会造成某条安装路径静默失效</title>
+
+  <text x="30" y="26" font-size="10.5" font-weight="700" fill="#8a4b00" letter-spacing=".5">新增一个字段（例如 chatOpacity）的完整改动面</text>
+
+  <!-- source column -->
+  <rect x="30" y="44" width="200" height="286" rx="6" fill="#f2f8f8" stroke="#0f6d68" stroke-width="1.4"/>
+  <text x="44" y="64" font-size="9" font-weight="700" fill="#0f6d68" letter-spacing=".8">① 源码 · 必须手改</text>
+
+  <rect x="44" y="74" width="172" height="102" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="56" y="92" font-size="10" font-weight="650" fill="#16181d">skin-core.js</text>
+  <text x="56" y="110" font-size="8.5" fill="#4a4f57">DEFAULTS 加默认值</text>
+  <text x="56" y="126" font-size="8.5" fill="#4a4f57">normalize() 加校验</text>
+  <text x="56" y="142" font-size="8.5" fill="#4a4f57">面板加 DOM 控件</text>
+  <text x="56" y="158" font-size="8.5" fill="#4a4f57">syncUi / 事件 / 保存</text>
+  <text x="56" y="172" font-size="8.5" fill="#8a4b00">（本文件 5 处以上）</text>
+
+  <rect x="44" y="186" width="172" height="60" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="56" y="204" font-size="10" font-weight="650" fill="#16181d">2 个 entry 适配器</text>
+  <text x="56" y="221" font-size="8.5" fill="#4a4f57">extension-entry.js</text>
+  <text x="56" y="237" font-size="8.5" fill="#4a4f57">native-entry.js</text>
+
+  <rect x="44" y="256" width="172" height="60" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="56" y="274" font-size="10" font-weight="650" fill="#16181d">bundle 脚本</text>
+  <text x="56" y="291" font-size="8.5" fill="#4a4f57">内联 adapter 里加</text>
+  <text x="56" y="307" font-size="8.5" fill="#4a4f57">KEYS 与 get()</text>
+
+  <!-- arrow to generated -->
+  <path d="M 234 200 L 282 200" stroke="#7c828c" stroke-width="1.5"/>
+  <path d="M 282 194 L 292 200 L 282 206 z" fill="#7c828c"/>
+  <text x="256" y="190" font-size="8.5" fill="#7c828c" text-anchor="middle">npm run</text>
+  <text x="256" y="222" font-size="8.5" fill="#7c828c" text-anchor="middle">build</text>
+
+  <!-- generated column -->
+  <rect x="296" y="44" width="180" height="286" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="310" y="64" font-size="9" font-weight="700" fill="#7c828c" letter-spacing=".8">② 生成物 · 不可手改</text>
+
+  <rect x="310" y="74" width="152" height="48" rx="4" fill="#fff" stroke="#c9d1d0"/>
+  <text x="322" y="92" font-size="9.5" font-weight="650" fill="#16181d">extension/content.js</text>
+  <text x="322" y="110" font-size="8.5" fill="#4a4f57">自动</text>
+
+  <rect x="310" y="130" width="152" height="48" rx="4" fill="#fff" stroke="#c9d1d0"/>
+  <text x="322" y="148" font-size="9.5" font-weight="650" fill="#16181d">native-dist/loader.js</text>
+  <text x="322" y="166" font-size="8.5" fill="#4a4f57">自动</text>
+
+  <rect x="310" y="186" width="152" height="48" rx="4" fill="#fff" stroke="#c9d1d0"/>
+  <text x="322" y="204" font-size="9.5" font-weight="650" fill="#16181d">plugin/client.js</text>
+  <text x="322" y="222" font-size="8.5" fill="#4a4f57">自动</text>
+
+  <text x="310" y="262" font-size="8.5" fill="#8c2f2f">这三份不同步 →</text>
+  <text x="310" y="278" font-size="8.5" fill="#4a4f57">某条路径静默失效</text>
+  <text x="310" y="296" font-size="8.5" fill="#4a4f57">（不报错，只是</text>
+  <text x="310" y="312" font-size="8.5" fill="#4a4f57"> 设置记不住）</text>
+
+  <!-- third column: guard -->
+  <path d="M 500 200 L 540 200" stroke="#7c828c" stroke-width="1.5"/>
+  <path d="M 540 194 L 550 200 L 540 206 z" fill="#7c828c"/>
+
+  <rect x="554" y="44" width="196" height="286" rx="6" fill="#fdf3e3" stroke="#8a4b00" stroke-width="1.4"/>
+  <text x="568" y="64" font-size="9" font-weight="700" fill="#8a4b00" letter-spacing=".8">③ 守卫 · 防止漏改</text>
+
+  <rect x="568" y="74" width="168" height="76" rx="4" fill="#fff" stroke="#e0c9a3"/>
+  <text x="580" y="92" font-size="10" font-weight="650" fill="#16181d">tests/static.test.mjs</text>
+  <text x="580" y="110" font-size="8.5" fill="#4a4f57">断言每条路径都持久化</text>
+  <text x="580" y="126" font-size="8.5" fill="#4a4f57">该字段（字符串检查）</text>
+  <text x="580" y="142" font-size="8.5" fill="#8a4b00">这是你唯一的保险</text>
+
+  <rect x="568" y="160" width="168" height="76" rx="4" fill="#fff" stroke="#e0c9a3"/>
+  <text x="580" y="178" font-size="10" font-weight="650" fill="#16181d">acceptance 脚本</text>
+  <text x="580" y="196" font-size="8.5" fill="#4a4f57">真浏览器驱动控件</text>
+  <text x="580" y="212" font-size="8.5" fill="#4a4f57">断言计算样式</text>
+  <text x="580" y="228" font-size="8.5" fill="#8a4b00">这是你唯一的实证</text>
+
+  <text x="568" y="264" font-size="8.5" fill="#4a4f57">理想状态：</text>
+  <text x="568" y="280" font-size="8.5" fill="#4a4f57">字段只在一处声明，</text>
+  <text x="568" y="296" font-size="8.5" fill="#4a4f57">其余自动派生。</text>
+  <text x="568" y="312" font-size="8.5" fill="#8c2f2f">现状：靠测试兜。</text>
+</svg>
+</div>
+<figcaption>
+  一个字段的改动面。<strong>注意 ② 那一列全都是自动生成的</strong>——
+  所以真正要手改的是 ①（3 类文件）＋ ③（2 类测试）。
+  第 5 课会给出把它压成"一处声明"的具体重构方案。
+</figcaption>
+</figure>
+
+<h3>一个已经存在的技术债，值得你现在就知道</h3>
+
+<p>
+仓库里有<strong>两套配置机制并存</strong>，字段已经不一致了：
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>路径</th><th>声明位置</th><th>字段</th><th>持久化</th></tr></thead>
+<tbody>
+<tr>
+<td>DSH bundle<br>（<code>plugin/client.js</code>）</td>
+<td><code>shared/skin-core.js</code><br>的 <code>DEFAULTS</code></td>
+<td><code>enabled, sea, time, glass,<br>autoCycle, chatCustom, chatOpacity</code></td>
+<td>宿主页 localStorage</td>
+</tr>
+<tr>
+<td>源码注入<br>（<code>harness-plugin/</code>）</td>
+<td><code>settings-contract.ts</code><br>＋ <code>settings.ts</code>（zod 校验）</td>
+<td><code>enabled, sea, time, glass,<br>autoCycle, quality</code></td>
+<td>Harness 设置服务</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="stop">
+<span class="label">这是一个真实缺陷，不是理论问题</span>
+<strong><code>chatCustom</code> / <code>chatOpacity</code> 在源码注入路径里根本不存在</strong>；
+反过来 <code>quality</code> 在 bundle 路径里也不存在。
+也就是说：走 <code>harness-plugin/</code> 装的人，<strong>看不到这次的对话面板独立背景</strong>。
+两条路径各有一份字段清单，靠人工保持一致——这必然会漂移。
+</div>
+
+<p>
+这个缺陷本身就是"配置管理该怎么做"的最好教材：<strong>只要你让同一份配置有两个真相来源，它们就会分叉。</strong>
+第 5 课讲怎么收敛到一个来源。
+</p>
+
+<h2><span class="num">4</span>接缝 ④：什么时候必须动 Harness</h2>
+
+<p>
+原则上：<strong>越少越好</strong>，因为改动会在 Harness 升级时失效。
+但有些事绕不开。判断标准只有一条——<strong>你想注册的那个 slot，宿主是否已经声明了</strong>。
+</p>
+
+<p>
+我扒了本机安装的 Harness <code>0.2.1</code> 里 <code>dsh-client-ui-layout</code> 的实际声明，
+根节点只有这 6 个：
+</p>
+
+<pre><code>"sidebar":       { kind: "single", scope: "root" }
+"main":          { kind: "keyed",  scope: "root" }
+"rightbar":      { kind: "single", scope: "root" }
+"shell.bottom":  { kind: "single", scope: "root" }
+"shell.overlay": { kind: "list",   scope: "root" }
+"shell.leading": { kind: "single", scope: "root" }</code></pre>
+
+<div class="warn">
+<span class="label">这里没有任何 background slot</span>
+所以你<strong>不能</strong>通过正常插件注册一个"铺在最底层的背景层"。
+这正是 <code>harness-plugin/install-into-harness.sh</code> 必须去改 Harness 源码
+<code>ui-layout</code> 的原因——它硬插了 <code>'shell.background'</code> 这个声明。
+</div>
+
+<p>
+但反过来，<strong>已经存在的 slot 是可以被第三方 npm 插件注册的</strong>。
+这不是推测——我查了本机装的其他插件，它们正在这么做：
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>已安装插件</th><th>注册的 slot</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>dsh-model-visibility</code></td><td><code>settings.section</code></td><td>在设置里加自己的页面</td></tr>
+<tr><td><code>dsh-rewind-plugin</code></td><td><code>plugins.bundle.config</code></td><td>插件配置面板</td></tr>
+<tr><td><code>dsh-browser-use</code></td><td><code>settings.section</code></td><td>设置页</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="label">对你最重要的一条结论</span>
+<strong>「配置管理」不需要动 Harness。</strong>
+<code>settings.section</code>（整页设置）和
+<code>settings.general.item</code>（设置里的一个条目）都是现成的 slot，
+第三方插件能注册。你现在用 DOM 自绘面板，是因为 bundle 路径最早只需要这样；
+要做"正经的配置管理"，正路是注册 <code>settings.section</code>。
+</div>
+
+<h2><span class="num">5</span>检验一下</h2>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="背景属于「换渲染内容」：新增一个入口页面、控制器多传一个字段，不触碰三条路径各自的适配逻辑。"
+     data-feedback-wrong="回到第 1 节的四层图，看视频背景落在哪一层。">
+  <p class="quiz-q"><span class="idx">1</span>加一个<b>视频背景</b>，主要触及哪一层接缝？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>接缝 ②：换渲染内容所在层</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>接缝 ③：新增持久化字段</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>接缝 ④：修改 Harness 宿主</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="视频几十 MB，localStorage 实测 6MB 就抛 <code>QuotaExceededError</code>。正确存储是 IndexedDB 存 Blob。"
+     data-feedback-wrong="想想 localStorage 只接受什么类型、有什么配额。">
+  <p class="quiz-q"><span class="idx">2</span>视频素材为什么<b>不能</b>沿用现有 localStorage 存储？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>localStorage 无法被同源 iframe 读取</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>localStorage 不支持 Chrome 与 Edge 浏览器</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>localStorage 有配额，只能存字符串</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="对。已安装的 <code>dsh-model-visibility</code> 就在注册 <code>settings.section</code>，证明第三方插件可以这样做。"
+     data-feedback-wrong="第 4 节列了本机已安装插件的实测证据，回去看那张表。">
+  <p class="quiz-q"><span class="idx">3</span>做「正经配置管理」需要修改 Harness 源码吗？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>需要，必须先新增一个设置 slot</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>不需要，注册已有设置 slot 即可</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>需要，必须重新编译整个前端包</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="是的。这是当前真实存在的漂移：两条路径各有一份字段清单，<code>chatOpacity</code> 只在其中一边。"
+     data-feedback-wrong="第 3 节末尾的红色警告框里写了具体是哪两个字段。">
+  <p class="quiz-q"><span class="idx">4</span>两套配置机制目前是否已经不一致？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>已经不一致，字段清单不同</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>完全一致，只是存储位置不同</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>无法判断，取决于版本号</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<h2><span class="num">6</span>延伸阅读</h2>
+
+<ol>
+<li>
+<a href="../../shared/skin-core.js"><code>shared/skin-core.js</code></a>
+——重点读 <code>createController(options)</code>：注意它只要求
+<code>assetUrl</code> 和 <code>storage</code> 两个能力，这就是全部的接缝契约。
+</li>
+<li>
+<a href="../../harness-plugin/src/settings-contract.ts"><code>harness-plugin/src/settings-contract.ts</code></a>
+——只有 30 行，是"配置该长什么样"的好范例（带 zod 校验、带类型）。
+对比它在 bundle 路径里的缺失，就能看出重构方向。
+</li>
+<li>
+<a href="https://github.com/deepseek-ai/deepseek-harness"><code>deepseek-harness</code> 仓库</a>
+——查 <code>packages/client/ui-*</code> 里各包的 <code>children</code> 声明，
+这是目前唯一能确定"哪些 slot 存在"的方法。
+</li>
+</ol>
+
+<p class="ask-teacher">
+想深入哪个方向都可以问我。比如："能不能让视频背景和海洋做成可叠加的图层"、
+"IndexedDB 存视频的容量上限怎么定"、"settings.section 注册具体怎么写"。
+</p>
+
+<div class="lesson-nav">
+  <span>← 上一课</span>
+  <a href="0001-one-source-three-paths.html">第 1 课 · 一份源码，三条路径</a>
+  <span>下一课 →</span>
+  <a href="0003-detach-from-upstream.html">第 3 课 · 脱离上游</a>
+</div>
+
+</body>
+</html>

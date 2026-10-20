@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 课 · 一份源码，三条路径</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<p class="kicker">Backspace 课程 · 第 1 课</p>
+<h1>一份源码，三条路径</h1>
+<p class="subtitle">
+你要扩展这个插件，第一件必须刻进肌肉记忆的事：
+<strong>仓库里只有一份真正的代码</strong>，其余同名文件都是它生成的副本。
+分不清这一点，后面每一个扩展都会改错地方。
+</p>
+
+<h2><span class="num">1</span>构建期：谁生成了谁</h2>
+
+<p>
+仓库根目录看起来有一堆重复文件——<code>extension/ocean.js</code>、
+<code>native-dist/ocean.js</code>、<code>harness-plugin/assets/ocean.js</code>
+三份内容一模一样。这不是历史遗留，是<strong>刻意的设计</strong>：一份源码，三个交付形态。
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 800 530" role="img" aria-labelledby="fig1-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig1-title">构建期数据流：shared 目录是唯一源码，经两个构建脚本生成 extension、native-dist、plugin 三份产物，分别服务扩展、静态安装和 DSH 插件三条路径</title>
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <!-- ============ ① 唯一源码 ============ -->
+  <text x="84" y="30" font-size="11" font-weight="700" fill="#0f6d68" letter-spacing="1">① 唯一源码</text>
+  <rect x="84" y="40" width="632" height="90" rx="8" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.5"/>
+  <text x="100" y="58" font-size="11.5" font-weight="650" fill="#0f6d68">shared/</text>
+
+  <rect x="98" y="66" width="140" height="50" rx="5" fill="#fff" stroke="#9fc7c3"/>
+  <text x="168" y="85" font-size="11" font-weight="650" fill="#16181d" text-anchor="middle">ocean.js</text>
+  <text x="168" y="101" font-size="9.5" fill="#4a4f57" text-anchor="middle">渲染器 · WebGPU</text>
+
+  <rect x="252" y="66" width="140" height="50" rx="5" fill="#fff" stroke="#0f6d68" stroke-width="1.6"/>
+  <text x="322" y="85" font-size="11" font-weight="650" fill="#16181d" text-anchor="middle">skin-core.js</text>
+  <text x="322" y="101" font-size="9.5" fill="#4a4f57" text-anchor="middle">控制器 · 玻璃</text>
+
+  <rect x="406" y="66" width="140" height="50" rx="5" fill="#fff" stroke="#9fc7c3"/>
+  <text x="476" y="83" font-size="9.5" font-weight="650" fill="#16181d" text-anchor="middle">extension-entry.js</text>
+  <text x="476" y="101" font-size="9.5" fill="#4a4f57" text-anchor="middle">chrome 存储适配</text>
+
+  <rect x="560" y="66" width="140" height="50" rx="5" fill="#fff" stroke="#9fc7c3"/>
+  <text x="630" y="83" font-size="9.5" font-weight="650" fill="#16181d" text-anchor="middle">native-entry.js</text>
+  <text x="630" y="101" font-size="9.5" fill="#4a4f57" text-anchor="middle">localStorage 适配</text>
+
+  <path d="M 229 130 L 229 152" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 571 130 L 571 152" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+
+  <!-- ============ ② 构建脚本 ============ -->
+  <text x="84" y="150" font-size="11" font-weight="700" fill="#0f6d68" letter-spacing="1" opacity="0">②</text>
+  <rect x="84" y="152" width="290" height="48" rx="6" fill="#fff" stroke="#b9c4c2"/>
+  <text x="229" y="172" font-size="11" font-weight="650" fill="#16181d" text-anchor="middle">build-runtime.mjs</text>
+  <text x="229" y="188" font-size="9.5" fill="#4a4f57" text-anchor="middle">复制资源 ＋ 拼接适配器</text>
+
+  <rect x="426" y="152" width="290" height="48" rx="6" fill="#fff" stroke="#b9c4c2"/>
+  <text x="571" y="172" font-size="11" font-weight="650" fill="#16181d" text-anchor="middle">build-dsh-bundle.mjs</text>
+  <text x="571" y="188" font-size="9.5" fill="#4a4f57" text-anchor="middle">包一层 loader ＋ 内联适配器</text>
+
+  <!-- ============ ③ 生成物 ============ -->
+  <path d="M 200 200 L 152 232" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 262 200 L 398 232" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 571 200 L 648 232" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+
+  <text x="44" y="256" font-size="11" font-weight="700" fill="#7c828c" letter-spacing="1">③ 生成物（不可手改）</text>
+
+  <rect x="44" y="266" width="210" height="96" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="58" y="286" font-size="11.5" font-weight="650" fill="#16181d">extension/</text>
+  <text x="58" y="304" font-size="9.5" fill="#4a4f57">content.js ＝ 核心 ＋ 适配器</text>
+  <text x="58" y="319" font-size="9.5" fill="#4a4f57">ocean.js · styles.css · vendor/</text>
+  <text x="58" y="342" font-size="9.5" fill="#8a4b00">显式复制 ＋ 拼接</text>
+
+  <rect x="295" y="266" width="210" height="96" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="309" y="286" font-size="11.5" font-weight="650" fill="#16181d">native-dist/</text>
+  <text x="309" y="304" font-size="9.5" fill="#4a4f57">loader.js ＝ 核心 ＋ 适配器</text>
+  <text x="309" y="319" font-size="9.5" fill="#4a4f57">ocean.js · styles.css · vendor/</text>
+  <text x="309" y="342" font-size="9.5" fill="#8a4b00">index.html 注入 loader</text>
+
+  <rect x="546" y="266" width="210" height="96" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="560" y="286" font-size="11.5" font-weight="650" fill="#16181d">plugin/</text>
+  <text x="560" y="304" font-size="9.5" fill="#4a4f57">client.js ＝ loader ＋ 内联适配</text>
+  <text x="560" y="319" font-size="9.5" fill="#4a4f57">index.js ＝ <tspan font-weight="650">手写</tspan> Host 路由</text>
+  <text x="560" y="342" font-size="9.5" fill="#0f6d68">依赖 native-dist/ 资产</text>
+
+  <!-- ============ ④ 安装路径 ============ -->
+  <path d="M 149 362 L 149 386" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 400 362 L 400 386" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 651 362 L 651 386" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+
+  <rect x="44" y="388" width="210" height="56" rx="6" fill="#e6f4f3" stroke="#0f6d68"/>
+  <text x="149" y="410" font-size="10.5" font-weight="650" fill="#16181d" text-anchor="middle">Chrome / Edge 扩展</text>
+  <text x="149" y="428" font-size="9.5" fill="#4a4f57" text-anchor="middle">加载解压后的目录</text>
+
+  <rect x="295" y="388" width="210" height="56" rx="6" fill="#e6f4f3" stroke="#0f6d68"/>
+  <text x="400" y="410" font-size="10.5" font-weight="650" fill="#16181d" text-anchor="middle">静态安装</text>
+  <text x="400" y="428" font-size="9.5" fill="#4a4f57" text-anchor="middle">复制进 dist/dsh-backspace/</text>
+
+  <rect x="546" y="388" width="210" height="56" rx="6" fill="#e6f4f3" stroke="#0f6d68"/>
+  <text x="651" y="410" font-size="10.5" font-weight="650" fill="#16181d" text-anchor="middle">DSH 插件</text>
+  <text x="651" y="428" font-size="9.5" fill="#4a4f57" text-anchor="middle">npm 包 / 桌面版插件管理器</text>
+
+  <!-- ============ 两个例外 ============ -->
+  <rect x="44" y="462" width="330" height="56" rx="6" fill="#fdf3e3" stroke="#8a4b00" stroke-dasharray="4 3"/>
+  <text x="58" y="480" font-size="10.5" font-weight="650" fill="#8a4b00">site/ · 冻结存档</text>
+  <text x="58" y="496" font-size="9.5" fill="#4a4f57">上游原始展示页，字节级保留</text>
+  <text x="58" y="510" font-size="9.5" fill="#4a4f57">不参与构建，也不在发布包里</text>
+
+  <rect x="404" y="462" width="352" height="56" rx="6" fill="#fdf3e3" stroke="#8a4b00" stroke-dasharray="4 3"/>
+  <text x="418" y="480" font-size="10.5" font-weight="650" fill="#8a4b00">harness-plugin/ · 另一条路</text>
+  <text x="418" y="496" font-size="9.5" fill="#4a4f57">源码注入，改 Harness 自己的代码</text>
+  <text x="418" y="510" font-size="9.5" fill="#4a4f57">不是生成物，与 npm 插件路径互斥</text>
+</svg>
+</div>
+<figcaption>
+  构建期全景。<strong>橙色虚线框是两个例外</strong>：<code>site/</code> 冻结不动，
+  <code>harness-plugin/</code> 是另一条完全不同的安装路径（见第 2 课接缝 ④），
+  两者都不由构建脚本产生。
+</figcaption>
+</figure>
+
+<div class="card">
+<h3>三个必须记住的细节</h3>
+<ol>
+<li>
+<strong><code>plugin/client.js</code> 不是简单复制。</strong>
+它被包进了 Harness 的模块加载器壳里（<code>window.__ModuleLoader__.load(...)</code>），
+并把存储适配器直接内联进去——因为这个文件要在浏览器里通过
+<code>/plugins/dsh-backspace/client.js</code> 被加载，拿不到构建期的相对路径。
+</li>
+<li>
+<strong><code>plugin/index.js</code> 是手写的，不是生成的。</strong>
+它是 Host 侧插件（注册 <code>/dsh-backspace</code> 静态路由），和 <code>client.js</code>
+放在同一个目录但来源完全不同。改路由逻辑要改它，改渲染逻辑不要碰它。
+</li>
+<li>
+<strong>两个适配器是同一份控制器的两种存储后端。</strong>
+<code>skin-core.js</code> 刻意不含 import/export，靠字符串拼接接到适配器后面。
+这就是为什么它长得像 IIFE——那是拼接的前提条件。
+</li>
+</ol>
+</div>
+
+<h2><span class="num">2</span>为什么手改生成物一定会炸</h2>
+
+<p>
+<code>npm run check</code> 会跑 <code>build-runtime.mjs --check</code> 和
+<code>build-dsh-bundle.mjs --check</code>。这两个脚本不做"重新生成"，
+而是<strong>重新算一遍期望内容，逐字节比对现有文件</strong>，不一致就抛错：
+</p>
+
+<pre><code>// scripts/build-runtime.mjs
+if (check) assertSame(body, target)
+else {
+  mkdirSync(dirname(join(root, target)), { recursive: true })
+  writeFileSync(join(root, target), body)
+}</code></pre>
+
+<p>
+所以手改 <code>native-dist/loader.js</code> 的后果不是"下次构建被覆盖"，
+而是<strong>下一次 CI 直接红</strong>。这是好事：它把"改错地方"从
+运行时怪 bug 变成了构建期硬失败。
+</p>
+
+<div class="warn">
+<span class="label">常见踩坑</span>
+改完 <code>shared/skin-core.js</code> 后忘记跑 <code>npm run build</code>，
+就去 `npm run test:desktop` 验证——测试跑的是生成物，
+你会看到"改了没生效"，然后开始怀疑人生。构建和验证的顺序是固定的。
+</div>
+
+<h2><span class="num">3</span>运行期：控制器和渲染器怎么通信</h2>
+
+<p>
+渲染器跑在一个<strong>同源 iframe</strong> 里，控制器跑在宿主页。两者不是共享内存，
+而是靠 URL 参数（初始）和 <code>postMessage</code>（后续更新）。
+理解这条边界，是后面加新背景的关键——你的新背景极可能也要走同样的结构。
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 760 400" role="img" aria-labelledby="fig2-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig2-title">运行期结构：宿主页内的 skin-core 控制器通过 URL 参数和 postMessage 驱动同源 iframe 中的 WebGPU 渲染器，并通过三个不同的存储适配器持久化设置</title>
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+    <marker id="a2s" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 10 0 L 0 5 L 10 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <rect x="28" y="12" width="700" height="240" rx="8" fill="#fbfcfd" stroke="#b9c4c2"/>
+  <text x="44" y="34" font-size="10.5" font-weight="700" fill="#7c828c" letter-spacing=".5">宿主页 · 同源 · Harness Web / Desktop</text>
+
+  <!-- iframe -->
+  <rect x="44" y="72" width="196" height="170" rx="6" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.5"/>
+  <text x="58" y="92" font-size="10" font-weight="700" fill="#0f6d68">iframe</text>
+  <text x="58" y="112" font-size="10.5" font-weight="650" fill="#16181d">skin.html</text>
+  <text x="58" y="130" font-size="9.5" fill="#4a4f57">ocean.js</text>
+  <text x="58" y="154" font-size="9.5" fill="#4a4f57">WebGPU · TSL</text>
+  <text x="58" y="170" font-size="9.5" fill="#4a4f57">Gerstner 波 · 天空</text>
+  <text x="58" y="194" font-size="9" fill="#0f6d68">z-index: 0 · 不吃鼠标</text>
+  <text x="58" y="212" font-size="9" fill="#0f6d68">pointer-events: none</text>
+
+  <!-- controller -->
+  <rect x="300" y="72" width="156" height="170" rx="6" fill="#fff" stroke="#b9c4c2"/>
+  <text x="314" y="92" font-size="10" font-weight="700" fill="#7c828c">控制器</text>
+  <text x="314" y="112" font-size="10.5" font-weight="650" fill="#16181d">skin-core.js</text>
+  <text x="314" y="136" font-size="9.5" fill="#4a4f57">state（当前设置）</text>
+  <text x="314" y="152" font-size="9.5" fill="#4a4f57">glassCss()</text>
+  <text x="314" y="168" font-size="9.5" fill="#4a4f57">syncUi()</text>
+  <text x="314" y="184" font-size="9.5" fill="#4a4f57">mount / unmount</text>
+  <text x="314" y="218" font-size="9" fill="#0f6d68">同一份代码</text>
+  <text x="314" y="232" font-size="9" fill="#0f6d68">三条路径复用</text>
+
+  <!-- UI -->
+  <rect x="516" y="72" width="204" height="170" rx="6" fill="#fff" stroke="#b9c4c2"/>
+  <text x="530" y="92" font-size="10" font-weight="700" fill="#7c828c">面板 DOM</text>
+  <text x="530" y="112" font-size="9.5" font-weight="650" fill="#16181d">注入到 body 末尾</text>
+  <text x="530" y="136" font-size="9" fill="#4a4f57">#__dsh-backspace-btn__</text>
+  <text x="530" y="152" font-size="9" fill="#4a4f57">#__dsh-backspace-panel__</text>
+  <text x="530" y="176" font-size="9.5" fill="#4a4f57">波浪 / 日光 / 玻璃</text>
+  <text x="530" y="192" font-size="9.5" fill="#4a4f57">对话面板独立背景</text>
+  <text x="530" y="216" font-size="9" fill="#0f6d68">不依赖 React</text>
+  <text x="530" y="230" font-size="9" fill="#0f6d68">纯 DOM + 原生控件</text>
+
+  <!-- gap markers -->
+  <circle cx="270" cy="118" r="10" fill="#16181d"/>
+  <text x="270" y="122" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+  <circle cx="270" cy="176" r="10" fill="#16181d"/>
+  <text x="270" y="180" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+  <circle cx="486" cy="130" r="10" fill="#16181d"/>
+  <text x="486" y="134" font-size="9.5" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+
+  <path d="M 296 108 L 248 108" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+  <path d="M 296 166 L 248 166" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+  <path d="M 512 120 L 464 120" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+  <path d="M 460 152 L 508 152" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+
+  <!-- storage -->
+  <path d="M 378 242 L 378 298" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+  <text x="390" y="276" font-size="9" fill="#4a4f57">get() / set()</text>
+
+  <rect x="36" y="300" width="660" height="82" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="50" y="318" font-size="9.5" font-weight="700" fill="#7c828c">存储：每条路径换一个 adapter，控制器代码不变</text>
+
+  <rect x="50" y="328" width="192" height="44" rx="4" fill="#fff" stroke="#b9c4c2"/>
+  <text x="146" y="346" font-size="9.5" font-weight="650" fill="#16181d" text-anchor="middle">localStorage</text>
+  <text x="146" y="362" font-size="9" fill="#4a4f57" text-anchor="middle">bsSea · bsGlass …</text>
+
+  <rect x="268" y="328" width="192" height="44" rx="4" fill="#fff" stroke="#b9c4c2"/>
+  <text x="364" y="346" font-size="9.5" font-weight="650" fill="#16181d" text-anchor="middle">chrome.storage.sync</text>
+  <text x="364" y="362" font-size="9" fill="#4a4f57" text-anchor="middle">skinSea · skinGlass …</text>
+
+  <rect x="486" y="328" width="192" height="44" rx="4" fill="#fff" stroke="#b9c4b2"/>
+  <text x="582" y="346" font-size="9.5" font-weight="650" fill="#16181d" text-anchor="middle">DSH settings 作用域</text>
+  <text x="582" y="362" font-size="9" fill="#4a4f57" text-anchor="middle">ui-backspace（源码注入路径）</text>
+</svg>
+</div>
+<figcaption>
+  运行期结构。<strong>①</strong> 挂载时通过 iframe 的 URL 查询参数传入
+  <code>sea</code> / <code>t</code> / <code>auto</code> / <code>parentOrigin</code>；
+  <strong>②</strong> 之后每次用户拖动滑块，控制器 <code>postMessage</code> 一条
+  <code>{type:'bs-set'}</code>；<strong>③</strong> 面板是纯原生 DOM，
+  不依赖 Harness 的 React 树——这是它能同时活在扩展、静态页和桌面版里的原因。
+  下方三个存储后端由适配器在同一接口下切换。
+</figcaption>
+</figure>
+
+<div class="note">
+<span class="label">为什么这对扩展很重要</span>
+<code>skin-core.js</code> 只依赖两个注入进来的能力：<code>assetUrl(path)</code> 和
+<code>storage</code>（<code>get</code>/<code>set</code>/可选 <code>listen</code>）。
+<strong>只要你不打破这两个接口，新增任何背景类型都能自动跑在三条路径上。</strong>
+反过来，一旦你的新功能需要额外的宿主能力，就得三处都改——这是第 2 课的核心。
+</div>
+
+<h2><span class="num">4</span>检验一下</h2>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="其余两个都是构建产物。判断方法：问它是不是 <code>npm run build</code> 生成出来的——是，就不能手改。"
+     data-feedback-wrong="回到第 1 节的图：只有 <code>shared/</code> 里的文件是源码，三份产物都在箭头下游。">
+  <p class="quiz-q"><span class="idx">1</span>下面哪个是<b>唯一源码</b>，其余都是它的产物？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span><code>shared/skin-core.js</code></button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span><code>native-dist/loader.js</code></button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span><code>extension/content.js</code></button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="它被包进了 Harness 的 <code>__ModuleLoader__</code> 壳，并把存储适配器内联进去了，为的是能被 <code>/plugins/…/client.js</code> 直接加载。"
+     data-feedback-wrong="回去看 <code>scripts/build-dsh-bundle.mjs</code> 的 <code>expected</code> 变量，看看它到底包了什么、内联了什么。">
+  <p class="quiz-q"><span class="idx">2</span><code>plugin/client.js</code> 为什么不能直接复制源码？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>要压缩成 WebAssembly 才能被加载</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>要包一层加载器壳并内联存储适配器</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>要由 Harness 重新编译成 TypeScript</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="对。<code>plugin/index.js</code> 是 Host 侧路由，手写的；<code>client.js</code> 才是生成的。同目录不同来源，这是最容易搞混的一对。"
+     data-feedback-wrong="同目录不等于同来源。一个是 Host 静态资源路由，一个是浏览器端模块。">
+  <p class="quiz-q"><span class="idx">3</span>关于 <code>plugin/</code> 目录，哪个说法正确？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>两个文件都由构建脚本自动生成</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>两个文件都靠手写维护、无生成物</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>仅 <code>client.js</code> 是生成物</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<h2><span class="num">5</span>延伸阅读</h2>
+
+<p>
+<strong>本课的主要依据是代码本身，不是文档。</strong>优先级排列：
+</p>
+
+<ol>
+<li>
+<a href="../../scripts/build-runtime.mjs"><code>scripts/build-runtime.mjs</code></a>
+——全仓库对"谁生成了谁"最权威的描述，不到 90 行，建议完整读一遍。
+</li>
+<li>
+<a href="../../scripts/build-dsh-bundle.mjs"><code>scripts/build-dsh-bundle.mjs</code></a>
+——同样不到 80 行，重点看 <code>adapter</code> 常量。
+</li>
+<li>
+<a href="../../docs/architecture.md"><code>docs/architecture.md</code></a>
+——文档版总结，适合复习；但注意它描述的是<strong>设计意图</strong>，
+个别地方已经落后于代码（第 3 课会指出一处）。
+</li>
+</ol>
+
+<p class="ask-teacher">
+有不清楚的地方直接问我。比如"为什么适配器要拼接而不是 import"、
+"能不能把 <code>skin-core.js</code> 改成 ESM 再打包"——这类问题往往牵出整套设计的取舍，
+值得展开讲。
+</p>
+
+<div class="lesson-nav">
+  <span>下一课 →</span>
+  <a href="0002-extension-seams.html">第 2 课 · 扩展接缝地图</a>
+  <a href="../reference/architecture-map.html">速查：架构地图</a>
+  <a href="../MISSION.md">教学任务</a>
+</div>
+
+</body>
+</html>

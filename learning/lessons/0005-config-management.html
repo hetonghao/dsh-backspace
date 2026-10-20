@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 5 课 · 配置管理：收敛到一个真相来源</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<p class="kicker">Backspace 课程 · 第 5 课</p>
+<h1>配置管理：收敛到一个真相来源</h1>
+<p class="subtitle">
+前面反复出现同一个症状：两套配置机制各有一份字段清单，已经开始漂移。
+根因不是"忘了同步"，而是<strong>结构上允许有两个真相</strong>。
+本课讲怎么在设计上消除这种可能。
+</p>
+
+<h2><span class="num">1</span>问题不是重复，是"两个真相"</h2>
+
+<p>
+重复本身不致命——生成物本质就是重复。真正的问题是：
+<strong>两份清单都是手写的，谁也不是从谁派生来的</strong>。这时候"保持一致"只能靠纪律，而纪律会失效。
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 400" role="img" aria-labelledby="fig1-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig1-title">当前状态与目标状态对比：当前是两份手写清单各自维护，目标是单一声明文件派生所有消费方，drift 在结构上不可能发生</title>
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <!-- ===== current ===== -->
+  <text x="30" y="26" font-size="10.5" font-weight="700" fill="#8c2f2f" letter-spacing=".5">现在：两个独立真相</text>
+
+  <rect x="30" y="38" width="330" height="92" rx="6" fill="#fbeceb" stroke="#8c2f2f" stroke-width="1.5"/>
+  <text x="44" y="56" font-size="9" font-weight="700" fill="#8c2f2f">手写 ①</text>
+  <text x="44" y="74" font-size="10" font-weight="650" fill="#16181d">skin-core.js · DEFAULTS + normalize()</text>
+  <text x="44" y="92" font-size="8.5" fill="#4a4f57">enabled sea time glass autoCycle</text>
+  <text x="44" y="106" font-size="8.5" fill="#0f6d68">chatCustom chatOpacity</text>
+  <text x="44" y="122" font-size="8.5" fill="#4a4f57">驱动：bundle / 静态 / 扩展 三条路径</text>
+
+  <rect x="30" y="150" width="330" height="92" rx="6" fill="#fbeceb" stroke="#8c2f2f" stroke-width="1.5"/>
+  <text x="44" y="168" font-size="9" font-weight="700" fill="#8c2f2f">手写 ②</text>
+  <text x="44" y="186" font-size="10" font-weight="650" fill="#16181d">settings-contract.ts + settings.ts</text>
+  <text x="44" y="204" font-size="8.5" fill="#4a4f57">enabled sea time glass autoCycle</text>
+  <text x="44" y="218" font-size="8.5" fill="#0f6d68">quality</text>
+  <text x="44" y="234" font-size="8.5" fill="#4a4f57">驱动：源码注入路径（harness-plugin/）</text>
+
+  <!-- drift arrows -->
+  <path d="M 200 130 L 200 150" stroke="#8c2f2f" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="212" y="144" font-size="8.5" font-weight="650" fill="#8c2f2f">✕ 已漂移</text>
+
+  <rect x="374" y="38" width="378" height="204" rx="6" fill="#fff" stroke="#e0b3b3" stroke-dasharray="4 3"/>
+  <text x="388" y="58" font-size="9.5" font-weight="700" fill="#8c2f2f">漂移的两个方向</text>
+
+  <text x="388" y="82" font-size="9" font-weight="650" fill="#16181d">① 只加在 bundle 侧</text>
+  <text x="388" y="98" font-size="8.5" fill="#4a4f57">chatCustom / chatOpacity</text>
+  <text x="388" y="114" font-size="8.5" fill="#8c2f2f">→ 源码注入用户看不到这个功能</text>
+
+  <text x="388" y="140" font-size="9" font-weight="650" fill="#16181d">② 只加在源码注入侧</text>
+  <text x="388" y="156" font-size="8.5" fill="#4a4f57">quality（auto / low / high）</text>
+  <text x="388" y="172" font-size="8.5" fill="#8c2f2f">→ bundle 用户无法调渲染质量</text>
+
+  <text x="388" y="200" font-size="9" font-weight="650" fill="#16181d">为什么没被发现</text>
+  <text x="388" y="216" font-size="8.5" fill="#4a4f57">两条路径各自能跑；测试也只测各自</text>
+  <text x="388" y="232" font-size="8.5" fill="#4a4f57">没有测试断言"两侧字段一致"</text>
+
+  <!-- divider -->
+  <path d="M 30 262 L 752 262" stroke="#dfe3e8" stroke-width="1"/>
+
+  <!-- ===== target ===== -->
+  <text x="30" y="286" font-size="10.5" font-weight="700" fill="#0f6d68" letter-spacing=".5">目标：一个真相，其余全部派生</text>
+
+  <rect x="30" y="298" width="176" height="76" rx="6" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.8"/>
+  <text x="44" y="316" font-size="9" font-weight="700" fill="#0f6d68">唯一声明</text>
+  <text x="44" y="334" font-size="10" font-weight="650" fill="#16181d">settings-schema.js</text>
+  <text x="44" y="350" font-size="8.5" fill="#4a4f57">字段 / 类型 / 范围</text>
+  <text x="44" y="364" font-size="8.5" fill="#4a4f57">/ 默认值 / 文案 key</text>
+
+  <path d="M 206 336 L 250 336" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="254" y="290" width="150" height="40" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="266" y="307" font-size="9" font-weight="650" fill="#16181d">生成控制面板</text>
+  <text x="266" y="322" font-size="8.5" fill="#4a4f57">DOM 自动按 schema 建</text>
+
+  <rect x="254" y="338" width="150" height="40" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="266" y="355" font-size="9" font-weight="650" fill="#16181d">生成 DEFAULTS</text>
+  <text x="266" y="370" font-size="8.5" fill="#4a4f57">与 normalize 边界</text>
+
+  <rect x="420" y="290" width="150" height="40" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="432" y="307" font-size="9" font-weight="650" fill="#16181d">生成适配器 KEYS</text>
+  <text x="432" y="322" font-size="8.5" fill="#4a4f57">三处 key 映射</text>
+
+  <rect x="420" y="338" width="150" height="40" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="432" y="355" font-size="9" font-weight="650" fill="#16181d">生成 ts 契约</text>
+  <text x="432" y="370" font-size="8.5" fill="#4a4f57">类型 + zod 校验</text>
+
+  <path d="M 430 330 L 414 330" stroke="#7c828c" stroke-width="1.2"/>
+  <path d="M 570 310 L 600 310" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a1)"/>
+  <path d="M 570 358 L 600 358" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="604" y="290" width="148" height="88" rx="5" fill="#fff" stroke="#9fc7c3" stroke-dasharray="4 3"/>
+  <text x="616" y="308" font-size="9" font-weight="700" fill="#0f6d68">校验</text>
+  <text x="616" y="326" font-size="8.5" fill="#4a4f57">测试断言：</text>
+  <text x="616" y="342" font-size="8.5" fill="#4a4f57">两侧字段集合</text>
+  <text x="616" y="358" font-size="8.5" fill="#4a4f57">完全相等</text>
+  <text x="616" y="372" font-size="8.5" fill="#0f6d68">drift 不再可能</text>
+</svg>
+</div>
+<figcaption>
+  上：现状。<strong>两份手写清单之间没有任何派生关系</strong>，一致性只能靠人记。
+  下：目标。字段只在 <code>settings-schema.js</code> 声明一次，其余全是产物。
+  <strong>注意右下角那格</strong>：仍要保留一条测试断言两侧一致——作为生成管线的兜底。
+</figcaption>
+</figure>
+
+<h2><span class="num">2</span>为什么这值得做（而不是记牢就行）</h2>
+
+<p>
+你可能会想："我知道有两套，以后加字段两处都改不就行了。"
+三个理由说明这条路走不通：
+</p>
+
+<div class="card">
+<h3>① 忘记的成本是不对称的</h3>
+<p>
+加字段忘了某一边，<strong>不会报错</strong>——只是那条路径的用户静默失去功能。
+你刚从 <code>chatOpacity</code> 的事里见过这个形态。这类缺陷的发现周期是"用户来抱怨为止"。
+</p>
+
+<h3>② 字段数会持续增长</h3>
+<p>
+现在 7 个字段已经漂移了 2 个方向。如果做到 15 个，靠人脑同步基本不可能。
+<strong>每加一个字段，两个方向的漂移概率就翻倍。</strong>
+</p>
+
+<h3>③ 它挡住了你要的扩展</h3>
+<p>
+你要加"背景类型"——这本身就是一个新字段（<code>bgType</code>），
+还可能要 <code>bgSource</code>、<code>bgBlur</code>、<code>bgDim</code>。
+这套配置会迅速膨胀，<strong>不先收敛就往上加，是在放大债务</strong>。
+</p>
+</div>
+
+<div class="note">
+<span class="label">奥卡姆剃刀视角</span>
+这个重构<strong>不是新增抽象，而是删除重复</strong>：删掉一份手写清单、删掉一批手写 key 映射、
+删掉"记得两处都改"这条隐性纪律。净代码量大概率会下降。
+</div>
+
+<h2><span class="num">3</span>具体怎么做：schema 优先</h2>
+
+<p>
+核心思路：<strong>字段声明一次，其余生成</strong>。用一个纯数据文件描述所有配置。
+</p>
+
+<pre><code>// shared/settings-schema.js —— 唯一真相，纯数据，无逻辑
+export const SETTINGS = [
+  { key: 'enabled',  type: 'boolean', default: true,
+    copy: 'enable',
+    storage: { extension: 'skinEnabled',  native: 'bsEnabled' } },
+
+  { key: 'sea',      type: 'number',  default: 45, min: 0, max: 100, step: 1,
+    copy: 'sea', control: 'range',
+    storage: { extension: 'skinSea',      native: 'bsSea' } },
+
+  { key: 'glass',    type: 'number',  default: 72, min: 40, max: 90, step: 1,
+    copy: 'glass', control: 'range',
+    storage: { extension: 'skinGlass',    native: 'bsGlass' } },
+
+  { key: 'chatCustom', type: 'boolean', default: false,
+    copy: 'chatCustom', control: 'switch',
+    storage: { extension: 'skinChatCustom', native: 'bsChatCustom' } },
+
+  { key: 'chatOpacity', type: 'number', default: 100, min: 40, max: 100, step: 1,
+    copy: 'chatOpacity', control: 'range',
+    // 从属于 chatCustom：开关关闭时隐藏该行
+    dependsOn: 'chatCustom',
+    storage: { extension: 'skinChatOpacity', native: 'bsChatOpacity' } },
+]</code></pre>
+
+<p>然后让构建脚本从它派生一切。这一步和你熟悉的 <code>build-runtime.mjs</code> 是同一个模式：</p>
+
+<pre><code>// scripts/build-settings.mjs（新增）
+import { SETTINGS } from '../shared/settings-schema.js'
+
+const defaults = SETTINGS
+  .map(f =&gt; `  ${f.key}: ${JSON.stringify(f.default)},`)
+  .join('\n')
+
+const keysOf = side =&gt; SETTINGS
+  .map(f =&gt; `    ${f.key}: '${f.storage[side]}',`)
+  .join('\n')
+
+// 生成 DEFAULTS 块 → 注入 skin-core.js 的占位标记处
+// 生成 native KEYS → 注入 native-entry.js
+// 生成 extension KEYS → 注入 extension-entry.js
+// 生成 TS interface + zod → 注入 harness-plugin/src/
+// 全部支持 --check，和现有两个脚本一致</code></pre>
+
+<div class="warn">
+<span class="label">关键约束：不要破坏"无 import"</span>
+<code>skin-core.js</code> 现在<strong>刻意不含 import/export</strong>，靠字符串拼接接到适配器后面。
+所以派生结果必须以<strong>生成的代码块</strong>注入，而不是让 <code>skin-core.js</code> 去 import schema。
+否则三条路径的拼接机制就崩了。
+</div>
+
+<h3>面板也可以由 schema 生成</h3>
+
+<p>
+现在面板 HTML 是 <code>mountUi()</code> 里一大段手写模板字符串。
+用 schema 循环生成可以同时解决"加字段要改模板"和"加字段要改 syncUi"两个问题：
+</p>
+
+<pre><code>// 从 schema 生成面板行，而不是手写模板
+const rows = SETTINGS
+  .filter(f =&gt; f.control === 'range' || f.control === 'switch')
+  .map(f =&gt; f.control === 'switch'
+    ? `&lt;div class="bs-row bs-switch"&gt;
+         &lt;label for="${IDS.panel}-${f.key}"&gt;${copy[f.copy]}&lt;/label&gt;
+         &lt;input type="checkbox" id="${IDS.panel}-${f.key}" /&gt;
+       &lt;/div&gt;`
+    : `&lt;div class="bs-row"${f.dependsOn ? ` hidden data-depends="${f.dependsOn}"` : ''}&gt;
+         ... range 控件，min/max 来自 schema ...
+       &lt;/div&gt;`)
+  .join('')</code></pre>
+
+<div class="note">
+<span class="label">收益</span>
+做完之后加一个新滑块 = <strong>在 schema 里加一条</strong>。
+面板、持久化、key 映射、类型、校验全部自动跟上。<code>npm run check</code> 保证产物没落后。
+这才是"配置管理"该有的形态。
+</div>
+
+<h2><span class="num">4</span>用 <code>settings.section</code> 做正经面板</h2>
+
+<p>
+DOM 自绘面板有个结构性缺陷：它是<strong>浮在宿主页上</strong>的一块外来 UI，
+管不了无障碍、焦点、主题继承、键盘导航这些宿主已经解决的问题。
+Harness 提供了正规入口。
+</p>
+
+<p>
+第 2 课查到：已安装的 <code>dsh-model-visibility</code> 正在注册 <code>settings.section</code>。
+它的做法是：
+</p>
+
+<pre><code>// 来自已安装插件 dsh-model-visibility 的真实用法
+const inject = [
+  '@deepseek-ai/dsh-api-remotes',
+  '@deepseek-ai/dsh-client-locale',
+  '@deepseek-ai/dsh-client-ui-settings',
+]
+
+function apply(ctx) {
+  ctx.effect(() =&gt; ctx.slots.inject('settings.section', () =&gt;
+    ctx.slots.register({
+      name: 'settings.section',
+      id: 'backspace',
+      order: 30,
+      // 插槽把 id / order / label 投影到设置导航
+      // 面板内容由你自己的组件渲染
+    }, BackspaceSettingsPage)
+  ))
+}</code></pre>
+
+<div class="warn">
+<span class="label">先证实再动手</span>
+上面是<strong>从已安装插件的产物反推</strong>的形态，不是我查到的公开文档。
+动手前建议：装一个已知能用 <code>settings.section</code> 的插件，确认真机生效，
+再照它的写法接入。我也可以帮你把当前版本的 slot props 完整读出来。
+</div>
+
+<p>
+另一条更轻的路：<strong>保留 DOM 面板，但只作为"快捷入口"</strong>，
+同时在 <code>settings.section</code> 提供一个完整版。这样老用户习惯不变，
+新用户能用到原生设置页。代价是两套 UI 要维护——所以更推荐<strong>只做</strong>
+原生那套，DOM 面板退化为一个纯按钮。
+</p>
+
+<h2><span class="num">5</span>迁移顺序（避免中途断裂）</h2>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 300" role="img" aria-labelledby="fig2-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig2-title">配置重构的四个阶段：先加 schema 与一致性测试，再逐步让消费方派生，最后删除手写清单，每步都能独立通过测试</title>
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <rect x="24" y="34" width="172" height="150" rx="6" fill="#e6f4f3" stroke="#0f6d68"/>
+  <text x="38" y="54" font-size="9" font-weight="700" fill="#0f6d68">阶段 1</text>
+  <text x="38" y="74" font-size="10.5" font-weight="650" fill="#16181d">写 schema</text>
+  <text x="38" y="92" font-size="8.5" fill="#4a4f57">＋ 一条</text>
+  <text x="38" y="106" font-size="8.5" fill="#4a4f57">"两侧字段一致"</text>
+  <text x="38" y="120" font-size="8.5" fill="#4a4f57">的测试</text>
+  <text x="38" y="142" font-size="8.5" fill="#0f6d68">此步会立即</text>
+  <text x="38" y="156" font-size="8.5" fill="#0f6d68">暴露现有漂移</text>
+  <text x="38" y="172" font-size="8.5" fill="#8c2f2f">（预期失败）</text>
+
+  <path d="M 196 108 L 214 108" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a2)"/>
+
+  <rect x="218" y="34" width="172" height="150" rx="6" fill="#fff" stroke="#9fc7c3"/>
+  <text x="232" y="54" font-size="9" font-weight="700" fill="#7c828c">阶段 2</text>
+  <text x="232" y="74" font-size="10.5" font-weight="650" fill="#16181d">补齐差异</text>
+  <text x="232" y="92" font-size="8.5" fill="#4a4f57">两侧都补上</text>
+  <text x="232" y="106" font-size="8.5" fill="#4a4f57">chatOpacity</text>
+  <text x="232" y="120" font-size="8.5" fill="#4a4f57">和 quality</text>
+  <text x="232" y="142" font-size="8.5" fill="#0f6d68">测试转绿</text>
+  <text x="232" y="156" font-size="8.5" fill="#4a4f57">功能对齐</text>
+
+  <path d="M 390 108 L 408 108" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a2)"/>
+
+  <rect x="412" y="34" width="172" height="150" rx="6" fill="#fff" stroke="#9fc7c3"/>
+  <text x="426" y="54" font-size="9" font-weight="700" fill="#7c828c">阶段 3</text>
+  <text x="426" y="74" font-size="10.5" font-weight="650" fill="#16181d">改为派生</text>
+  <text x="426" y="92" font-size="8.5" fill="#4a4f57">构建脚本从</text>
+  <text x="426" y="106" font-size="8.5" fill="#4a4f57">schema 生成</text>
+  <text x="426" y="120" font-size="8.5" fill="#4a4f57">DEFAULTS / KEYS</text>
+  <text x="426" y="142" font-size="8.5" fill="#0f6d68">每改一处</text>
+  <text x="426" y="156" font-size="8.5" fill="#0f6d68">都能独立过测试</text>
+
+  <path d="M 584 108 L 602 108" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a2)"/>
+
+  <rect x="606" y="34" width="164" height="150" rx="6" fill="#fdf3e3" stroke="#8a4b00"/>
+  <text x="620" y="54" font-size="9" font-weight="700" fill="#8a4b00">阶段 4</text>
+  <text x="620" y="74" font-size="10.5" font-weight="650" fill="#16181d">删手写清单</text>
+  <text x="620" y="92" font-size="8.5" fill="#4a4f57">面板改由</text>
+  <text x="620" y="106" font-size="8.5" fill="#4a4f57">schema 生成</text>
+  <text x="620" y="120" font-size="8.5" fill="#4a4f57">或接原生 slot</text>
+  <text x="620" y="142" font-size="8.5" fill="#8a4b00">净代码减少</text>
+  <text x="620" y="156" font-size="8.5" fill="#4a4f57">漂移不可能</text>
+
+  <!-- bottom note -->
+  <rect x="24" y="208" width="746" height="72" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="38" y="228" font-size="9.5" font-weight="700" fill="#7c828c">为什么这个顺序不能颠倒</text>
+  <text x="38" y="248" font-size="8.5" fill="#4a4f57">阶段 1 先写测试，阶段 2 修数据，阶段 3 才改结构。这样<strong>任何一步出问题都能回退</strong>，</text>
+  <text x="38" y="264" font-size="8.5" fill="#4a4f57">且每一步结束时仓库都是可发布状态。反过来（先改结构再补测试）就没有安全网。</text>
+</svg>
+</div>
+<figcaption>
+  四阶段迁移。<strong>阶段 1 的测试会先失败</strong>——那不是错误，是把已有债务显性化。
+  每一步结束都应能跑通 <code>npm run check</code>。
+</figcaption>
+</figure>
+
+<div class="card">
+<h3>阶段 1 那条测试长什么样</h3>
+<pre><code>test('both config paths expose the same fields', async () =&gt; {
+  // 从 bundle 侧读 DEFAULTS 的 key
+  const core = await text('shared/skin-core.js')
+  const defaults = core.match(/DEFAULTS = Object\.freeze\(\{([^}]*)\}/s)[1]
+  const bundleKeys = [...defaults.matchAll(/(\w+):/g)].map(m =&gt; m[1]).sort()
+
+  // 从源码注入侧读 interface 的 key
+  const contract = await text('harness-plugin/src/settings-contract.ts')
+  const nativeKeys = [...contract.matchAll(/^\s{2}(\w+):/gm)].map(m =&gt; m[1]).sort()
+
+  assert.deepEqual(bundleKeys, nativeKeys)
+})</code></pre>
+<p style="margin-bottom:0">
+写出来就会立刻看到 <code>chatCustom</code>/<code>chatOpacity</code>/<code>quality</code> 的不一致。
+<strong>这条测试本身就是这次重构最重要的产出</strong>——它防住的不只是现在这两个字段，而是未来所有的漂移。
+</p>
+</div>
+
+<h2><span class="num">6</span>检验一下</h2>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="重复不可怕，可怕的是两份都是手写的、彼此没有派生关系。一旦有了单一来源，重复就变成无害的生成物。"
+     data-feedback-wrong="回顾第 1 节的两张图：一张是两个独立真相，一张是一个来源派生全部。">
+  <p class="quiz-q"><span class="idx">1</span>配置漂移的<b>根本原因</b>是什么？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>存储位置不同导致读取失败</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>缺少统一的类型检查工具链</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>存在两个无派生关系的手写清单</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="阶段 1 先加一致性测试，它会立刻失败并暴露现有漂移。这是把债务显性化，不是引入 bug。"
+     data-feedback-wrong="第 5 节的图里，阶段 1 那格明确写了「预期失败」。">
+  <p class="quiz-q"><span class="idx">2</span>迁移第一阶段写完一致性测试后，预期结果是？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>测试失败，暴露出已有的漂移</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>测试通过，说明当前是一致的</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>无法运行，需先改构建脚本</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="<code>skin-core.js</code> 刻意不含 import/export，靠字符串拼接接适配器。派生结果必须以生成的代码块注入，不能让它去 import。"
+     data-feedback-wrong="回到第 3 节的黄色警告框，那里写了这条约束。">
+  <p class="quiz-q"><span class="idx">3</span><code>skin-core.js</code> 为什么不能直接 import schema？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>因为它运行在无法加载模块的环境</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>因为它靠字符串拼接接入存储适配器</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>因为它必须保持单文件以便于调试</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="字段在 bundle 侧和源码注入侧各自手写，谁也不是从谁派生。这就是结构性原因。"
+     data-feedback-wrong="注意区分「忘了同步」（人为失误）和「结构上允许两个真相」（设计问题）。">
+  <p class="quiz-q"><span class="idx">4</span>要彻底消除漂移，最关键的改动是什么？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>给两套配置都加上运行时校验</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>把两套配置合并到同一个存储键</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>让字段只有一处声明其余都派生</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<h2><span class="num">7</span>延伸阅读</h2>
+
+<ol>
+<li>
+<a href="../../harness-plugin/src/settings-contract.ts"><code>settings-contract.ts</code></a>
+＋
+<a href="../../harness-plugin/src/settings.ts"><code>settings.ts</code></a>
+——加起来不到 60 行，是"配置该长什么样"的现成范例：带类型、带 zod 校验、带默认值。
+把它作为 schema 的起点，比自己从零设计强。
+</li>
+<li>
+<a href="../../scripts/build-runtime.mjs"><code>build-runtime.mjs</code></a>
+——派生+校验这套模式在这个仓库已经跑通了，照抄它的结构（含 <code>--check</code>）即可。
+</li>
+<li>
+<a href="https://github.com/deepseek-ai/deepseek-harness"><code>deepseek-harness</code></a>
+——动手接 <code>settings.section</code> 前，先读 <code>packages/client/ui-settings</code>
+和相关 slot 声明，别只看我这个速查页（它会过期）。
+</li>
+</ol>
+
+<p class="ask-teacher">
+这一课是四节里最"工程"的，但收益也最大。如果你决定做，我建议从阶段 1 开始——
+那条一致性测试我可以直接帮你写，它本身就是一份"当前债务清单"。
+</p>
+
+<div class="lesson-nav">
+  <span>← 上一课</span>
+  <a href="0004-adding-a-background.html">第 4 课 · 新增一种背景</a>
+  <a href="../reference/architecture-map.html">速查：架构地图</a>
+  <a href="../reference/harness-slots.html">速查：可用 slot</a>
+</div>
+
+</body>
+</html>

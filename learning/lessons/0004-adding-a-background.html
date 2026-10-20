@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 课 · 新增一种背景</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<p class="kicker">Backspace 课程 · 第 4 课</p>
+<h1>新增一种背景</h1>
+<p class="subtitle">
+壁纸、视频、渐变——这些都能加，而且<strong>不需要动三条安装路径</strong>。
+但要绕开一个坑：现有存储层放不下素材。
+本课给出可落地的分层设计，以及每一步的验证方式。
+</p>
+
+<h2><span class="num">1</span>目标结构：背景变成"可插拔策略"</h2>
+
+<p>
+现在 <code>skin.html</code> 硬编码加载 <code>ocean.js</code>。
+改造目标是让它变成一个<strong>分派器</strong>：按 <code>type</code> 选一个渲染器模块。
+这样以后加背景就是"加一个文件"，不用改控制器。
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 400" role="img" aria-labelledby="fig1-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig1-title">背景分派架构：skin.html 作为分派器按 type 加载不同渲染模块，控制器只负责传参数和存储素材，三条安装路径无需改动</title>
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <!-- controller -->
+  <rect x="30" y="34" width="180" height="104" rx="6" fill="#fff" stroke="#b9c4c2"/>
+  <text x="42" y="52" font-size="9" font-weight="700" fill="#7c828c">宿主页 · 不变</text>
+  <text x="42" y="72" font-size="10.5" font-weight="650" fill="#16181d">skin-core.js</text>
+  <text x="42" y="90" font-size="9" fill="#4a4f57">存 state</text>
+  <text x="42" y="106" font-size="9" fill="#4a4f57">拼 iframe URL</text>
+  <text x="42" y="122" font-size="9" fill="#4a4f57">postMessage 更新</text>
+
+  <path d="M 210 86 L 252 86" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a1)"/>
+  <text x="231" y="76" font-size="8" fill="#4a4f57" text-anchor="middle">type=…</text>
+
+  <!-- dispatcher -->
+  <rect x="256" y="34" width="150" height="104" rx="6" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.5"/>
+  <text x="268" y="52" font-size="9" font-weight="700" fill="#0f6d68">iframe 入口 · 改造点</text>
+  <text x="268" y="72" font-size="10.5" font-weight="650" fill="#16181d">skin.html</text>
+  <text x="268" y="90" font-size="9" fill="#4a4f57">读 type 参数</text>
+  <text x="268" y="106" font-size="9" fill="#4a4f57">动态 import()</text>
+  <text x="268" y="122" font-size="9" fill="#0f6d68">仍是唯一入口</text>
+
+  <!-- modules -->
+  <path d="M 406 62 L 448 52" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 406 86 L 448 86" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 406 110 L 448 120" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+
+  <rect x="452" y="30" width="300" height="38" rx="5" fill="#fff" stroke="#9fc7c3"/>
+  <text x="466" y="46" font-size="10" font-weight="650" fill="#16181d">ocean.js</text>
+  <text x="466" y="60" font-size="8.5" fill="#4a4f57">现有 · 程序化 WebGPU 海洋</text>
+
+  <rect x="452" y="74" width="300" height="38" rx="5" fill="#f2f8f8" stroke="#0f6d68"/>
+  <text x="466" y="90" font-size="10" font-weight="650" fill="#16181d">background-image.js</text>
+  <text x="466" y="104" font-size="8.5" fill="#4a4f57">新增 · 静态壁纸，约 20 行</text>
+
+  <rect x="452" y="118" width="300" height="38" rx="5" fill="#f2f8f8" stroke="#0f6d68"/>
+  <text x="466" y="134" font-size="10" font-weight="650" fill="#16181d">background-video.js</text>
+  <text x="466" y="148" font-size="8.5" fill="#4a4f57">新增 · 循环视频，约 30 行</text>
+
+  <text x="452" y="180" font-size="8.5" fill="#0f6d68">每个模块自包含：读参数、自建 DOM、报告 ready</text>
+
+  <!-- asset store -->
+  <rect x="30" y="212" width="722" height="96" rx="6" fill="#fdf3e3" stroke="#8a4b00" stroke-width="1.4"/>
+  <text x="44" y="232" font-size="9.5" font-weight="700" fill="#8a4b00">素材从哪来：两条路径，都不要塞进 localStorage</text>
+
+  <rect x="44" y="244" width="330" height="50" rx="4" fill="#fff" stroke="#e0c9a3"/>
+  <text x="56" y="262" font-size="9.5" font-weight="650" fill="#16181d">① 用户本地文件 → blob: URL</text>
+  <text x="56" y="278" font-size="8.5" fill="#4a4f57">即时可用，实测同源 iframe 可 fetch</text>
+  <text x="56" y="290" font-size="8.5" fill="#8a4b00">不可跨会话持久化</text>
+
+  <rect x="394" y="244" width="344" height="50" rx="4" fill="#fff" stroke="#e0c9a3"/>
+  <text x="406" y="262" font-size="9.5" font-weight="650" fill="#16181d">② IndexedDB 存 Blob → 重启后仍在</text>
+  <text x="406" y="278" font-size="8.5" fill="#4a4f57">实测 3MB Blob 存取正常</text>
+  <text x="406" y="290" font-size="8.5" fill="#8a4b00">需新增一层存储能力</text>
+
+  <!-- contract -->
+  <rect x="30" y="326" width="722" height="56" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="44" y="346" font-size="9.5" font-weight="700" fill="#7c828c">渲染模块必须遵守的契约（三个现有约定，别打破）</text>
+  <text x="44" y="364" font-size="8.5" fill="#4a4f57">① 建 DOM 后加 <tspan font-family="monospace" fill="#0f6d68">body.ready</tspan>（触发淡入）　② 只监听 parent 且校验 origin　③ 不吃鼠标（pointer-events: none）</text>
+  <text x="44" y="378" font-size="8.5" fill="#4a4f57">三条路径的 CSS 与安全策略都依赖这三点，新模块照抄即可。</text>
+</svg>
+</div>
+<figcaption>
+  改造后的结构。<strong>只有 <code>skin.html</code> 和新增的背景模块是新的</strong>；
+  <code>skin-core.js</code> 只多传一个参数，三条安装路径完全不用改。
+  这是接缝 ② 的标准形态。
+</figcaption>
+</figure>
+
+<h2><span class="num">2</span>最小实现：静态壁纸</h2>
+
+<p>先做最简单的，验证整条链路通。新建 <code>shared/background-image.js</code>：</p>
+
+<pre><code>// 静态壁纸背景。遵守与 ocean.js 相同的三条约定。
+const query = new URLSearchParams(location.search)
+const src = query.get('src')          // blob: 或 data: 或 https:
+
+if (!src) {
+  // 没素材就什么也不画，让下面的控制器退回海洋
+  window.parent.postMessage({ type: 'bs-bg-error', reason: 'missing-src' }, location.origin)
+} else {
+  const image = new Image()
+  image.src = src
+  image.decoding = 'async'
+  image.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;' +
+    'object-fit:cover;pointer-events:none'
+
+  const reveal = () => document.body.classList.add('ready')   // ① 淡入契约
+  image.decode().then(reveal, reveal)                          // 解码失败也要显示，避免白屏
+  document.body.append(image)
+}
+
+// ② 只接受 parent 且校验 origin
+window.addEventListener('message', (event) =&gt; {
+  if (event.source !== window.parent) return
+  if (event.origin !== location.origin) return
+  const data = event.data
+  if (data?.type === 'bs-bg-set' &amp;&amp; typeof data.src === 'string') {
+    document.querySelector('img')?.setAttribute('src', data.src)
+  }
+})</code></pre>
+
+<p>然后在 <code>skin.html</code> 里改成分派（现在它硬编码 <code>ocean.js?skin=1</code>）：</p>
+
+<pre><code>const query = new URLSearchParams(location.search)
+const type = query.get('type') ?? 'ocean'
+
+const MODULES = {
+  ocean: './ocean.js?skin=1',
+  image: './background-image.js',
+  video: './background-video.js',
+}
+
+import(MODULES[type] ?? MODULES.ocean)
+  .catch(() =&gt; import(MODULES.ocean))   // 任何失败都退回海洋，绝不白屏</code></pre>
+
+<div class="note">
+<span class="label">为什么退回海洋很重要</span>
+素材可能损坏、格式不支持、URL 失效。<strong>背景是装饰层，它失败绝不能让 Harness 不可用。</strong>
+现有代码在 WebGPU 不可用时也只是在 console 报错并保持页面可读——新背景要守住同一条底线。
+</div>
+
+<h2><span class="num">3</span>素材从哪来：两条路径</h2>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 340" role="img" aria-labelledby="fig2-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig2-title">素材来源的两条路径：本地文件即时生成 blob URL，或存入 IndexedDB 以便下次启动恢复，两条路径最终都变成 iframe 可用的 URL</title>
+  <defs>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <!-- origin -->
+  <rect x="30" y="26" width="150" height="56" rx="5" fill="#fff" stroke="#b9c4c2"/>
+  <text x="44" y="46" font-size="9.5" font-weight="650" fill="#16181d">用户选文件</text>
+  <text x="44" y="62" font-size="8.5" fill="#4a4f57">&lt;input type=file&gt;</text>
+  <text x="44" y="74" font-size="8.5" fill="#4a4f57">或拖拽</text>
+
+  <path d="M 180 54 L 220 54" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a2)"/>
+
+  <rect x="224" y="26" width="160" height="56" rx="5" fill="#fff" stroke="#b9c4c2"/>
+  <text x="238" y="46" font-size="9.5" font-weight="650" fill="#16181d">File 对象</text>
+  <text x="238" y="62" font-size="8.5" fill="#4a4f57">本质是 Blob</text>
+  <text x="238" y="74" font-size="8.5" fill="#4a4f57">不用读进内存</text>
+
+  <!-- path A (ephemeral) -->
+  <path d="M 384 44 L 424 36" stroke="#7c828c" stroke-width="1.5" marker-end="url(#a2)"/>
+  <rect x="428" y="14" width="322" height="46" rx="5" fill="#f2f8f8" stroke="#0f6d68"/>
+  <text x="442" y="32" font-size="9.5" font-weight="650" fill="#16181d">URL.createObjectURL(file) → blob: URL</text>
+  <text x="442" y="48" font-size="8.5" fill="#4a4f57">即时、零拷贝、跨同源 iframe可读（实测）· 刷新即失效</text>
+
+  <!-- path B (durable) -->
+  <path d="M 384 66 L 424 92" stroke="#8a4b00" stroke-width="1.5" marker-end="url(#a2)"/>
+  <rect x="428" y="76" width="322" height="46" rx="5" fill="#fdf3e3" stroke="#8a4b00"/>
+  <text x="442" y="94" font-size="9.5" font-weight="650" fill="#16181d">IndexedDB.put(blob) → 下次启动 get()</text>
+  <text x="442" y="110" font-size="8.5" fill="#4a4f57">持久（实测 3MB 正常）· 需要新的存储能力</text>
+
+  <!-- converge -->
+  <path d="M 589 60 L 589 140" stroke="#7c828c" stroke-width="1.4"/>
+  <path d="M 589 122 L 589 140" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+
+  <rect x="330" y="144" width="400" height="52" rx="5" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.5"/>
+  <text x="344" y="163" font-size="10" font-weight="650" fill="#16181d">iframe 的 src 参数：type=image&amp;src=blob:…</text>
+  <text x="344" y="180" font-size="8.5" fill="#4a4f57">两条路径收敛到同一个 URL 形态，渲染模块无需区分来源</text>
+
+  <path d="M 460 196 L 460 226" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a2)"/>
+
+  <rect x="330" y="230" width="400" height="44" rx="5" fill="#fff" stroke="#b9c4c2"/>
+  <text x="344" y="249" font-size="9.5" font-weight="650" fill="#16181d">background-image.js / background-video.js</text>
+  <text x="344" y="265" font-size="8.5" fill="#4a4f57">只认 URL，不关心它是 blob 还是 https</text>
+
+  <!-- warning box -->
+  <rect x="30" y="230" width="270" height="80" rx="5" fill="#fbeceb" stroke="#8c2f2f" stroke-dasharray="4 3"/>
+  <text x="44" y="250" font-size="9" font-weight="650" fill="#8c2f2f">✕ 不要走这里</text>
+  <text x="44" y="268" font-size="8.5" fill="#4a4f57">localStorage 存 base64 素材</text>
+  <text x="44" y="284" font-size="8.5" fill="#8c2f2f">实测 6MB 即抛 QuotaExceeded</text>
+  <text x="44" y="300" font-size="8.5" fill="#4a4f57">base64 还会再膨胀约 33%</text>
+
+  <text x="30" y="332" font-size="8.5" fill="#7c828c">↑ blob URL 的生命周期：createObjectURL 后在不再使用时 revokeObjectURL()，否则整个会话都在泄漏内存</text>
+</svg>
+</div>
+<figcaption>
+  素材的两条来源。<strong>关键设计</strong>：两条路径最终都收敛成"一个 URL"，
+  所以背景模块<strong>不需要知道素材是刚选的还是上次存的</strong>——这大幅降低了复杂度。
+</figcaption>
+</figure>
+
+<div class="warn">
+<span class="label">必须处理的一个细节</span>
+<code>createObjectURL()</code> 产生的 URL 会让 Blob 一直驻留内存，
+直到 <code>revokeObjectURL()</code> 或页面卸载。
+换素材时必须先撤销旧的，否则连续换十次壁纸就泄漏十份数据。
+</div>
+
+<h2><span class="num">4</span>要新增的存储能力</h2>
+
+<p>
+现有 <code>storage</code> 接口只有 <code>get/set</code>，且三条路径都只能存小标量。
+加大素材需要扩展这个接口——<strong>这是本次改造唯一需要碰适配器的地方</strong>，
+所以要想清楚边界。
+</p>
+
+<pre><code>// 建议：把"大对象"和"设置"分开，不要混进同一个 get/set
+const storage = {
+  get: ...,        // 保持原样：小标量
+  set: ...,        // 保持原样
+}
+
+// 新增，仅背景功能使用
+const assetStore = {
+  put: (key, blob) =&gt; Promise&lt;void&gt;,
+  get: (key)        =&gt; Promise&lt;Blob | undefined&gt;,
+  remove: (key)     =&gt; Promise&lt;void&gt;,
+}
+
+createController({ assetUrl, storage, assetStore })</code></pre>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>路径</th><th><code>assetStore</code> 实现</th><th>备注</th></tr></thead>
+<tbody>
+<tr><td>扩展</td><td>IndexedDB（扩展自身 origin）</td><td><code>storage</code> 权限已够</td></tr>
+<tr><td>静态 / DSH 插件</td><td>IndexedDB（Harness origin）</td><td>与宿主共享配额</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="label">三处实现几乎相同</span>
+IndexedDB 的代码是通用的，可以抽成一个共享函数由三个适配器各自调用。
+<strong>不要把 IndexedDB 逻辑写进 <code>skin-core.js</code></strong>——
+控制器不该知道持久化细节。
+</div>
+
+<h2><span class="num">5</span>视频特有的三个坑</h2>
+
+<div class="card">
+<h3>① 自动播放策略</h3>
+<p>
+带声音的视频会被浏览器拦截。<code>muted</code> + <code>autoplay</code> + <code>playsInline</code>
+是必填组合；<code>play()</code> 返回 Promise，<strong>必须 catch</strong>，
+否则在受限环境会抛未处理拒绝。
+</p>
+
+<h3>② 解码开销</h3>
+<p>
+4K 视频当背景会让 GPU 解码器和 WebGPU 抢资源。建议在控制器里限制
+（比如超过 1080p 提示降级），或者让用户自己承担。这需要真机测帧率——
+我没有你的机器数据，别信任何"应该没问题"的说法。
+</p>
+
+<h3>③ 与「减少动效」冲突</h3>
+<p>
+现有渲染器在 <code>prefers-reduced-motion</code> 下会降到约 20 FPS 并显著减速。
+视频背景应当尊重同一偏好：<strong>抽首帧当静态图</strong>，而不是继续播放。
+</p>
+</div>
+
+<pre><code>// 尊重 reduced-motion：不播放，只留首帧
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+if (reduce) {
+  video.removeAttribute('autoplay')
+  video.currentTime = 0.1        // 确保有帧可显示
+} else {
+  await video.play().catch(() =&gt; { /* 被拦截：保持首帧 */ })
+}</code></pre>
+
+<h2><span class="num">6</span>检验一下</h2>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="背景模块只认 URL，blob 和 https 对它没区别。真正不能用的是 localStorage 存素材（配额会爆）。"
+     data-feedback-wrong="回到第 2 节的「正确」与「错误」两个框，看看哪个是被明确排除的。">
+  <p class="quiz-q"><span class="idx">1</span>下面哪种素材存放方式<b>不可行</b>？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>用 blob URL 传给同源 iframe</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>用 localStorage 存 base64</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>用 IndexedDB 存 Blob</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="现有淡入动画靠 <code>body.ready</code> 触发；不设它背景就不显示，或会闪一下。"
+     data-feedback-wrong="这个约定在 <code>styles.css</code> 里，第 2 节代码注释也标了 ①。">
+  <p class="quiz-q"><span class="idx">2</span>新背景模块建好 DOM 后必须做什么？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>调用控制器的 ready 回调函数</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>向父页面发送完成的通知消息</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>给 body 加上 ready 类触发淡入</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="背景是装饰层。素材损坏、格式不支持、WebGPU 不可用——任何失败都必须退回海洋或保持页面可读，绝不允许白屏。"
+     data-feedback-wrong="想想现有代码在 WebGPU 不可用时的行为。">
+  <p class="quiz-q"><span class="idx">3</span>背景素材加载失败时，正确行为是？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>回退到海洋并保持 Harness 可用</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>显示全屏错误提示等待用户处理</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>重试三次后清空全部用户设置</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="<code>revokeObjectURL()</code> 不调用，Blob 会一直驻留内存，换几次素材就是几份泄漏。"
+     data-feedback-wrong="第 3 节红框下面的提示专门讲了生命周期。">
+  <p class="quiz-q"><span class="idx">4</span>用户连续更换五次壁纸，会有什么后果？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>旧壁纸会被浏览器自动回收释放</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>未撤销的 URL 会让数据驻留内存</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>IndexedDB 会被自动清空并报错</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<h2><span class="num">7</span>延伸阅读</h2>
+
+<ol>
+<li>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static">MDN: <code>URL.createObjectURL()</code></a>
+——重点看"内存生命周期"那一节，这是最容易漏的地方。
+</li>
+<li>
+<a href="https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Containers">MDN: 媒体容器格式</a>
+——选 MP4/H.264 还是 WebM 的依据。
+</li>
+<li>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API">MDN: IndexedDB API</a>
+——只需要理解 <code>objectStore</code> 能直接存 Blob，不需要读完全部。
+</li>
+</ol>
+
+<p class="ask-teacher">
+真正开始动手时，我可以帮你把 <code>skin.html</code> 的分派改造写出来、把 IndexedDB 那层抽象做好。
+但按你的要求，我这次没有改仓库。想开始就说一声。
+</p>
+
+<div class="lesson-nav">
+  <span>← 上一课</span>
+  <a href="0002-extension-seams.html">第 2 课 · 扩展接缝地图</a>
+  <span>下一课 →</span>
+  <a href="0005-config-management.html">第 5 课 · 配置管理</a>
+</div>
+
+</body>
+</html>

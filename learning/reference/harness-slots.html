@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>速查 · Harness 可用 slot 清单</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<p class="kicker">速查手册</p>
+<h1>Harness 可用 slot 清单</h1>
+<p class="subtitle">
+配套课程：<a href="../lessons/0002-extension-seams.html">第 2 课</a>。
+数据来源：本机安装的 DeepSeek Harness <code>0.2.1</code>，
+解包 <code>app.asar</code> 后读取 <code>@deepseek-ai/dsh-client-ui-*</code> 里
+<code>ctx.slots.register({ children: { … kind } })</code> 的实际声明。
+</p>
+
+<div class="warn">
+<span class="label">先读这条</span>
+Harness <strong>没有公开的 slot 完整清单文档</strong>。本页是从安装包反推的，
+版本一变就可能过期。<strong>用之前先在你当前的版本上复核一遍</strong>（复核方法见页尾）。
+</div>
+
+<h2>根节点（由 ui-layout 声明）</h2>
+
+<p>这是最顶层，只有 6 个。注意<strong>没有 background slot</strong>。</p>
+
+<table>
+<thead><tr><th>slot</th><th>kind</th><th>scope</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>sidebar</code></td><td>single</td><td>root</td><td>左栏整列</td></tr>
+<tr><td><code>main</code></td><td>keyed</td><td>root</td><td>中央主面板（keyed，可用 key 区分）</td></tr>
+<tr><td><code>rightbar</code></td><td>single</td><td>root</td><td>右栏</td></tr>
+<tr><td><code>shell.bottom</code></td><td>single</td><td>root</td><td>三列下方的全宽条</td></tr>
+<tr><td><code>shell.overlay</code></td><td>list</td><td>root</td><td>覆盖整个框架的浮层</td></tr>
+<tr><td><code>shell.leading</code></td><td>single</td><td>root</td><td>macOS 折叠侧栏时的前导区</td></tr>
+</tbody>
+</table>
+
+<div class="stop">
+<span class="label">没有 shell.background</span>
+所以第三方插件<strong>无法</strong>注册"铺在最底层、位于三列之后"的背景层。
+这就是本仓库 <code>harness-plugin/install-into-harness.sh</code> 必须修改 Harness 源码
+<code>ui-layout/src/client/index.ts</code> 硬插 <code>'shell.background'</code> 声明的唯一原因。
+</div>
+
+<h2>设置相关</h2>
+
+<p>由 <code>dsh-client-ui-settings-general</code> 声明。<strong>这是第三方插件做配置管理的正路。</strong></p>
+
+<table>
+<thead><tr><th>slot</th><th>用途</th><th>第三方可用</th></tr></thead>
+<tbody>
+<tr><td><code>settings.section</code></td><td><strong>在设置对话框里增加一个整页分区</strong></td><td>✓ 已实测</td></tr>
+<tr><td><code>settings.general.item</code></td><td>通用设置页里的一个条目</td><td>原生集成用过</td></tr>
+<tr><td><code>settings.header</code></td><td>设置导航标题区</td><td>—</td></tr>
+<tr><td><code>settings.launcher</code></td><td>打开设置的入口</td><td>—</td></tr>
+<tr><td><code>settings.trigger</code></td><td>触发控件</td><td>—</td></tr>
+<tr><td><code>settings.action</code></td><td>设置头部动作区</td><td>—</td></tr>
+<tr><td><code>settings.close</code></td><td>关闭按钮标签</td><td>—</td></tr>
+<tr><td><code>settings.onboarding</code></td><td>引导步骤</td><td>—</td></tr>
+<tr><td><code>settings.models.footer</code></td><td>模型设置页脚</td><td>—</td></tr>
+<tr><td><code>settings.plugins.tab</code></td><td>插件设置页签</td><td>—</td></tr>
+<tr><td><code>settings.shortcuts</code></td><td>快捷键设置</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h3>已安装第三方插件的实测用法</h3>
+
+<table>
+<thead><tr><th>插件</th><th>注册的 slot</th></tr></thead>
+<tbody>
+<tr><td><code>dsh-model-visibility</code></td><td><code>settings.section</code></td></tr>
+<tr><td><code>dsh-rewind-plugin</code></td><td><code>plugins.bundle.config</code></td></tr>
+<tr><td><code>dsh-browser-use</code></td><td><code>settings.section</code></td></tr>
+<tr><td><code>dsh-plugin-tool-management</code></td><td><code>conversation.input.dock</code></td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<span class="label">结论</span>
+<strong>配置管理不需要动 Harness。注册 <code>settings.section</code> 就够了。</strong>
+</div>
+
+<h2>侧栏</h2>
+
+<table>
+<thead><tr><th>slot</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>sidebar.brand.mark</code></td><td>品牌图标</td></tr>
+<tr><td><code>sidebar.brand.name</code></td><td>品牌名</td></tr>
+<tr><td><code>sidebar.toggle.badge</code></td><td>折叠按钮角标</td></tr>
+<tr><td><code>sidebar.panellist</code></td><td>面板列表</td></tr>
+<tr><td><code>sidebar.workspaces</code></td><td>工作区列表</td></tr>
+<tr><td><code>sidebar.settings</code></td><td>设置入口区（<strong>本仓库按钮定位于此</strong>）</td></tr>
+<tr><td><code>sidebar.footer.action</code></td><td>侧栏底部动作（原生集成用这个）</td></tr>
+</tbody>
+</table>
+
+<h2>对话区（30+ 个，最丰富的扩展面）</h2>
+
+<table>
+<thead><tr><th>slot</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>conversation.view</code></td><td>整个对话视图</td></tr>
+<tr><td><code>conversation.session</code></td><td>会话容器</td></tr>
+<tr><td><code>conversation.header</code> / <code>.leading</code></td><td>头部与头部前导</td></tr>
+<tr><td><code>conversation.session.header</code></td><td>会话头</td></tr>
+<tr><td><code>conversation.session.header.actions</code></td><td>会话头动作按钮</td></tr>
+<tr><td><code>conversation.session.header.utilities</code></td><td>会话头工具区</td></tr>
+<tr><td><code>conversation.session.header.corner</code></td><td>会话头角落</td></tr>
+<tr><td><code>conversation.session.header.lineage</code></td><td>会话血缘</td></tr>
+<tr><td><code>conversation.composer</code> / <code>.bar</code> / <code>.dock</code></td><td>输入区及其栏、停靠区</td></tr>
+<tr><td><code>conversation.input.dock</code></td><td>输入框停靠区（第三方插件在用）</td></tr>
+<tr><td><code>conversation.input.left</code> / <code>.right</code></td><td>输入框左右侧</td></tr>
+<tr><td><code>conversation.input.model</code> / <code>.model.label</code></td><td>模型选择器</td></tr>
+<tr><td><code>conversation.input.attachments</code></td><td>附件区</td></tr>
+<tr><td><code>conversation.input.permission</code></td><td>权限控制</td></tr>
+<tr><td><code>conversation.input.plan</code></td><td>计划模式</td></tr>
+<tr><td><code>conversation.input.activity</code></td><td>活动状态</td></tr>
+<tr><td><code>conversation.input.overlay</code></td><td>输入区浮层</td></tr>
+<tr><td><code>conversation.input.selector.context</code></td><td>选择器上下文</td></tr>
+<tr><td><code>conversation.hero.*</code></td><td>空会话首页（brand/workspace/agentPreset/options）</td></tr>
+<tr><td><code>conversation.chat.*</code></td><td>消息渲染（node/flow/message.images/reasoning.body/turnTail/commandview/user.images）</td></tr>
+<tr><td><code>conversation.user.text</code> / <code>.node</code></td><td>用户消息文本</td></tr>
+<tr><td><code>conversation.approval.detail</code></td><td>审批详情</td></tr>
+<tr><td><code>conversation.trajectory.images</code></td><td>轨迹图片</td></tr>
+</tbody>
+</table>
+
+<h2>详情栏 / 插件页</h2>
+
+<table>
+<thead><tr><th>slot</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>details.event</code> / <code>.error</code> / <code>.compacted</code></td><td>详情栏事件渲染</td></tr>
+<tr><td><code>details.hierarchy</code></td><td>层级视图</td></tr>
+<tr><td><code>details.model</code> / <code>.provider</code> / <code>.purpose</code></td><td>详情信息项</td></tr>
+<tr><td><code>details.resize</code> / <code>.close</code></td><td>尺寸手柄、关闭</td></tr>
+<tr><td><code>details.failure.auth</code> / <code>.lastAttemptError</code></td><td>失败详情</td></tr>
+<tr><td><code>plugins.add.actions</code></td><td>插件添加对话框动作</td></tr>
+<tr><td><code>plugins.bundle.activation</code> / <code>.config</code></td><td>插件包激活与配置</td></tr>
+<tr><td><code>plugins.detail.actions</code> / <code>.badge</code> / <code>.section</code></td><td>插件详情</td></tr>
+<tr><td><code>plugins.item</code> / <code>.row.config</code> / <code>.tab</code></td><td>插件条目</td></tr>
+</tbody>
+</table>
+
+<h2>kind 的语义</h2>
+
+<table>
+<thead><tr><th>kind</th><th>含义</th><th>注册方式</th></tr></thead>
+<tbody>
+<tr><td><code>single</code></td><td>只能有一个占用者</td><td>直接注册；先到先得</td></tr>
+<tr><td><code>list</code></td><td>可以有多个，按 order 排序</td><td>多个插件可共存</td></tr>
+<tr><td><code>keyed</code></td><td>按 key 区分多个</td><td>注册时给 key</td></tr>
+</tbody>
+</table>
+
+<h2>怎么在你的版本上复核</h2>
+
+<p>找不到文档时，直接读安装包。macOS 官方客户端：</p>
+
+<pre><code># 1. 解包 asar（一次性）
+npx --yes @electron/asar extract \
+  "/Applications/DeepSeek Harness.app/Contents/Resources/app.asar" \
+  /tmp/asarprobe
+
+# 2. 看某个包声明了哪些 slot
+cd /tmp/asarprobe/dsh/node_modules/@deepseek-ai/dsh-client-ui-layout
+node -e 'const s=require("fs").readFileSync("lib/client.js","utf8");
+const i=s.indexOf("children: {");
+console.log(s.slice(i, i+900))'
+
+# 3. 全局搜某类 slot 名
+cd /tmp/asarprobe/dsh/node_modules/@deepseek-ai
+grep -rhoE '"settings\.[a-zA-Z.]+":\s*\{' --include=client.js . | sort -u</code></pre>
+
+<div class="note">
+<span class="label">更快的办法</span>
+直接给你装好的第三方插件做同样的 grep——它们只会用<strong>确实能跑通</strong>的 slot。
+见上方"已安装第三方插件的实测用法"表。
+</div>
+
+<h2>踩坑提醒</h2>
+
+<ul>
+<li>
+<strong>slot 不存在 ≠ 注册失败会有报错。</strong>
+部分路径下注册一个未声明的 slot 会静默无效。这就是为什么
+<code>harness-plugin/</code> 要打源码补丁而不是直接注册。
+</li>
+<li>
+<strong>不要只靠 CSS 猜结构。</strong>
+<code>skin-core.js</code> 里那些 <code>.wSkVaW_root</code>、
+<code>data-shell-overlay</code> 的选择器是<strong>脆弱的 DOM 探测</strong>，
+不是契约。版本一升就可能失效——1.2.3 和 1.2.5 两次修复都源于此。
+</li>
+<li>
+<strong>优先用 slot，其次用主题 token，最后才用 DOM 选择器。</strong>
+本仓库目前大量依赖最后一种，这是它最脆弱的地方，也是未来该改善的方向。
+</li>
+</ul>
+
+<p class="ask-teacher">
+想确认某个 slot 的 props 长什么样、或者想让我基于某版本重新扫一遍清单，直接说。
+也可以让我把「当前版本 vs 上次扫描」的差异列出来。
+</p>
+
+</body>
+</html>

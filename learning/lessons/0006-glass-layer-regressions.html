@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 课 · 玻璃层：为什么它反复出问题</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<p class="kicker">Backspace 课程 · 第 6 课</p>
+<h1>玻璃层：为什么它反复出问题</h1>
+<p class="subtitle">
+这是全仓库<strong>唯一一个修了四次还在修的模块</strong>，而你的扩展计划正好要经过它。
+本课不讲"玻璃怎么写"，而是讲<strong>为什么它必然会坏、以及怎么让它坏得可预测</strong>——
+这决定了你之后每加一个背景要付多少维护成本。
+</p>
+
+<h2><span class="num">1</span>先看证据：同一个根因，四次事故</h2>
+
+<p>
+我把 <code>CHANGELOG.md</code> 和提交历史里所有和玻璃相关的修复排在一起。
+注意它们<strong>看起来是完全不同的 bug</strong>：
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 340" role="img" aria-labelledby="fig1-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig1-title">四次玻璃相关修复的时间线：症状各不相同，但都源于同一件事——插件通过覆盖 Harness 的语义 token 来改变外观</title>
+
+  <!-- axis -->
+  <path d="M 40 200 L 748 200" stroke="#b9c4c2" stroke-width="1.5"/>
+  <text x="748" y="190" font-size="9" fill="#7c828c" text-anchor="end">时间 →</text>
+
+  <!-- 1.2.1 -->
+  <circle cx="120" cy="200" r="7" fill="#0f6d68"/>
+  <line x1="120" y1="193" x2="120" y2="110" stroke="#9fc7c3" stroke-width="1.2"/>
+  <rect x="46" y="56" width="148" height="54" rx="4" fill="#e6f4f3" stroke="#0f6d68"/>
+  <text x="56" y="72" font-size="9" font-weight="700" fill="#0f6d68">1.2.1</text>
+  <text x="56" y="88" font-size="8.5" font-weight="650" fill="#16181d">设置弹窗被盖住</text>
+  <text x="56" y="102" font-size="8" fill="#4a4f57">z-index 层叠上下文</text>
+  <text x="120" y="220" font-size="8.5" fill="#4a4f57" text-anchor="middle">弹窗不可点</text>
+
+  <!-- 1.2.3 -->
+  <circle cx="320" cy="200" r="7" fill="#0f6d68"/>
+  <line x1="320" y1="193" x2="320" y2="110" stroke="#9fc7c3" stroke-width="1.2"/>
+  <rect x="246" y="56" width="148" height="54" rx="4" fill="#e6f4f3" stroke="#0f6d68"/>
+  <text x="256" y="72" font-size="9" font-weight="700" fill="#0f6d68">1.2.3</text>
+  <text x="256" y="88" font-size="8.5" font-weight="650" fill="#16181d">三栏深浅不一</text>
+  <text x="256" y="102" font-size="8" fill="#4a4f57">侧栏叠加 + 透明覆盖</text>
+  <text x="320" y="220" font-size="8.5" fill="#4a4f57" text-anchor="middle">侧栏偏浅</text>
+
+  <!-- 1.2.5 -->
+  <circle cx="520" cy="200" r="7" fill="#8a4b00"/>
+  <line x1="520" y1="193" x2="520" y2="110" stroke="#e0c9a3" stroke-width="1.2"/>
+  <rect x="446" y="56" width="148" height="54" rx="4" fill="#fdf3e3" stroke="#8a4b00"/>
+  <text x="456" y="72" font-size="9" font-weight="700" fill="#8a4b00">1.2.5</text>
+  <text x="456" y="88" font-size="8.5" font-weight="650" fill="#16181d">对话区偏暗</text>
+  <text x="456" y="102" font-size="8" fill="#4a4f57">嵌套表面重复合成</text>
+  <text x="520" y="220" font-size="8.5" fill="#4a4f57" text-anchor="middle">中间发黑</text>
+
+  <!-- 未发布 -->
+  <circle cx="694" cy="200" r="7" fill="#8c2f2f"/>
+  <line x1="694" y1="193" x2="694" y2="110" stroke="#e0b3b3" stroke-width="1.2"/>
+  <rect x="620" y="56" width="148" height="54" rx="4" fill="#fbeceb" stroke="#8c2f2f"/>
+  <text x="630" y="72" font-size="9" font-weight="700" fill="#8c2f2f">本次</text>
+  <text x="630" y="88" font-size="8.5" font-weight="650" fill="#16181d">预览卡透出背景</text>
+  <text x="630" y="102" font-size="8" fill="#4a4f57">浮层 token 被稀释</text>
+  <text x="694" y="220" font-size="8.5" fill="#4a4f57" text-anchor="middle">文字看不清</text>
+
+  <!-- root cause band -->
+  <rect x="40" y="252" width="728" height="76" rx="6" fill="#fff" stroke="#8c2f2f" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <text x="56" y="274" font-size="10" font-weight="700" fill="#8c2f2f">共同根因（唯一的）</text>
+  <text x="56" y="294" font-size="9.5" fill="#16181d">插件通过覆盖 Harness 的语义 token 改变外观，而 token 的消费方由 Harness 决定、且不保证稳定。</text>
+  <text x="56" y="312" font-size="8.5" fill="#4a4f57">每次都是「插件假设了某个 token / 某个元素只用于 X，而 Harness 拿它去画了 Y」——症状不同，机制相同。</text>
+
+  <!-- arrow from band up -->
+  <path d="M 404 252 L 404 232" stroke="#8c2f2f" stroke-width="1.2" marker-end="url(#aX)"/>
+  <defs><marker id="aX" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8c2f2f"/></marker></defs>
+</svg>
+</div>
+<figcaption>
+  四次事故、四个不同症状、<strong>一个根因</strong>。
+  这条时间线解释了一件事：这不是"手滑"，是<strong>设计上的结构性风险</strong>。
+  如果你接下来要加视频背景、要加配置项，你会反复经过这一层。
+</figcaption>
+</figure>
+
+<h2><span class="num">2</span>机制：为什么覆盖 token 特别危险</h2>
+
+<p>
+Harness 的配色不是"给每个元素写死颜色"，而是<strong>语义 token</strong>：
+先定义静态调色板，再把语义别名映射上去。
+</p>
+
+<pre><code>/* 静态调色板：值 */
+--dsw-static-neutral-bluish-00: #fff
+--dsw-static-neutral-bluish-950: #151517
+
+/* 语义别名：用途。这就是"token" */
+--dsw-alias-bg-base: var(--dsw-static-neutral-bluish-00)
+--dsw-alias-bg-layer-1: var(--dsw-static-neutral-bluish-00)
+--dsw-alias-bg-layer-2: var(--dsw-static-neutral-bluish-00)</code></pre>
+
+<p>
+这个设计对 Harness 是好事：改一处调色板，全站跟着变。但对你这个插件，
+它意味着<strong>一次覆盖会命中所有消费方，而你不知道消费方有哪些</strong>。
+</p>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 330" role="img" aria-labelledby="fig2-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig2-title">覆盖一个 token 会同时影响插件知道的消费方和不知道的消费方，后者就是事故来源</title>
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c828c"/>
+    </marker>
+  </defs>
+
+  <rect x="300" y="24" width="180" height="52" rx="6" fill="#fff" stroke="#16181d" stroke-width="1.6"/>
+  <text x="390" y="45" font-size="10" font-weight="650" fill="#16181d" text-anchor="middle">--dsw-alias-bg-layer-1</text>
+  <text x="390" y="63" font-size="8.5" fill="#4a4f57" text-anchor="middle">插件把它覆盖为 0.6 透明度</text>
+
+  <path d="M 390 76 L 390 96" stroke="#7c828c" stroke-width="1.4"/>
+  <path d="M 190 96 L 590 96" stroke="#7c828c" stroke-width="1.4"/>
+  <path d="M 190 96 L 190 116" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 390 96 L 390 116" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+  <path d="M 590 96 L 590 116" stroke="#7c828c" stroke-width="1.4" marker-end="url(#a1)"/>
+
+  <!-- known -->
+  <rect x="80" y="120" width="220" height="86" rx="5" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.4"/>
+  <text x="94" y="140" font-size="9" font-weight="700" fill="#0f6d68">你知道的消费方</text>
+  <text x="94" y="158" font-size="8.5" fill="#16181d">对话区卡片、输入框、</text>
+  <text x="94" y="172" font-size="8.5" fill="#16181d">选中指示器</text>
+  <text x="94" y="192" font-size="8.5" fill="#0f6d68">这些"变透明"符合预期</text>
+
+  <!-- unknown -->
+  <rect x="290" y="120" width="220" height="86" rx="5" fill="#fbeceb" stroke="#8c2f2f" stroke-width="1.6"/>
+  <text x="304" y="140" font-size="9" font-weight="700" fill="#8c2f2f">你不知道的消费方</text>
+  <text x="304" y="158" font-size="8.5" fill="#16181d">悬停预览卡（diff 弹层）</text>
+  <text x="304" y="172" font-size="8.5" fill="#16181d">—— 本次事故就是它</text>
+  <text x="304" y="192" font-size="8.5" fill="#8c2f2f">文字直接透出背景</text>
+
+  <!-- future -->
+  <rect x="500" y="120" width="220" height="86" rx="5" fill="#fdf3e3" stroke="#8a4b00" stroke-dasharray="4 3"/>
+  <text x="514" y="140" font-size="9" font-weight="700" fill="#8a4b00">未来版本的消费方</text>
+  <text x="514" y="158" font-size="8.5" fill="#16181d">Harness 下个版本新增</text>
+  <text x="514" y="172" font-size="8.5" fill="#16181d">的任何浮层</text>
+  <text x="514" y="192" font-size="8.5" fill="#8a4b00">你无法预知，只能防御</text>
+
+  <!-- bottom conclusion -->
+  <rect x="80" y="228" width="640" height="80" rx="6" fill="#fbfcfd" stroke="#b9c4c2" stroke-dasharray="5 3"/>
+  <text x="94" y="248" font-size="9.5" font-weight="700" fill="#7c828c">所以正确的提问方式不是「这个 token 该多透明」</text>
+  <text x="94" y="268" font-size="9.5" font-weight="700" fill="#0f6d68">而是「Harness 用这个 token 表达什么语义」</text>
+  <text x="94" y="290" font-size="8.5" fill="#4a4f57">bg-base = 工作区表面（该透）· layer-1/2 = 浮在其上的 UI（该实）——按语义分类，才不会逐个打补丁。</text>
+</svg>
+</div>
+<figcaption>
+  同一个 token 下面挂着三类消费方，而你只能看见第一类。
+  <strong>每次事故都发生在红色那一格</strong>。
+</figcaption>
+</figure>
+
+<h2><span class="num">3</span>实测：哪些 token 真的该透明</h2>
+
+<p>
+我把当前 Harness 前端产物解包，统计每个 token 被多少条规则消费、被谁消费。
+这是判断"该不该覆盖"的唯一可靠依据。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>token</th><th>消费规则数</th><th>消费方</th><th>插件应如何处理</th></tr></thead>
+<tbody>
+<tr>
+<td><code>--dsw-alias-bg-base</code></td><td>7</td>
+<td>工作区表面、编辑器、背板</td>
+<td><strong>跟随玻璃</strong></td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-layer-1</code></td><td>4</td>
+<td>悬停预览卡、输入框外壳、选中指示器</td>
+<td><strong>保持不透明</strong></td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-layer-2</code></td><td>3</td>
+<td><strong>弹窗</strong>、<strong>浮动窗</strong>、胶囊按钮</td>
+<td><strong>保持不透明</strong></td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-layer-3</code></td><td>4</td>
+<td>标签、按钮、输入框（都是小控件）</td>
+<td>跟随玻璃（影响小）</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-overlay</code></td><td><strong>0</strong></td>
+<td><strong>当前版本无人使用</strong></td>
+<td>覆盖无害，但也无效</td>
+</tr>
+<tr>
+<td><code>--dsw-alias-bg-module-platform</code></td><td>2</td>
+<td>标签页、中性标签</td>
+<td>跟随玻璃（影响小）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="label">两个反直觉的实测结论</span>
+<p style="margin:.4rem 0 0">
+<strong>① <code>bg-layer-1</code> 不只是"卡片"。</strong>
+它同时画悬停预览、输入框外壳和选中指示器。所以不能"整个调暗"，只能按语义保持不透明。
+</p>
+<p style="margin:.5rem 0 0">
+<strong>② <code>bg-overlay</code> 在当前前端是零消费的。</strong>
+插件花力气把它的透明度算得精细（<code>light + 0.10</code>，上限 0.96），
+但当前版本<strong>没有任何元素使用它</strong>。<br>
+——这提醒你：<strong>不要假设你覆盖的 token 一定有用</strong>。它可能只是历史遗留，也可能是给未来功能的预留。
+</p>
+</div>
+
+<div class="note">
+<span class="label">这组数据会过期</span>
+上面的消费方统计来自<strong>当前安装的 Harness 版本</strong>。
+Harness 升级后数字会变——所以正确做法不是记住这张表，而是<strong>记住怎么重新生成它</strong>。
+方法见 <a href="../reference/glass-tokens.html">速查：玻璃 token 清单</a>。
+</div>
+
+<h2><span class="num">4</span>现在的修法：按语义分层，而不是逐元素打补丁</h2>
+
+<p>
+前三次修复都是"发现哪个元素坏了，给它加例外"。
+第四次换了思路：<strong>按 token 的语义决定透明度</strong>。
+</p>
+
+<pre><code>// 工作区表面：跟随用户的玻璃设置
+--dsw-alias-bg-base: rgba(255, 255, 255, ${alpha(light)})
+
+// 浮层：固定近不透明，玻璃设置不影响它
+const ELEVATED_ALPHA = 0.97
+--dsw-alias-bg-layer-1: rgba(255, 255, 255, ${alpha(ELEVATED_ALPHA)})
+--dsw-alias-bg-layer-2: rgba(255, 255, 255, ${alpha(ELEVATED_ALPHA)})</code></pre>
+
+<p>
+<code>0.97</code> 不是随便取的——它是<strong>设置弹窗此前已经在用的值</strong>
+（因为那个弹窗早就被单独处理过）。统一到同一个数字，
+意味着以后"什么算浮层"只有一个答案。
+</p>
+
+<div class="card">
+<h3>为什么是"分层"而不是"修元素"</h3>
+<p>
+修元素的逻辑是：<em>已知 N 个坏元素 → 写 N 条规则</em>。N 会随 Harness 版本增长，规则永远追不上。
+</p>
+<p style="margin-bottom:0">
+分层的逻辑是：<em>token 有 M 种语义 → 写 M 条规则</em>。M 由 Harness 的设计决定，增长慢且有限。
+<strong>你从"追症状"变成"守契约"。</strong>
+</p>
+</div>
+
+<h2><span class="num">5</span>这对你的扩展计划意味着什么</h2>
+
+<p>
+这是本课最实用的部分。你接下来要做两件事，它们和玻璃层的关系完全不同：
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>你的计划</th><th>和玻璃层的关系</th><th>维护成本</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>加视频 / 壁纸背景</strong></td>
+<td>背景在<strong>最底层</strong>（iframe, z-index 0），
+玻璃层在它<strong>上面</strong>。两者不冲突。</td>
+<td><strong>低</strong>——背景换了，玻璃逻辑不用动</td>
+</tr>
+<tr>
+<td><strong>加配置项</strong></td>
+<td>如果新配置影响透明度/颜色，就会进入玻璃层。
+每加一个，就要判一次"它该作用在哪个 token 上"。</td>
+<td><strong>中</strong>——需要遵循分层原则，否则重蹈覆辙</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="label">一个提前的提醒</span>
+如果哪天你想做「<strong>背景也要有独立透明度</strong>」（类似对话面板独立背景），
+别直接给背景加 alpha——那会和玻璃层<strong>复合</strong>，得到无法预测的结果。
+现有代码里对"独立对话背景"的处理已经踩过这个坑：
+为了让对话区比侧栏<strong>更亮</strong>，它不得不把共享的框架填充交还给各列。
+<strong>alpha 会复合，这是这一层唯一的硬约束。</strong>
+</div>
+
+<h2><span class="num">6</span>检验一下</h2>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="四次症状完全不同（弹窗被盖、侧栏偏浅、对话区偏暗、预览卡透），但机制都是「插件假设了 token 的用途，Harness 拿它画了别的东西」。"
+     data-feedback-wrong="回顾第 1 节时间线最下方那个红色虚线框。">
+  <p class="quiz-q"><span class="idx">1</span>四次玻璃修复的共同点是什么？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>都源于 CSS 权重写得不够高</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>都源于误判 token 的实际用途</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>都源于浏览器渲染引擎的缺陷</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="实测：layer-1 同时画悬停预览、输入框外壳、选中指示器；layer-2 画弹窗和浮动窗。两者都该保持不透明。"
+     data-feedback-wrong="第 3 节的表格列了每个 token 的具体消费方。">
+  <p class="quiz-q"><span class="idx">2</span>按实测，哪些 token 应当<b>保持不透明</b>？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>只有 <code>bg-base</code> 需要保持不透明</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>只有 <code>bg-overlay</code> 需要保持不透明</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span><code>layer-1</code> 与 <code>layer-2</code> 都应保持不透明</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="实测它在当前前端零消费。这提醒你：覆盖一个 token 之前，先确认它到底有没有人在用、被谁用。"
+     data-feedback-wrong="第 3 节黄色警告框的第 ② 条专门讲了这件事。">
+  <p class="quiz-q"><span class="idx">3</span><code>--dsw-alias-bg-overlay</code> 的实测情况是？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>当前版本没有任何元素使用它</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>被全部弹窗和浮层广泛使用</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>只在深色模式下才会被使用</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="alpha 会复合。两次半透明叠加会得到更不透明的结果，而且越叠越难预测——1.2.5 的「对话区偏暗」就是这么来的。"
+     data-feedback-wrong="想想两层半透明叠在一起时，最终的透明度怎么算。">
+  <p class="quiz-q"><span class="idx">4</span>给背景<b>再加一层</b>半透明，主要风险是什么？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>浏览器会拒绝渲染过多的透明层</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>WebGPU 无法在透明背景上工作</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>透明度会复合，结果难以预测</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<h2><span class="num">7</span>延伸阅读</h2>
+
+<ol>
+<li>
+<a href="../../shared/skin-core.js"><code>shared/skin-core.js</code></a> 的
+<code>glassCss()</code> —— 现在这一版是分层写法的实例。
+重点看 <code>ELEVATED_ALPHA</code> 的定义与注释，那是这一课的全部结论。
+</li>
+<li>
+<a href="../../CHANGELOG.md"><code>CHANGELOG.md</code></a> 的 1.2.1 / 1.2.3 / 1.2.5
+三条 —— 读它们的"症状描述"而非"修复方案"，
+你会看到同一个机制如何伪装成三个不同的 bug。
+</li>
+<li>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color-mix">MDN: <code>color-mix()</code></a>
+—— 现有代码用它把 Harness 原生调色板按比例稀释。
+理解它，你才能判断某个透明度是"算出来的"还是"叠出来的"。
+</li>
+</ol>
+
+<p class="ask-teacher">
+这一课是前三课的"负重训练"：它把架构知识用在了真实缺陷上。
+如果你准备开始做背景或配置管理，建议先回答一个问题再动手——
+<strong>「我这个新功能，会改变哪个 token、而那个 token 又被谁消费？」</strong>
+答不上来就先别写代码，问我。
+</p>
+
+<div class="lesson-nav">
+  <span>← 上一课</span>
+  <a href="0005-config-management.html">第 5 课 · 配置管理</a>
+  <a href="../reference/glass-tokens.html">速查：玻璃 token 清单</a>
+  <a href="../index.html">课程索引</a>
+</div>
+
+</body>
+</html>

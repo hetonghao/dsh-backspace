@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backspace 插件扩展 · 课程索引</title>
+<link rel="stylesheet" href="./assets/course.css">
+</head>
+<body>
+
+<p class="kicker">Backspace 课程</p>
+<h1>从「维护一个 fork」到「拥有一个产品」</h1>
+<p class="subtitle">
+目标不是学会写这个插件，而是拿到<strong>结构性判断力</strong>：
+新需求该落在哪一层、哪些改动是法律义务、独立发展按什么顺序推进。
+</p>
+
+<div class="card">
+<h3>先读这个</h3>
+<p style="margin-bottom:0">
+<a href="./MISSION.md"><code>MISSION.md</code></a> —— 说明为什么学、学到什么算成功。
+所有课程都围绕它组织；如果目标变了，先改它再改课。
+</p>
+</div>
+
+<h2>课程</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>课程</th><th>你会拿走</th></tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="./lessons/0001-one-source-three-paths.html">一份源码，三条路径</a></td>
+<td>分得清哪个文件是源码、哪个是生成物，以及为什么手改生成物一定会炸</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="./lessons/0002-extension-seams.html">扩展接缝地图</a></td>
+<td>四层接缝模型；判断"壁纸/视频能不能做"；配置管理不需要动 Harness</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="./lessons/0003-detach-from-upstream.html">脱离上游</a></td>
+<td>MIT 署名哪些不能删；代码归属现实；可执行的脱钩顺序</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="./lessons/0004-adding-a-background.html">新增一种背景</a></td>
+<td>背景分派架构；素材的两条来源；视频的三个坑</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="./lessons/0005-config-management.html">配置管理</a></td>
+<td>单一真相来源 + 派生；消除字段漂移的四阶段迁移</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="./lessons/0006-glass-layer-regressions.html">玻璃层：为什么它反复出问题</a></td>
+<td>四次同类事故的共同根因；按 token 语义分层；alpha 复合约束</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="label">读课顺序建议</span>
+<strong>1 → 2 → 3</strong> 是地基，讲架构、扩展、法律边界，三课加起来不到一小时。<br>
+<strong>4 和 5</strong> 是你的两个扩展目标，可以挑着先看。<br>
+<strong>6 是"负重训练"</strong>——它把前三课的知识用在了一个真实反复出问题的模块上。
+如果你打算做背景或配置管理，建议别跳过它：那是你未来维护成本的主要来源。
+</div>
+
+<h2>速查手册</h2>
+
+<p>课程读一遍就够，速查会反复回来看。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>手册</th><th>什么时候翻它</th></tr></thead>
+<tbody>
+<tr>
+<td><a href="./reference/architecture-map.html">架构地图</a></td>
+<td>忘了某个文件是生成物还是源码；想知道控制器只依赖哪两个能力</td>
+</tr>
+<tr>
+<td><a href="./reference/glass-tokens.html">玻璃 token 清单</a></td>
+<td>要改透明度/颜色时；含每个 token 该多透明、被谁消费、怎么重新统计</td>
+</tr>
+<tr>
+<td><a href="./reference/harness-slots.html">Harness 可用 slot 清单</a></td>
+<td>要往 Harness 界面上挂东西时；含本机 0.2.1 反推的全部 slot 名</td>
+</tr>
+<tr>
+<td><a href="./reference/detach-checklist.html">脱离上游清单</a></td>
+<td>决定开始脱钩时，按表逐项执行</td>
+</tr>
+<tr>
+<td><a href="./reference/glossary.html">术语表</a></td>
+<td>遇到"token / 表面 / 列 / 浮层"这类词拿不准时；全课程用词以此为准</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>其他材料</h2>
+
+<ul>
+<li><a href="./RESOURCES.md"><code>RESOURCES.md</code></a> —— 可信来源清单，含每个链接"用在哪"</li>
+<li><a href="./NOTES.md"><code>NOTES.md</code></a> —— 已实测的事实与待验证项（写课程的依据）</li>
+<li><a href="./learning-records/"><code>learning-records/</code></a> —— 学习记录，决定下次课讲什么</li>
+</ul>
+
+<div class="note">
+<span class="label">关于材料的位置</span>
+这套材料放在仓库的 <code>learning/</code> 目录，<strong>不在 npm 发布包内</strong>
+（<code>package.json</code> 的 <code>files</code> 白名单不含它）。
+所以它不会影响你已经发布的插件，也不会增加安装体积。
+</div>
+
+<p class="ask-teacher">
+建议从<a href="./lessons/0001-one-source-three-paths.html">第 1 课</a>开始，
+但如果你更急着做"新背景"或"配置管理"，可以直接跳到
+<a href="./lessons/0004-adding-a-background.html">第 4 课</a>或
+<a href="./lessons/0005-config-management.html">第 5 课</a>——
+它们可以独立阅读，只是会引用前两课的几个结论。
+有任何不清楚的地方直接问我。
+</p>
+
+</body>
+</html>

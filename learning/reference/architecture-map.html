@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>速查 · 架构地图</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<p class="kicker">速查手册</p>
+<h1>架构地图</h1>
+<p class="subtitle">
+一页看完：源码在哪、谁生成谁、运行期怎么连、扩展该改哪一层。
+配套课程：<a href="../lessons/0001-one-source-three-paths.html">第 1 课</a>、
+<a href="../lessons/0002-extension-seams.html">第 2 课</a>。
+</p>
+
+<h2>构建期：源码 → 产物</h2>
+
+<table>
+<thead><tr><th>产物</th><th>来源</th><th>生成方式</th><th>手改？</th></tr></thead>
+<tbody>
+<tr>
+<td><code>extension/content.js</code></td>
+<td><code>shared/skin-core.js</code><br>＋<code>shared/extension-entry.js</code></td>
+<td>字符串拼接，加 banner 注释</td>
+<td>✕ 生成物</td>
+</tr>
+<tr>
+<td><code>native-dist/loader.js</code></td>
+<td><code>shared/skin-core.js</code><br>＋<code>shared/native-entry.js</code></td>
+<td>字符串拼接，加 banner 注释</td>
+<td>✕ 生成物</td>
+</tr>
+<tr>
+<td><code>plugin/client.js</code></td>
+<td><code>shared/skin-core.js</code><br>＋脚本内联的适配器</td>
+<td>包进 <code>__ModuleLoader__</code> 壳</td>
+<td>✕ 生成物</td>
+</tr>
+<tr>
+<td><code>plugin/index.js</code></td>
+<td>—</td>
+<td><strong>手写</strong></td>
+<td>✓ 唯一手写的 plugin 文件</td>
+</tr>
+<tr>
+<td><code>extension/ocean.js</code><br><code>native-dist/ocean.js</code><br><code>harness-plugin/assets/ocean.js</code></td>
+<td><code>shared/ocean.js</code></td>
+<td>三份字节级复制</td>
+<td>✕ 生成物</td>
+</tr>
+<tr>
+<td><code>styles.css</code>（三份）</td>
+<td><code>shared/styles.css</code></td>
+<td>字节级复制</td>
+<td>✕ 生成物</td>
+</tr>
+<tr>
+<td><code>vendor/</code>（三份）</td>
+<td><code>shared/vendor/</code></td>
+<td>递归复制</td>
+<td>✕ 生成物</td>
+</tr>
+<tr>
+<td><code>site/</code></td>
+<td>—</td>
+<td><strong>冻结</strong>，测试锁 SHA-256</td>
+<td>✕ 别动</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note">
+<span class="label">一条命令判断"能不能手改"</span>
+问：<code>npm run check</code> 会不会因为改它而失败？会 → 它是生成物。
+两个构建脚本都支持 <code>--check</code>，做的是<strong>逐字节比对</strong>，不是重新生成。
+</div>
+
+<h2>运行期：谁控制谁</h2>
+
+<table>
+<thead><tr><th>角色</th><th>运行位置</th><th>职责</th><th>关键文件</th></tr></thead>
+<tbody>
+<tr>
+<td>控制器</td>
+<td>宿主页</td>
+<td>读设置、算 CSS、建面板、挂/卸 surface</td>
+<td><code>shared/skin-core.js</code></td>
+</tr>
+<tr>
+<td>渲染器</td>
+<td>同源 iframe</td>
+<td>WebGPU 画海洋</td>
+<td><code>shared/ocean.js</code></td>
+</tr>
+<tr>
+<td>面板 UI</td>
+<td>宿主页 body 末尾</td>
+<td>原生 DOM 控件，不依赖 React</td>
+<td>由 <code>skin-core.js</code> 生成</td>
+</tr>
+<tr>
+<td>Host 插件</td>
+<td>Node 进程</td>
+<td>注册 <code>/dsh-backspace</code> 静态路由</td>
+<td><code>plugin/index.js</code></td>
+</tr>
+</tbody>
+</table>
+
+<h3>三条通道</h3>
+
+<table>
+<thead><tr><th>方向</th><th>机制</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>控制器 → 渲染器（初始）</td><td>iframe URL 查询参数</td><td><code>skin=1 · sea · t · auto · parentOrigin · quality</code></td></tr>
+<tr><td>控制器 → 渲染器（更新）</td><td><code>postMessage</code></td><td><code>{type:'bs-set', sea, t, auto}</code></td></tr>
+<tr><td>控制器 ↔ 存储</td><td>注入的 <code>storage.get/set</code></td><td>全部持久化字段</td></tr>
+</tbody>
+</table>
+
+<div class="warn">
+<span class="label">渲染器的安全边界</span>
+<code>shared/ocean.js</code> 只接受 <code>ev.source === window.parent</code>
+<strong>且</strong> origin 匹配的消息。加新通道时不要放宽这两条。
+</div>
+
+<h2>控制器只要求两个能力</h2>
+
+<p>这是全仓库最重要的接缝。<code>createController(options)</code> 只依赖：</p>
+
+<pre><code>createController({
+  assetUrl: (path) =&gt; string   // 资源根路径，三条路径各自不同
+  storage: {
+    get: (defaults) =&gt; Promise&lt;settings&gt;
+    set: (patch)    =&gt; Promise&lt;void&gt;
+    listen?: (cb)   =&gt; dispose   // 仅扩展路径提供
+  }
+})</code></pre>
+
+<table>
+<thead><tr><th>路径</th><th><code>assetUrl</code></th><th>存储</th><th><code>listen</code></th></tr></thead>
+<tbody>
+<tr>
+<td>浏览器扩展</td>
+<td><code>chrome.runtime.getURL(path)</code></td>
+<td><code>chrome.storage.sync</code><br><code>skin*</code> 前缀</td>
+<td>有（跨窗口同步）</td>
+</tr>
+<tr>
+<td>静态安装</td>
+<td><code>/dsh-backspace/${path}</code></td>
+<td><code>localStorage</code><br><code>bs*</code> 前缀</td>
+<td>无</td>
+</tr>
+<tr>
+<td>DSH 插件</td>
+<td><code>/dsh-backspace/${path}</code></td>
+<td><code>localStorage</code><br><code>bs*</code> 前缀</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note">
+<span class="label">扩展法则</span>
+<strong>能在 <code>skin-core.js</code> 里做的事，就不要动适配器。</strong>
+一旦你需要适配器提供新能力（比如大文件存储），三条路径要分别实现——成本立刻 ×3。
+</div>
+
+<h2>配置字段现状（已漂移）</h2>
+
+<table>
+<thead><tr><th>字段</th><th>bundle 路径</th><th>源码注入路径</th></tr></thead>
+<tbody>
+<tr><td><code>enabled</code></td><td>✓</td><td>✓</td></tr>
+<tr><td><code>sea</code></td><td>✓</td><td>✓</td></tr>
+<tr><td><code>time</code></td><td>✓</td><td>✓</td></tr>
+<tr><td><code>glass</code></td><td>✓</td><td>✓</td></tr>
+<tr><td><code>autoCycle</code></td><td>✓</td><td>✓</td></tr>
+<tr><td><code>chatCustom</code></td><td>✓</td><td><strong>✕ 缺失</strong></td></tr>
+<tr><td><code>chatOpacity</code></td><td>✓</td><td><strong>✕ 缺失</strong></td></tr>
+<tr><td><code>quality</code></td><td><strong>✕ 缺失</strong></td><td>✓</td></tr>
+</tbody>
+</table>
+
+<div class="stop">
+<span class="label">后果</span>
+用 <code>harness-plugin/</code>（源码注入）安装的人<strong>看不到对话面板独立背景</strong>。
+修法见第 2 课第 3 节，方案见下节课（统一配置来源）。
+</div>
+
+<h2>四层接缝：改哪里</h2>
+
+<table>
+<thead><tr><th>层</th><th>典型需求</th><th>改动面</th><th>是否动 Harness</th></tr></thead>
+<tbody>
+<tr>
+<td>① 内容替换</td>
+<td>换配色、换文案、换波参数</td>
+<td>1 个文件里的常量</td>
+<td>否</td>
+</tr>
+<tr>
+<td>② 换渲染内容</td>
+<td>壁纸、视频、渐变、粒子</td>
+<td>新入口页 ＋ 控制器传参</td>
+<td>否</td>
+</tr>
+<tr>
+<td>③ 新配置项</td>
+<td>新滑块、新开关、新持久化</td>
+<td><code>skin-core</code> 多处 ＋ 3 个适配器 ＋ 测试</td>
+<td>否</td>
+</tr>
+<tr>
+<td>④ 新 slot / 改结构</td>
+<td>要一个宿主没有的挂载点</td>
+<td>改 Harness 源码</td>
+<td><strong>是</strong>（升级即失效）</td>
+</tr>
+</tbody>
+</table>
+
+<h2>命令速查</h2>
+
+<table>
+<thead><tr><th>目的</th><th>命令</th></tr></thead>
+<tbody>
+<tr><td>重新生成全部产物</td><td><code>npm run build</code></td></tr>
+<tr><td>只校验产物是否最新</td><td><code>npm run check:generated</code></td></tr>
+<tr><td>单元测试（20 个）</td><td><code>npm test</code></td></tr>
+<tr><td>全部关卡</td><td><code>npm run check</code></td></tr>
+<tr><td>桌面壳层验收</td><td><code>BACKSPACE_CHROME_BIN="…" npm run test:desktop</code></td></tr>
+<tr><td>官网验收</td><td><code>npm run test:website</code></td></tr>
+</tbody>
+</table>
+
+<div class="ask-teacher">
+这张图有看不懂的地方，或者想让我补某个细节（比如"玻璃 CSS 到底怎么算的"），
+直接问。<a href="../lessons/0001-one-source-three-paths.html">第 1 课</a>开头的图是它的展开版。
+</div>
+
+</body>
+</html>

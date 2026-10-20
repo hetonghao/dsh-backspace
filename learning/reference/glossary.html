@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>速查 · 术语表</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<p class="kicker">速查手册</p>
+<h1>术语表</h1>
+<p class="subtitle">
+本课程所有材料统一使用这些术语。遇到近义词时以这里为准——
+比如"列"和"栏"在本课程里指同一个东西，但"表面 surface"和"列 column"不同。
+</p>
+
+<h2>仓库结构</h2>
+
+<table>
+<thead><tr><th>术语</th><th>含义</th><th>别混成</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>源码 source</strong></td>
+<td><code>shared/</code> 下的文件。改这里才有意义。</td>
+<td>不是 <code>extension/</code>、<code>native-dist/</code>、<code>plugin/client.js</code></td>
+</tr>
+<tr>
+<td><strong>生成物 artifact</strong></td>
+<td>由 <code>npm run build</code> 从源码算出来的文件。手改会被 <code>npm run check</code> 拒绝。</td>
+<td>不是"备份"，不是"可以顺手微调的副本"</td>
+</tr>
+<tr>
+<td><strong>适配器 adapter</strong></td>
+<td>给控制器注入 <code>assetUrl</code> 与 <code>storage</code> 的一小段代码。
+三条安装路径各一份。</td>
+<td>不是渲染器，不含业务逻辑</td>
+</tr>
+<tr>
+<td><strong>安装路径 install path</strong></td>
+<td>把皮肤装进 Harness / 浏览器的一种方式。共三条：DSH 插件、静态安装、浏览器扩展。</td>
+<td>不是"版本"，三条路径内容相同</td>
+</tr>
+<tr>
+<td><strong>源码注入 source injection</strong></td>
+<td><code>harness-plugin/</code> 那条路：直接改 Harness 自己的代码。与 npm 插件路径<strong>互斥</strong>。</td>
+<td>不是官方插件机制</td>
+</tr>
+</tbody>
+</table>
+
+<h2>运行期</h2>
+
+<table>
+<thead><tr><th>术语</th><th>含义</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>控制器 controller</strong></td>
+<td>跑在宿主页的 <code>skin-core.js</code>：读设置、算 CSS、建面板、挂卸 surface。</td>
+</tr>
+<tr>
+<td><strong>渲染器 renderer</strong></td>
+<td>跑在同源 iframe 里的 <code>ocean.js</code>：用 WebGPU 画海。</td>
+</tr>
+<tr>
+<td><strong>surface（表面）</strong></td>
+<td>控制器挂上去的那层东西：iframe + 玻璃 <code>&lt;style&gt;</code>。禁用皮肤时被拆除，但按钮/面板保留。</td>
+</tr>
+<tr>
+<td><strong>列 / 栏（column）</strong></td>
+<td>Harness 界面的三个纵向区域：侧栏 sidebar、对话区 conversation、详情栏 details。</td>
+</tr>
+<tr>
+<td><strong>面板 panel</strong></td>
+<td>由控制器自绘的浮动设置面板（原生 DOM，不依赖 React）。</td>
+</tr>
+<tr>
+<td><strong>受控字段 controlled field</strong></td>
+<td>面板里已有控件、会被 <code>syncUi()</code> 双向同步的设置项。</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Harness 插件契约</h2>
+
+<table>
+<thead><tr><th>术语</th><th>含义</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>slot（插槽）</strong></td>
+<td>Harness 界面上一个<strong>已声明</strong>的挂载点，例如 <code>settings.section</code>。
+第三方插件只能注册<strong>已存在</strong>的 slot。</td>
+</tr>
+<tr>
+<td><strong>slot kind</strong></td>
+<td>占用规则：<code>single</code>（只能一个）、<code>list</code>（多个）、<code>keyed</code>（按 key 分多个）。</td>
+</tr>
+<tr>
+<td><strong>profile</strong></td>
+<td>一套插件组合。DSH Desktop 有自己的 <code>desktop</code> profile，与 <code>web</code> 独立。</td>
+</tr>
+<tr>
+<td><strong>bundle patch</strong></td>
+<td><code>cordis.patch.yml</code>：告诉 Harness「这个包里有一行插件要加载」。</td>
+</tr>
+<tr>
+<td><strong>Cordis</strong></td>
+<td>DSH 底层插件容器。<code>inject</code> / <code>apply</code> / <code>ctx.effect</code> 都来自它。</td>
+</tr>
+<tr>
+<td><strong><code>ctx.effect</code></strong></td>
+<td>注册一个随插件卸载而自动清理的副作用。清理函数必须返回。</td>
+</tr>
+</tbody>
+</table>
+
+<h2>样式与玻璃</h2>
+
+<table>
+<thead><tr><th>术语</th><th>含义</th><th>易错点</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>静态调色板</strong></td>
+<td><code>--dsw-static-neutral-bluish-*</code>。真正带颜色值的变量。</td>
+<td>不要硬编码十六进制</td>
+</tr>
+<tr>
+<td><strong>语义 token</strong></td>
+<td><code>--dsw-alias-bg-*</code> / <code>--dsw-specific-*</code>。按"用途"命名的别名，指向静态调色板。</td>
+<td>覆盖它会影响<strong>所有</strong>消费方</td>
+</tr>
+<tr>
+<td><strong>玻璃 glass</strong></td>
+<td>插件把工作区表面变半透明、让海面透出的效果。用 <code>alpha</code> 控制。</td>
+<td>不是 CSS 的 <code>opacity</code> 属性，而是颜色里的 alpha 通道</td>
+</tr>
+<tr>
+<td><strong>浮层 elevated layer</strong></td>
+<td><code>layer-1</code> / <code>layer-2</code> 所在的层：预览卡、弹窗、浮动窗。必须保持不透明。</td>
+<td>别把它和"玻璃"一起稀释</td>
+</tr>
+<tr>
+<td><strong>alpha 复合 composite</strong></td>
+<td>两层半透明叠加后 <code>1−(1−a)(1−b)</code>，比任何单层都深。</td>
+<td>不能当加法算</td>
+</tr>
+<tr>
+<td><strong>独立背景 independent background</strong></td>
+<td>对话区有自己的一套透明度，不跟随主玻璃（<code>chatCustom</code>）。</td>
+<td>1.0 表示"和原生 Harness 一模一样"</td>
+</tr>
+</tbody>
+</table>
+
+<h2>测试</h2>
+
+<table>
+<thead><tr><th>术语</th><th>含义</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>生成物新鲜度</strong></td>
+<td><code>npm run check:generated</code>：逐字节比对生成物是否与源码一致。</td>
+</tr>
+<tr>
+<td><strong>验收测试 acceptance test</strong></td>
+<td>用真实浏览器加载真实代码、测量计算样式。<code>npm run test:desktop</code>。</td>
+</tr>
+<tr>
+<td><strong>fixture（测试替身）</strong></td>
+<td><code>tests/fixtures/</code> 下模拟各类 Harness 外壳的 HTML，用于在没有真 Harness 时测量布局。</td>
+</tr>
+<tr>
+<td><strong>变异测试 mutation test</strong></td>
+<td>故意把代码改坏，确认测试<strong>真的会失败</strong>。用来验证断言有效。</td>
+</tr>
+<tr>
+<td><strong>有效透明度 effective alpha</strong></td>
+<td>从根节点到目标元素逐层复合后的最终 alpha，而不是单个元素的声明值。
+验收测试里的 <code>effective()</code> 就是在算这个。</td>
+</tr>
+</tbody>
+</table>
+
+<h2>脱离上游相关</h2>
+
+<table>
+<thead><tr><th>术语</th><th>含义</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>上游 upstream</strong></td>
+<td><code>d-dev0101/open-sea-skin</code>，本项目的 fork 来源。</td>
+</tr>
+<tr>
+<td><strong>fork 网络</strong></td>
+<td>GitHub 平台侧标记（<code>"fork": true</code>）。<strong>删 remote 不会消除它。</strong></td>
+</tr>
+<tr>
+<td><strong>署名义务 attribution obligation</strong></td>
+<td>MIT 要求随软件附带原始版权行与许可全文。这是<strong>硬性</strong>的，不能因"不署名"而删除。</td>
+</tr>
+</tbody>
+</table>
+
+<p class="ask-teacher">
+发现哪个词在不同课程里用法不一致，或者你心里有更好的叫法，告诉我——
+术语表一旦改动，我会同步更新所有课程，而不是只在某一课里改。
+</p>
+
+</body>
+</html>

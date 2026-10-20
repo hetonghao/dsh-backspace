@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 课 · 脱离上游</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<p class="kicker">Backspace 课程 · 第 3 课</p>
+<h1>脱离上游：哪些能去，哪些不能</h1>
+<p class="subtitle">
+"不署名、独立发展"这个目标里藏着三件性质完全不同的事：
+<strong>法律义务</strong>（不能改）、<strong>品牌整理</strong>（该改）、<strong>工程解耦</strong>（要改）。
+把它们混在一起谈，很容易为了"看起来干净"而违反许可协议。
+</p>
+
+<h2><span class="num">1</span>先分清三件事</h2>
+
+<figure>
+<div class="fig-wrap">
+<svg viewBox="0 0 780 430" role="img" aria-labelledby="fig1-title" xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+  <title id="fig1-title">脱离上游的三类事项：法律义务不可改动、品牌整理可以清理、工程解耦需要逐步完成</title>
+
+  <!-- Column 1: legal -->
+  <rect x="24" y="30" width="238" height="372" rx="8" fill="#fbeceb" stroke="#8c2f2f" stroke-width="1.6"/>
+  <circle cx="52" cy="58" r="13" fill="#8c2f2f"/>
+  <text x="52" y="63" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">✕</text>
+  <text x="74" y="55" font-size="12" font-weight="700" fill="#8c2f2f">法律义务</text>
+  <text x="74" y="72" font-size="9.5" fill="#8c2f2f">绝对不能删</text>
+
+  <path d="M 40 88 L 246 88" stroke="#e0b3b3" stroke-width="1"/>
+
+  <text x="40" y="110" font-size="10" font-weight="650" fill="#16181d">LICENSE 里的版权行</text>
+  <text x="40" y="128" font-size="8.5" fill="#4a4f57">MIT 要求「保留上述版权</text>
+  <text x="40" y="142" font-size="8.5" fill="#4a4f57">声明和许可声明」</text>
+  <text x="40" y="160" font-size="8.5" fill="#8c2f2f">删了＝违约，不是"不署名"</text>
+
+  <text x="40" y="188" font-size="10" font-weight="650" fill="#16181d">THIRD_PARTY_NOTICES</text>
+  <text x="40" y="206" font-size="8.5" fill="#4a4f57">three.js / Geist 的许可</text>
+  <text x="40" y="220" font-size="8.5" fill="#4a4f57">同样是硬性义务</text>
+
+  <text x="40" y="248" font-size="10" font-weight="650" fill="#16181d">vendor/ 里的许可证文件</text>
+  <text x="40" y="266" font-size="8.5" fill="#4a4f57">three-LICENSE.txt</text>
+  <text x="40" y="280" font-size="8.5" fill="#4a4f57">geist-OFL.txt</text>
+
+  <rect x="40" y="300" width="206" height="86" rx="4" fill="#fff" stroke="#e0b3b3"/>
+  <text x="52" y="318" font-size="9" font-weight="650" fill="#8c2f2f">正确做法</text>
+  <text x="52" y="335" font-size="8.5" fill="#4a4f57">版权行可以「增加」，</text>
+  <text x="52" y="349" font-size="8.5" fill="#4a4f57">不能「替换」。</text>
+  <text x="52" y="366" font-size="8.5" fill="#4a4f57">当前写法已经合规：</text>
+  <text x="52" y="380" font-size="8.5" fill="#0f6d68">两行并列，各归各。</text>
+
+  <!-- Column 2: brand -->
+  <rect x="278" y="30" width="238" height="372" rx="8" fill="#fdf3e3" stroke="#8a4b00" stroke-width="1.6"/>
+  <circle cx="306" cy="58" r="13" fill="#8a4b00"/>
+  <text x="306" y="63" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">✓</text>
+  <text x="328" y="55" font-size="12" font-weight="700" fill="#8a4b00">品牌整理</text>
+  <text x="328" y="72" font-size="9.5" fill="#8a4b00">已基本完成</text>
+
+  <path d="M 294 88 L 500 88" stroke="#e0c9a3" stroke-width="1"/>
+
+  <text x="294" y="110" font-size="10" font-weight="650" fill="#16181d">已改（做得对）</text>
+  <text x="294" y="128" font-size="8.5" fill="#4a4f57">插件 id / 包名 / 路由</text>
+  <text x="294" y="142" font-size="8.5" fill="#4a4f57">UI 文案 / 扩展名</text>
+  <text x="294" y="156" font-size="8.5" fill="#4a4f57">存储 key 前缀</text>
+  <text x="294" y="170" font-size="8.5" fill="#4a4f57">README / 截图</text>
+  <text x="294" y="184" font-size="8.5" fill="#0f6d68">应用内已无上游字样</text>
+
+  <text x="294" y="212" font-size="10" font-weight="650" fill="#16181d">还留着（可清理）</text>
+  <text x="294" y="230" font-size="8.5" fill="#4a4f57">site/ 里仍是「OPEN SEA」</text>
+  <text x="294" y="244" font-size="8.5" fill="#4a4f57">README 有「与 OpenSea</text>
+  <text x="294" y="258" font-size="8.5" fill="#4a4f57">NFT 平台无关」的澄清</text>
+  <text x="294" y="272" font-size="8.5" fill="#4a4f57">git 历史含上游提交</text>
+
+  <rect x="294" y="294" width="206" height="92" rx="4" fill="#fff" stroke="#e0c9a3"/>
+  <text x="306" y="312" font-size="9" font-weight="650" fill="#8a4b00">注意</text>
+  <text x="306" y="329" font-size="8.5" fill="#4a4f57">site/ 被测试用</text>
+  <text x="306" y="343" font-size="8.5" fill="#4a4f57">SHA-256 锁死，</text>
+  <text x="306" y="357" font-size="8.5" fill="#4a4f57">改它要同步改测试。</text>
+  <text x="306" y="375" font-size="8.5" fill="#4a4f57">但它不在发布包里。</text>
+
+  <!-- Column 3: engineering -->
+  <rect x="532" y="30" width="226" height="372" rx="8" fill="#e6f4f3" stroke="#0f6d68" stroke-width="1.6"/>
+  <circle cx="560" cy="58" r="13" fill="#0f6d68"/>
+  <text x="560" y="63" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">→</text>
+  <text x="582" y="55" font-size="12" font-weight="700" fill="#0f6d68">工程解耦</text>
+  <text x="582" y="72" font-size="9.5" fill="#0f6d68">真正的独立发展</text>
+
+  <path d="M 548 88 L 742 88" stroke="#9fc7c3" stroke-width="1"/>
+
+  <text x="548" y="110" font-size="10" font-weight="650" fill="#16181d">可以做的</text>
+  <text x="548" y="128" font-size="8.5" fill="#4a4f57">删 upstream remote</text>
+  <text x="548" y="142" font-size="8.5" fill="#4a4f57">打通 npm 发布链路</text>
+  <text x="548" y="156" font-size="8.5" fill="#4a4f57">统一两套配置来源</text>
+  <text x="548" y="170" font-size="8.5" fill="#4a4f57">补 slot 扩展点</text>
+  <text x="548" y="184" font-size="8.5" fill="#4a4f57">逐步退出 harness-plugin</text>
+
+  <text x="548" y="212" font-size="10" font-weight="650" fill="#16181d">代价 / 风险</text>
+  <text x="548" y="230" font-size="8.5" fill="#4a4f57">失去上游同步能力</text>
+  <text x="548" y="244" font-size="8.5" fill="#4a4f57">要自己兜升级适配</text>
+  <text x="548" y="258" font-size="8.5" fill="#4a4f57">壳层 CSS 更易碎</text>
+
+  <rect x="548" y="282" width="194" height="104" rx="4" fill="#fff" stroke="#9fc7c3"/>
+  <text x="560" y="300" font-size="9" font-weight="650" fill="#0f6d68">判断标准</text>
+  <text x="560" y="318" font-size="8.5" fill="#4a4f57">你的原创代码</text>
+  <text x="560" y="332" font-size="8.5" fill="#4a4f57">占比越高，</text>
+  <text x="560" y="346" font-size="8.5" fill="#4a4f57">独立得越站得住。</text>
+  <text x="560" y="366" font-size="8.5" fill="#8a4b00">实测：约 10%</text>
+  <text x="560" y="380" font-size="8.5" fill="#8a4b00">（见第 2 节）</text>
+</svg>
+</div>
+<figcaption>
+  三类事项的性质完全不同。<strong>红色那列一旦被"顺手清干净"，你就违约了。</strong>
+  真正该投入精力的是绿色那列——但它恰好是最慢的一列。
+</figcaption>
+</figure>
+
+<h2><span class="num">2</span>一个必须正视的事实：你的代码占比</h2>
+
+<p>
+我用 <code>git blame</code> 逐行统计了当前 <code>HEAD</code> 的归属。这不是道德评判，
+只是让你知道"独立发展"现在站在什么地基上：
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>文件</th><th>行数</th><th>你（HTH）</th><th>上游作者</th><th>说明</th></tr></thead>
+<tbody>
+<tr>
+<td><code>shared/skin-core.js</code></td><td>749</td>
+<td><strong>263</strong></td><td>386</td>
+<td>唯一你大量参与的文件</td>
+</tr>
+<tr>
+<td><code>shared/ocean.js</code></td><td>637</td>
+<td>6</td><td>631</td>
+<td>渲染器几乎完全上游</td>
+</tr>
+<tr>
+<td><code>shared/styles.css</code></td><td>367</td>
+<td>1</td><td>366</td>
+<td>样式表原封未动</td>
+</tr>
+<tr>
+<td><code>plugin/index.js</code></td><td>79</td>
+<td>5</td><td>74</td>
+<td>Host 路由上游写的</td>
+</tr>
+<tr>
+<td>全仓库（含文档/vendor）</td><td>18759</td>
+<td><strong>1928</strong></td><td>—</td>
+<td>约 <strong>10%</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="label">这意味着什么</span>
+现在删掉上游署名，技术上能做，<strong>但作品实质仍是上游代码</strong>——
+这既不符合开源社区的惯例，也不利于你长期维护（因为你不熟悉那 90%）。
+<strong>更务实的目标不是"删署名"，而是"把署名保持在正确的位置，同时让自己的代码变成主体"。</strong>
+</div>
+
+<h2><span class="num">3</span>第一步：先搞清楚"上游"现在是什么状态</h2>
+
+<p>
+很多人以为 fork 之后就"停在当时那版"了。实际不是。我查了真实状态：
+</p>
+
+<div class="card">
+<h3>当前同步状态（2026-10-19 实测）</h3>
+<ul>
+<li>上游 <code>d-dev0101/open-sea-skin</code> 的 <code>main</code> 停在 <code>634583f</code>。</li>
+<li>本仓库<strong>已包含上游全部提交</strong>（<code>upstream ahead = 0</code>），本地领先 4 个提交。</li>
+<li>也就是说：<strong>现在没有落后的上游修复</strong>，历史是干净的。</li>
+</ul>
+<p>
+这是个好消息——意味着"脱离上游"不会让你丢失任何当前已知的修复。
+<strong>这个结论现在成立，但不会永远成立</strong>：上游随时可能提交新东西。
+</p>
+</div>
+
+<p>
+GitHub 上本仓库仍是 <code>fork: true</code>，属于 <code>d-dev0101/open-sea-skin</code> 的 fork 网络。
+这<strong>不是 git remote</strong>，删掉 <code>upstream</code> 远程不会消除它。
+要脱离 fork 网络，必须在 GitHub 侧操作（Settings 里没有直接的"脱离 fork"按钮，
+常见做法是让 GitHub Support 解除，或新建一个非 fork 的仓库迁移过去）。
+</p>
+
+<div class="stop">
+<span class="label">一个我自己做不了的操作</span>
+解除 GitHub fork 关系需要你在 GitHub 后台或联系 GitHub Support，
+<strong>agent 无法代劳</strong>。如果你决定这么做，我可以帮你把迁移步骤和影响面列清楚。
+</div>
+
+<h2><span class="num">4</span>可执行的脱钩清单</h2>
+
+<p>按"风险从低到高、可逆性从高到低"排序。每一项都标了可逆性。
+</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>步骤</th><th>操作</th><th>可逆</th><th>影响</th></tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>删 <code>upstream</code> remote<br><code>git remote remove upstream</code></td>
+<td>是（随时可加回）</td>
+<td>不再能 <code>git fetch upstream</code>；fork 网络标记仍在</td>
+</tr>
+<tr>
+<td>2</td>
+<td>打通 npm 发布<br><code>npm login</code> → <code>npm publish</code></td>
+<td>否（版本号一旦发布不可删）</td>
+<td><strong>修掉当前文档缺陷</strong>：文档让用户装的 <code>dsh-backspace@1.2.5</code> 现在根本不存在</td>
+</tr>
+<tr>
+<td>3</td>
+<td>清理 <code>site/</code> 的「OPEN SEA」字样</td>
+<td>否（测试锁 SHA-256，需同步改）</td>
+<td>该目录不在发布包内；改它收益小、成本中</td>
+</tr>
+<tr>
+<td>4</td>
+<td>统一两套配置来源</td>
+<td>是</td>
+<td>消除字段漂移（第 2 课那个缺陷）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>给现有 slot 写正规设置面板<br>（<code>settings.section</code>）</td>
+<td>是</td>
+<td>摆脱 DOM 自绘，改善可维护性</td>
+</tr>
+<tr>
+<td>6</td>
+<td>逐步弃用 <code>harness-plugin/</code><br>（源码注入路径）</td>
+<td>是（保留目录即可回退）</td>
+<td>减少一个维护面；但它目前提供唯一的背景层</td>
+</tr>
+<tr>
+<td>7</td>
+<td>解除 GitHub fork 关系</td>
+<td><strong>否</strong></td>
+<td>需 GitHub 侧操作；会让 PR/issue 关联断裂</td>
+</tr>
+<tr>
+<td>8</td>
+<td>重写渲染器以降低上游代码占比</td>
+<td>否</td>
+<td>工作量最大，但这是"作品真是你的"唯一实质路径</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<span class="label">我的建议顺序</span>
+<strong>2 → 4 → 5 → 1 → 6</strong>。
+理由：第 2 步是当前唯一的<strong>功能性缺陷</strong>（用户按文档装不上），优先级最高；
+4 和 5 是真正的技术债，直接决定你后面的扩展效率；
+1 和 6 是"心理上的干净"，可以晚点做；
+7 和 8 别急——在你自有代码占比上来之前做 8 意义不大。
+</div>
+
+<h2><span class="num">5</span>关于 MIT 署名，把话说明白</h2>
+
+<p>MIT 协议只有一条硬性要求（原文用 <code>Permission is hereby granted … subject to the following conditions</code> 引入）：</p>
+
+<blockquote style="margin:1.2rem 0;padding-left:1rem;border-left:3px solid var(--rule);color:var(--ink-soft);font-size:.93rem;">
+<em>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</em>
+</blockquote>
+
+<p>翻译成可执行的话：</p>
+
+<ul>
+<li><strong>可以</strong>：改名、换标识、闭源分发你的<strong>新增部分</strong>、商业化、不再提"我们是 fork"。</li>
+<li><strong>必须</strong>：随软件附带那份包含<strong>原始版权行和许可全文</strong>的文本。</li>
+<li><strong>不存在</strong>：MIT 里没有任何"必须写致谢""必须链接上游仓库"的要求。</li>
+</ul>
+
+<p>
+所以 <code>THIRD_PARTY_NOTICES.md</code> 里那段"Backspace is a fork of open-sea-skin"
+严格说是<strong>超额履行</strong>——是礼貌，不是义务。你可以把它改写成更中性的
+"基于 MIT 许可的第三方代码"，但那份包含版权行的 LICENSE 文本本身不能少。
+</p>
+
+<div class="card">
+<h3>当前 LICENSE 的写法其实是对的</h3>
+<pre><code>Copyright (c) 2026 Open Sea Skin contributors (upstream: d-dev0101/open-sea-skin)
+Copyright (c) 2026 Backspace contributors</code></pre>
+<p style="margin-bottom:0">
+两行并列，各归各。<strong>这既满足了 MIT，也清楚地表明了你的著作权。</strong>
+如果哪天你想让"Backspace"更突出，可以调整<strong>行序</strong>或措辞，
+但不要删掉第一行。
+</p>
+</div>
+
+<h2><span class="num">6</span>检验一下</h2>
+
+<div class="quiz" data-answer="C"
+     data-feedback-correct="MIT 只要求随软件附带版权声明和许可全文。删掉那行就违反了协议，与「要不要写致谢」是两回事。"
+     data-feedback-wrong="回到第 5 节看 MIT 原文引用的那一句条件。">
+  <p class="quiz-q"><span class="idx">1</span>想让项目「完全不带上游名字」，<code>LICENSE</code> 里的上游版权行能删吗？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>可以删，改名即视为全新作品</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>可以删，只要在 README 里致谢</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>不能删，属 MIT 的强制保留项</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="实测 <code>upstream ahead = 0</code>，说明上游全部提交都已在本地，现在脱钩不会丢修复。但这个结论会随上游更新而失效。"
+     data-feedback-wrong="第 3 节写了实测数字，注意区分「现在成立」和「永远成立」。">
+  <p class="quiz-q"><span class="idx">2</span>就<strong>代码同步</strong>而言，现在脱离上游的风险如何？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>很高，会丢失多个未合并修复</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>较低，上游提交已全部包含</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>无风险，两者早已互不相关</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="A"
+     data-feedback-correct="<code>dsh-backspace</code> 在 npm 上返回 404，从未发布。而文档让用户 <code>add dsh-backspace@1.2.5</code>——这是当前最该先修的实际问题。"
+     data-feedback-wrong="我实测过 <code>npm view dsh-backspace</code>，结果在第 4 节表格第 2 行提到。">
+  <p class="quiz-q"><span class="idx">3</span>当前最优先该修的<strong>功能性</strong>问题是什么？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>npm 包未发布但文档已指引安装</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>site 目录仍显示上游旧名称</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>GitHub 仓库仍标记为 fork 关系</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<div class="quiz" data-answer="B"
+     data-feedback-correct="对着呢——它不是你删 remote 能改的。fork 关系是 GitHub 侧的元数据，需要平台侧操作。"
+     data-feedback-wrong="第 3 节明确说了：删 <code>upstream</code> remote 不会消除 fork 标记。">
+  <p class="quiz-q"><span class="idx">4</span><code>git remote remove upstream</code> 能解除 GitHub fork 关系吗？</p>
+  <div class="quiz-opts">
+    <button class="quiz-opt" data-key="A"><span class="key">A</span>能，remote 与 fork 关系是同一个</button>
+    <button class="quiz-opt" data-key="B"><span class="key">B</span>不能，fork 关系属平台侧元数据</button>
+    <button class="quiz-opt" data-key="C"><span class="key">C</span>不能，还需删除上游全部提交</button>
+  </div>
+  <p class="quiz-feedback"></p>
+  <button class="quiz-reset" type="button">重做</button>
+</div>
+
+<h2><span class="num">7</span>延伸阅读</h2>
+
+<ol>
+<li>
+<a href="https://opensource.org/license/mit">MIT 许可证原文（OSI）</a>
+——只有三段，两分钟读完。重点就是那句 <em>shall be included in all copies or
+substantial portions of the Software</em>。
+</li>
+<li>
+<a href="../../LICENSE"><code>LICENSE</code></a> 和
+<a href="../../THIRD_PARTY_NOTICES.md"><code>THIRD_PARTY_NOTICES.md</code></a>
+——对照上面原文，看当前写法哪些是义务、哪些是超额礼貌。
+</li>
+<li>
+<a href="../../docs/releasing.md"><code>docs/releasing.md</code></a>
+——发布流程已经写好了，包括 npm 那一步。它缺的不是文档，是<strong>真的执行过一次</strong>。
+</li>
+</ol>
+
+<p class="ask-teacher">
+这一步涉及法律，我的建议只到"怎么做不违约"。具体商业决策（要不要彻底断、
+要不要换许可证、要不要说"基于开源项目"）建议你自己拿主意，
+有问题可以追问，我也可以帮你把每种选择的后果列清楚。
+</p>
+
+<div class="lesson-nav">
+  <span>← 上一课</span>
+  <a href="0002-extension-seams.html">第 2 课 · 扩展接缝地图</a>
+  <a href="../reference/detach-checklist.html">速查：脱钩清单</a>
+  <a href="../reference/harness-slots.html">速查：可用 slot 清单</a>
+</div>
+
+</body>
+</html>
