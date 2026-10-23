@@ -28,9 +28,9 @@ export interface BackspaceSettings {
 /** Defaults applied when a field is absent from user-settings. */
 export const DEFAULT_BACKSPACE_SETTINGS: Readonly<BackspaceSettings> = Object.freeze({
   enabled: true,
-  sea: 45,
+  sea: 50,
   time: 55,
-  glass: 72,
+  glass: 70,
   autoCycle: true,
   quality: 'auto',
 })

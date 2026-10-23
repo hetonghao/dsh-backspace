@@ -27,6 +27,10 @@ try {
   await page.evaluate(() => {
     localStorage.setItem('bsAutoCycle', 'false')
     localStorage.setItem('bsGlass', '40')
+    // These combinations assert one shared glass across the three columns. The
+    // product default now enables the independent conversation background, so
+    // pin it off here rather than depending on the shipped default.
+    localStorage.setItem('bsChatCustom', 'false')
     window.__ModuleLoader__ = { load({ factory }) {
       const plugin = factory(() => {})
       plugin.apply({ effect(fn) { window.stopBackspace = fn() } })

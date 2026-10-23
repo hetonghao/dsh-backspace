@@ -85,9 +85,9 @@ test('shared controller retains duplicate guards, a11y and resilient anchors', a
 
 test('the conversation panel has its own background opacity', async () => {
   const core = await text('shared/skin-core.js')
-  // Off by default, and persisted as two independent values.
-  assert.match(core, /chatCustom: false/)
-  assert.match(core, /chatOpacity: 100/)
+  // On by default at a milder opacity, and persisted as two independent values.
+  assert.match(core, /chatCustom: true/)
+  assert.match(core, /chatOpacity: 90/)
   assert.match(core, /chatCustom: raw\.chatCustom === true/)
   assert.match(core, /chatOpacity: clamp\(raw\.chatOpacity, CHAT_OPACITY_MIN, CHAT_OPACITY_MAX/)
   // The slider spans 40-100% and is bound to the switch that reveals it.

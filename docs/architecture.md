@@ -77,7 +77,7 @@ and substantially slows time rather than removing the scene abruptly.
 Glass is applied through Harness semantic tokens, not nested opacity:
 `--dsw-alias-bg-base`, `layer-1..3`, `module-platform`, `multi-select`,
 `overlay`, `--dsw-specific-sidebar-fill`, and `selector`. Light mode defaults
-near 0.72; dark mode derives roughly 0.12 lower. Elevated overlays receive a
+near 0.70; dark mode derives roughly 0.12 lower. Elevated overlays receive a
 higher alpha to preserve legibility. The native plugin uses the theme API;
 static compatibility retains a small set of documented CSS-module fallbacks.
 

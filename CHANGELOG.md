@@ -4,6 +4,14 @@ All notable changes to Backspace are documented here.
 
 ## Unreleased
 
+### Changed
+
+- **New code-level defaults**, matching the shipped skin baseline: sea state
+  **50**, daylight **55** (afternoon), glass opacity **70%**, automatic day
+  cycle on, and the independent conversation background **on at 90%**. Earlier
+  installs keep their saved values; the new defaults apply to fresh installs
+  and to the panel's "Reset to defaults" button, whose note now names them.
+
 ### Added
 
 - **Independent conversation background** in the skin settings panel. A
@@ -13,7 +21,7 @@ All notable changes to Backspace are documented here.
   `--dsw-static-neutral-bluish-*` palette and only scaled by `color-mix()`.
   With the switch off the conversation follows the workspace glass, exactly as
   before, and the sidebars and details columns keep that glass in both modes.
-  Off by default; stored as `bsChatCustom` / `bsChatOpacity` (localStorage) and
+  On by default at 90%; stored as `bsChatCustom` / `bsChatOpacity` (localStorage) and
   `skinChatCustom` / `skinChatOpacity` (extension sync storage). The control is
   wired through all install paths: DSH bundle, static installer and MV3
   extension.

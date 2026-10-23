@@ -16,12 +16,12 @@
 
   const DEFAULTS = Object.freeze({
     enabled: true,
-    sea: 45,
+    sea: 50,
     time: 55,
-    glass: 72,
+    glass: 70,
     autoCycle: true,
-    chatCustom: false,
-    chatOpacity: 100,
+    chatCustom: true,
+    chatOpacity: 90,
   });
 
   // The conversation column shares the workspace glass until the independent
@@ -51,7 +51,7 @@
       chatCustom: '对话面板独立背景调整',
       chatOpacity: '对话面板不透明度',
       reset: '恢复默认',
-      resetNote: '恢复全部默认设置（波浪 45 / 日光 55 / 玻璃 72 / 自动循环开 / 对话面板跟随主玻璃）',
+      resetNote: '恢复全部默认设置（波浪 50 / 日光 55 / 玻璃 70 / 自动循环开 / 对话面板独立背景开、不透明度 90）',
       note: '调节即时生效并自动保存；手动设定「日光」后会停止自动昼夜循环。开启「对话面板独立背景调整」后，可以用下面的拖动条单独设定中间对话区的背景浓度，100% 即 Harness 原生背景；关闭时对话区跟随上面的「玻璃不透明度」，左右侧栏始终使用主玻璃。',
       times: ['黄昏', '金色时刻', '下午', '正午'],
     },
@@ -66,7 +66,7 @@
       chatCustom: 'Independent conversation background',
       chatOpacity: 'Conversation opacity',
       reset: 'Reset to defaults',
-      resetNote: 'Restore all defaults (sea 45 / daylight 55 / glass 72 / auto cycle on / conversation follows the workspace glass)',
+      resetNote: 'Restore all defaults (sea 50 / daylight 55 / glass 70 / auto cycle on / independent conversation background on at 90%)',
       note: 'Changes apply immediately and save automatically. Setting daylight manually stops the automatic day cycle. Turning on the independent conversation background lets the slider below set how strongly the center column is tinted; 100% is Harness\'s native background. Switch it off and the conversation follows the glass opacity above, while the sidebars always use the workspace glass.',
       times: ['Dusk', 'Golden hour', 'Afternoon', 'Midday'],
     },

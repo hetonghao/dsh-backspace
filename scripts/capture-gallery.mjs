@@ -238,7 +238,7 @@ async function captureHarness() {
     await panel.waitFor({ state: 'hidden' })
     await rpc(page, 'settings.update', {
       ns: 'ui-backspace',
-      patch: { enabled: true, sea: 45, time: 55, glass: 72, autoCycle: true, quality: 'auto' },
+      patch: { enabled: true, sea: 50, time: 55, glass: 70, autoCycle: true, quality: 'auto' },
     })
     await rpc(page, 'settings.update', { ns: 'ui-theme', patch: { preference: 'system' } })
     assert.deepEqual(failures, [])

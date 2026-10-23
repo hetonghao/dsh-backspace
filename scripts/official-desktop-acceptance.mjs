@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
@@ -23,6 +24,10 @@ try {
   await page.evaluate(() => {
     localStorage.setItem('bsAutoCycle', 'false')
     localStorage.setItem('bsGlass', '40')
+    // This block asserts one shared glass across all three columns. The product
+    // default now ships the independent conversation background switched on, so
+    // the baseline is pinned explicitly here instead of relying on defaults.
+    localStorage.setItem('bsChatCustom', 'false')
     window.__ModuleLoader__ = { load({ factory }) {
       const plugin = factory(() => {})
       plugin.apply({ effect(fn) { window.stopBackspace = fn() } })
@@ -111,7 +116,21 @@ try {
   assert.equal(await slider.isVisible(), false, 'slider is hidden while the conversation follows the glass')
   await box.check()
   assert.equal(await slider.isVisible(), true, 'slider appears once the switch is on')
-  assert.equal(await slider.inputValue(), '100', '100% is the default and matches native')
+  // The default conversation opacity is a product setting, not a constant:
+  // read it from the shared source so retuning it cannot silently pass.
+  const documentedChatOpacity = Number(
+    (await readFile(resolve(root, 'shared/skin-core.js'), 'utf8'))
+      .match(/chatOpacity:\s*(\d+)/)?.[1],
+  )
+  assert.equal(
+    await slider.inputValue(),
+    String(documentedChatOpacity),
+    'the switch opens on the documented default opacity',
+  )
+  // 100% is the contract the feature is built on: the column must be
+  // indistinguishable from unthemed Harness. Drive the slider there explicitly
+  // so a retuned default cannot weaken this check.
+  await setRange(slider, 100)
   for (const dark of [true, false]) {
     await page.evaluate((dark) => { document.body.toggleAttribute('data-ds-dark-theme', dark) }, dark)
     const paints = await page.evaluate(() => {
@@ -154,7 +173,7 @@ try {
 
     // Every step below 100% must be a genuinely lower conversation opacity
     // while the sidebars stay put.
-    for (const percent of [40, 65, 90]) {
+    for (const percent of [40, 65, documentedChatOpacity]) {
       await setRange(slider, percent)
       const stepped = await page.evaluate(() => {
         const column = document.querySelector('div:has(> [data-shell-overlay]) > :nth-child(2)')
