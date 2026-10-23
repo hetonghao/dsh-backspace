@@ -1,7 +1,7 @@
 <div align="center">
   <img src="extension/icons/icon128.png" width="80" height="80" alt="Backspace wave logo" />
   <h1>Backspace · DeepSeek Harness Ocean Theme</h1>
-  <p><strong>A living ocean behind your workspace.</strong><br>实时海洋 · 夕阳光影 · 透明玻璃界面</p>
+  <p><strong>A living ocean behind your workspace.</strong><br>Animated waves · Sunset lighting · Translucent glass</p>
   <p><a href="README.md">简体中文</a> · <strong>English</strong></p>
   <p>
     <a href="https://github.com/hetonghao/dsh-backspace/releases"><img src="https://img.shields.io/github/v/release/hetonghao/dsh-backspace?color=138b8b&amp;label=GitHub%20release" alt="Latest GitHub release" /></a>
@@ -14,17 +14,38 @@
   <p><a href="https://hetonghao.github.io/dsh-backspace/"><strong>🌊 Interactive demo</strong></a> · <a href="#install">📦 Install</a> · <a href="https://github.com/hetonghao/dsh-backspace/releases">🚀 Releases</a> · <a href="https://github.com/hetonghao/dsh-backspace/issues">💬 Get help</a></p>
 </div>
 
+## 🌊 See the ocean in motion
+
+![Backspace animated ocean inside DeepSeek Harness in dark mode at 40 percent glass opacity](docs/screenshots/harness-dark-overview-40.gif)
+
+🎬 Original Harness recording · 40% glass opacity · [Light mode, waves & sunset](#gallery) · [Try the interactive website](https://hetonghao.github.io/dsh-backspace/)
+
 ## 🚀 Official Desktop in three steps
 
-**① Plugins → Add plugin　② Paste the package below　③ Install → Enable now**
+🖥️ **Using Official Desktop? Install the Harness plugin directly.** The same steps work on Windows and Mac. No terminal or browser extension required.
+
+1. 🧩 Open **Plugins → Add plugin** in the sidebar.
+2. 📋 Paste the package name below and click **Install**.
+3. ✅ Choose **Enable now**, then restart if prompted.
 
 ```text
-dsh-backspace@1.2.5
+dsh-backspace@1.2.6
 ```
 
-Windows / Mac · npm and mainland China mirror · [Other methods](#install)
+🇨🇳 The mainland China mirror is optional; switch to the official npm registry if the version is not available.
 
-![Backspace dynamic ocean theme running inside DeepSeek Harness with a transparent chat interface](docs/marketplace/backspace-harness-cover.png)
+🌐 Using Harness Web? [Go to Web installation](#dsh-plugin). Need help? [Read the plugin guide](docs/dsh-plugin.md).
+
+> 💡 **Choose one integration.** The Harness plugin and browser extension are alternatives. Do not install both in the same Harness instance.
+
+<details>
+<summary>🛍️ Already using a community plugin market?</summary>
+
+Search for **Backspace / dsh-backspace**, verify the repository is **hetonghao/dsh-backspace**, and check the version.
+
+If the listing is outdated, use Official Desktop's **Add plugin** instead. Installing a community market is not required.
+
+</details>
 
 **Backspace is an open-source ocean theme and appearance plugin for DeepSeek Harness (DSH).** It adds a real-time WebGPU animated background, adjustable waves, daylight-to-sunset lighting, and a translucent glass interface. Use it as a DSH plugin, a Harness-only Chrome/Edge extension, or a static frontend integration.
 
@@ -95,7 +116,7 @@ Wave size stays at 56 while the light moves from Midday to Dusk.
 2. Paste this exact package name and version:
 
    ```text
-   dsh-backspace@1.2.5
+   dsh-backspace@1.2.6
    ```
 
 3. Choose the official npm registry, or the mainland China mirror if that works better on your network.
@@ -117,7 +138,7 @@ Wave size stays at 56 while the light moves from Midday to Dusk.
 Run this on the machine that runs `dsh web`. The command is the same in Windows PowerShell and the macOS terminal:
 
 ```sh
-dsh plugin --profile web add dsh-backspace@1.2.5
+dsh plugin --profile web add dsh-backspace@1.2.6
 ```
 
 Restart your running `dsh web` process and reload the browser. This installs into the Web profile, **not Official Desktop**.
@@ -130,7 +151,7 @@ Restart your running `dsh web` process and reload the browser. This installs int
 
 For local Harness pages in a browser, on Windows or Mac.
 
-1. [Download the extension ZIP](https://github.com/hetonghao/dsh-backspace/releases/download/v1.2.5/dsh-backspace-extension-v1.2.5.zip) and unzip it.
+1. [Download the extension ZIP](https://github.com/hetonghao/dsh-backspace/releases/download/v1.2.6/dsh-backspace-extension-v1.2.6.zip) and unzip it.
 2. Open `chrome://extensions` or `edge://extensions`; enable **Developer mode**.
 3. Choose **Load unpacked** and select the extracted folder containing `manifest.json`.
 4. Reload your Harness page on `127.0.0.1` or `localhost`.

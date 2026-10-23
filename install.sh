@@ -2,7 +2,7 @@
 # Download a pinned Backspace source archive and run the static Harness installer.
 set -euo pipefail
 
-BACKSPACE_VERSION="${BACKSPACE_VERSION:-v1.2.5}"
+BACKSPACE_VERSION="${BACKSPACE_VERSION:-v1.2.6}"
 BACKSPACE_ARCHIVE_URL="${BACKSPACE_ARCHIVE_URL:-https://github.com/hetonghao/dsh-backspace/archive/refs/tags/${BACKSPACE_VERSION}.tar.gz}"
 
 REQUESTED_MODE="install"

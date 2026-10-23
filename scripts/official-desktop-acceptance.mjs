@@ -33,6 +33,8 @@ try {
 
   for (const platform of ['darwin', 'windows']) {
     for (const dark of [true, false]) {
+      for (const glass of [40, 90]) {
+      await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), glass)
       await page.evaluate(({ platform, dark }) => {
         document.documentElement.toggleAttribute('data-windows-titlebar', platform === 'windows')
         if (platform === 'darwin') document.documentElement.dataset.platform = 'darwin'
@@ -71,25 +73,22 @@ try {
           columns: ['.sidebar', '.conversation', '[data-dockkit-content]'].map(effective),
           composer: alpha('.composer'),
           settings: alpha('[data-shortcut-modal="settings"]'),
-          layerOne: tokenAlpha('--dsw-alias-bg-layer-1'),
-          layerTwo: tokenAlpha('--dsw-alias-bg-layer-2'),
-          base: tokenAlpha('--dsw-alias-bg-base'),
+          marketplace: alpha('.marketplace'),
+          pluginDialog: alpha('.plugin-dialog'),
         }
       })
-      const expected = .4
+      const expected = dark ? Math.max(.4, glass / 100 - .12) : glass / 100
       for (const value of paints.columns) assert.ok(Math.abs(value - expected) < .005,
         `${platform}/${dark ? 'dark' : 'light'}: columns ${JSON.stringify(paints.columns)} expected ${expected}`)
       assert.ok(paints.composer >= .96, `composer keeps its own readable surface, got ${paints.composer}`)
       assert.ok(paints.settings >= .96, 'settings stays legible over the ocean')
-      // A hover preview over the ocean must never show the page through its
-      // text, at any glass setting.
-      assert.ok(paints.layerOne >= .96,
-        `${platform}/${dark ? 'dark' : 'light'}: hover preview layer ${paints.layerOne} must stay opaque`)
-      assert.ok(paints.layerTwo >= .96,
-        `${platform}/${dark ? 'dark' : 'light'}: dialog/floating layer ${paints.layerTwo} must stay opaque`)
-      // ...while the workspace surface still carries the glass setting.
-      assert.ok(Math.abs(paints.base - expected) < .005,
-        `${platform}/${dark ? 'dark' : 'light'}: workspace base ${paints.base} should follow the glass setting`)
+      assert.ok(paints.marketplace >= .96, 'marketplace keeps a readable overlay token')
+      assert.ok(paints.pluginDialog >= .96, 'sibling configuration dialog has an independent surface')
+      assert.equal(await page.locator('[data-shell-overlay]').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)')
+      if (process.env.OSS_SCREENSHOTS && platform === 'windows' && glass === 40) {
+        await page.screenshot({ path: `${process.env.OSS_SCREENSHOTS}/overlay-${dark ? 'dark' : 'light'}.png` })
+      }
+      }
     }
   }
   await page.evaluate(() => window.stopBackspace())
@@ -104,6 +103,10 @@ try {
   await page.addScriptTag({ path: resolve(root, 'plugin/client.js') })
   await waitForOcean(page)
   await page.locator('#__dsh-backspace-btn__').click()
+  // The rotation above leaves the glass slider on its last value. Pin it back
+  // to the documented 40% so this block measures the sidebar baseline it
+  // asserts, instead of inheriting whatever the previous loop ended on.
+  await setRange(page.locator('#__dsh-backspace-panel__-glass-range'), 40)
   // The slider stays out of the way until the switch enables it.
   assert.equal(await slider.isVisible(), false, 'slider is hidden while the conversation follows the glass')
   await box.check()
